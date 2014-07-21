@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/sourcegraph/srclib/graph"
-	"github.com/sourcegraph/srclib/toolchain/golang/gog"
+	"github.com/sourcegraph/srclib-go/gog"
 )
 
 func init() {

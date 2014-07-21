@@ -13,7 +13,7 @@ import (
 	"github.com/sourcegraph/srclib/graph"
 	"github.com/sourcegraph/srclib/grapher2"
 	"github.com/sourcegraph/srclib/repo"
-	"github.com/sourcegraph/srclib/toolchain/golang/gog"
+	"github.com/sourcegraph/srclib-go/gog"
 	"github.com/sourcegraph/srclib/unit"
 )
 
