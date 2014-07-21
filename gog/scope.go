@@ -38,7 +38,10 @@ func (g *Grapher) path(obj types.Object) (path []string) {
 	}
 
 	if scope == nil {
-		panic("no scope for object " + obj.String())
+		// TODO(sqs): make this actually handle cases like the one described in
+		// https://github.com/sourcegraph/sourcegraph.com/issues/218
+		log.Printf("Warning: no scope for object %s at pos %s", obj.String(), g.program.Fset.Position(obj.Pos()))
+		return nil
 	}
 
 	prefix, hasPath := g.scopePaths[scope]
