@@ -1,7 +1,7 @@
-OP scan
+HANDLER scan
 
-OP deplist
+HANDLER deplist
 
-OP depresolve
+HANDLER depresolve
 
-OP graph
+HANDLER graph
