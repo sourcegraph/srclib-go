@@ -1,7 +1,0 @@
-HANDLER scan
-
-HANDLER deplist
-
-HANDLER depresolve
-
-HANDLER graph
