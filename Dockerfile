@@ -11,19 +11,26 @@ ENV GOBIN /usr/local/bin
 ENV PATH /usr/local/go/bin:$PATH
 ENV GOPATH /srclib
 
-# TMP: this is slow, so pre-fetch it
-RUN go get github.com/golang/gddo/gosrc github.com/sourcegraph/go-vcsurl code.google.com/p/go.tools/go/loader
+# TMP: these are slow; pre-fetch them for faster builds
+RUN go get -d github.com/golang/gddo/gosrc
+RUN go get -d github.com/sourcegraph/go-vcsurl
+RUN go get -d code.google.com/p/go.tools/go/loader
+RUN go get -d github.com/jessevdk/go-flags
+RUN go get -d github.com/sourcegraph/srclib/unit
+RUN go get -d github.com/jmoiron/sqlx/types
+RUN go get -d github.com/sourcegraph/go-nnz
 
-# TMP: use the ext-toolchains branch of srclib
-RUN mkdir -p /srclib/src/github.com/sourcegraph
-RUN cd /srclib/src/github.com/sourcegraph && git clone https://github.com/sourcegraph/srclib.git
-RUN cd /srclib/src/github.com/sourcegraph/srclib && git fetch origin ext-toolchains && git checkout ext-toolchains && git checkout b96226 && git branch -D master && git checkout -b master --track origin/ext-toolchains
+# Allow determining whether we're running in Docker
+ENV IN_DOCKER_CONTAINER true
 
 # Add this toolchain
 ADD . /srclib/src/github.com/sourcegraph/srclib-go/
 WORKDIR /srclib/src/github.com/sourcegraph/srclib-go
-RUN go get -v -d ./cmd/src-tool-go
-RUN go install ./cmd/src-tool-go
+RUN go get -v -d
+RUN go install
 
+# Now set the GOPATH for the project source code, which is mounted at /src.
+ENV GOPATH /
 WORKDIR /src
-ENTRYPOINT ["src-tool-go"]
+
+ENTRYPOINT ["srclib-go"]
