@@ -1,7 +1,8 @@
-TOOL scan
-
-TOOL deplist
-
-TOOL depresolve
-
-TOOL graph
+{
+  "Tools": [
+    "scan",
+    "graph",
+    "deplist",
+    "depresolve"
+  ]
+}
