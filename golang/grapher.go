@@ -3,79 +3,55 @@ package golang
 import (
 	"encoding/json"
 	"fmt"
-	"os"
-	"path/filepath"
 
 	"strings"
 
-	"github.com/sourcegraph/srclib/config"
-	"github.com/sourcegraph/srclib/container"
+	"github.com/sourcegraph/srclib-go/gog"
 	"github.com/sourcegraph/srclib/graph"
 	"github.com/sourcegraph/srclib/grapher2"
 	"github.com/sourcegraph/srclib/repo"
-	"github.com/sourcegraph/srclib-go/gog"
 	"github.com/sourcegraph/srclib/unit"
 )
 
-func init() {
-	grapher2.Register(&Package{}, grapher2.DockerGrapher{defaultGoVersion})
-}
-
-func (v *goVersion) BuildGrapher(dir string, unit unit.SourceUnit, c *config.Repository) (*container.Command, error) {
-	gogBinPath := filepath.Join(os.Getenv("GOBIN"), "gog")
-
-	pkg := unit.(*Package)
-
-	cont, err := v.containerForRepo(dir, unit, c)
+func Graph(unit *unit.SourceUnit) (*grapher2.Output, error) {
+	pkg, err := UnitDataAsBuildPackage(unit)
 	if err != nil {
 		return nil, err
 	}
 
-	// Install VCS tools in Docker container.
-	cont.Dockerfile = append(cont.Dockerfile, []byte("RUN apt-get update -qq && apt-get -qq install git mercurial bzr subversion\n")...)
-
-	cont.AddFiles = append(cont.AddFiles, [2]string{gogBinPath, "/usr/local/bin/gog"})
-	cont.Cmd = []string{"bash", "-c", fmt.Sprintf("go get -v -t %s; gog %s", pkg.ImportPath, pkg.ImportPath)}
-
-	cmd := container.Command{
-		Container: *cont,
-		Transform: func(in []byte) ([]byte, error) {
-			var o gog.Output
-			err := json.Unmarshal(in, &o)
-			if err != nil {
-				return nil, err
-			}
-
-			o2 := grapher2.Output{
-				Symbols: make([]*graph.Symbol, len(o.Symbols)),
-				Refs:    make([]*graph.Ref, len(o.Refs)),
-				Docs:    make([]*graph.Doc, len(o.Docs)),
-			}
-
-			for i, gs := range o.Symbols {
-				o2.Symbols[i], err = v.convertGoSymbol(gs, c)
-				if err != nil {
-					return nil, err
-				}
-			}
-			for i, gr := range o.Refs {
-				o2.Refs[i], err = v.convertGoRef(gr, c)
-				if err != nil {
-					return nil, err
-				}
-			}
-			for i, gd := range o.Docs {
-				o2.Docs[i], err = v.convertGoDoc(gd, c)
-				if err != nil {
-					return nil, err
-				}
-			}
-
-			return json.Marshal(o2)
-		},
+	o, err := gog.Main(&gog.Default, []string{pkg.ImportPath})
+	if err != nil {
+		return nil, err
 	}
 
-	return &cmd, nil
+	o2 := grapher2.Output{
+		Symbols: make([]*graph.Symbol, len(o.Symbols)),
+		Refs:    make([]*graph.Ref, len(o.Refs)),
+		Docs:    make([]*graph.Doc, len(o.Docs)),
+	}
+
+	uri := string(unit.Repo)
+
+	for i, gs := range o.Symbols {
+		o2.Symbols[i], err = convertGoSymbol(gs, uri)
+		if err != nil {
+			return nil, err
+		}
+	}
+	for i, gr := range o.Refs {
+		o2.Refs[i], err = convertGoRef(gr, uri)
+		if err != nil {
+			return nil, err
+		}
+	}
+	for i, gd := range o.Docs {
+		o2.Docs[i], err = convertGoDoc(gd, uri)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &o2, nil
 }
 
 // SymbolData is extra Go-specific data about a symbol.
@@ -88,8 +64,8 @@ type SymbolData struct {
 	PackageImportPath string `json:",omitempty"`
 }
 
-func (v *goVersion) convertGoSymbol(gs *gog.Symbol, c *config.Repository) (*graph.Symbol, error) {
-	resolvedTarget, err := v.resolveGoImportDep(gs.SymbolKey.PackageImportPath, c)
+func convertGoSymbol(gs *gog.Symbol, repoURI string) (*graph.Symbol, error) {
+	resolvedTarget, err := ResolveDep(gs.SymbolKey.PackageImportPath, repoURI)
 	if err != nil {
 		return nil, err
 	}
@@ -134,8 +110,8 @@ func (v *goVersion) convertGoSymbol(gs *gog.Symbol, c *config.Repository) (*grap
 	return sym, nil
 }
 
-func (v *goVersion) convertGoRef(gr *gog.Ref, c *config.Repository) (*graph.Ref, error) {
-	resolvedTarget, err := v.resolveGoImportDep(gr.Symbol.PackageImportPath, c)
+func convertGoRef(gr *gog.Ref, repoURI string) (*graph.Ref, error) {
+	resolvedTarget, err := ResolveDep(gr.Symbol.PackageImportPath, repoURI)
 	if err != nil {
 		return nil, err
 	}
@@ -155,8 +131,8 @@ func (v *goVersion) convertGoRef(gr *gog.Ref, c *config.Repository) (*graph.Ref,
 	}, nil
 }
 
-func (v *goVersion) convertGoDoc(gd *gog.Doc, c *config.Repository) (*graph.Doc, error) {
-	resolvedTarget, err := v.resolveGoImportDep(gd.PackageImportPath, c)
+func convertGoDoc(gd *gog.Doc, repoURI string) (*graph.Doc, error) {
+	resolvedTarget, err := ResolveDep(gd.PackageImportPath, repoURI)
 	if err != nil {
 		return nil, err
 	}

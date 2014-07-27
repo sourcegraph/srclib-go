@@ -1,3 +1,5 @@
+//+build off
+
 package golang
 
 import (

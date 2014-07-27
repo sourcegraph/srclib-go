@@ -3,20 +3,17 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"go/build"
-	"io"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"reflect"
-	"sort"
-	"strings"
 
 	"github.com/jessevdk/go-flags"
+	"github.com/sourcegraph/srclib-go/golang"
 	"github.com/sourcegraph/srclib/dep2"
-	"github.com/sourcegraph/srclib/toolchain"
 	"github.com/sourcegraph/srclib/unit"
 )
 
@@ -65,93 +62,17 @@ func (c *ScanCmd) Execute(args []string) error {
 		log.Println("Warning: no --repo specified, and tool is running in a Docker container (i.e., without awareness of host's GOPATH). Go import paths in source units produced by the scanner may be inaccurate. To fix this, ensure that the --repo URI is specified. Report this issue if you are seeing it unexpectedly.")
 	}
 
-	cmd := exec.Command("go", "list", "-e", "-json", "./...")
-	cmd.Stderr = os.Stderr
-	stdout, err := cmd.StdoutPipe()
+	units, err := golang.Scan("./...")
 	if err != nil {
 		return err
 	}
-	if err := cmd.Start(); err != nil {
-		return err
-	}
 
-	dec := json.NewDecoder(stdout)
-	var units []*unit.SourceUnit
-	for {
-		var pkg *build.Package
-		if err := dec.Decode(&pkg); err == io.EOF {
-			break
-		} else if err != nil {
-			return err
-		}
-
-		pv, pt := reflect.ValueOf(pkg).Elem(), reflect.TypeOf(*pkg)
-
-		// collect all files
-		var files []string
-		for i := 0; i < pt.NumField(); i++ {
-			f := pt.Field(i)
-			if strings.HasSuffix(f.Name, "Files") {
-				fv := pv.Field(i).Interface()
-				files = append(files, fv.([]string)...)
-			}
-		}
-
-		// collect all imports
-		depsMap := map[string]struct{}{}
-		for i := 0; i < pt.NumField(); i++ {
-			f := pt.Field(i)
-			if strings.HasSuffix(f.Name, "Imports") {
-				fv := pv.Field(i).Interface()
-				imports := fv.([]string)
-				for _, imp := range imports {
-					depsMap[imp] = struct{}{}
-				}
-			}
-		}
-		deps0 := make([]string, len(depsMap))
-		i := 0
-		for imp := range depsMap {
-			deps0[i] = imp
-			i++
-		}
-		sort.Strings(deps0)
-		deps := make([]interface{}, len(deps0))
-		for i, imp := range deps0 {
-			deps[i] = imp
-		}
-
-		// make all dirs relative to the current dir
-		for i := 0; i < pt.NumField(); i++ {
-			f := pt.Field(i)
-			if strings.HasSuffix(f.Name, "Dir") {
-				fv := pv.Field(i)
-				dir := fv.Interface().(string)
-				if dir != "" {
-					dir, err := filepath.Rel(cwd, dir)
-					if err != nil {
-						return err
-					}
-					fv.Set(reflect.ValueOf(dir))
-				}
-			}
-		}
-
-		// fix up import path to be consistent when running as a program and as
-		// a Docker container.
+	// fix up import paths to be consistent when running as a program and as
+	// a Docker container.
+	for _, u := range units {
+		pkg := u.Data.(*build.Package)
 		pkg.ImportPath = filepath.Join(c.Repo, c.Subdir, pkg.Dir)
-
-		units = append(units, &unit.SourceUnit{
-			Name:         pkg.ImportPath,
-			Type:         "GoPackage",
-			Files:        files,
-			Data:         pkg,
-			Dependencies: deps,
-			Ops:          map[string]*toolchain.ToolRef{"depresolve": nil, "graph": nil},
-		})
-	}
-	if err := cmd.Wait(); err != nil {
-		return err
+		u.Name = pkg.ImportPath
 	}
 
 	if err := json.NewEncoder(os.Stdout).Encode(units); err != nil {
@@ -186,11 +107,123 @@ func (c *DepResolveCmd) Execute(args []string) error {
 
 	res := make([]*dep2.Resolution, len(unit.Dependencies))
 	for i, dep := range unit.Dependencies {
-		res[i] = &dep2.Resolution{Error: fmt.Sprintf("TODO %v", dep)}
+		importPath, ok := dep.(string)
+		if !ok {
+			return fmt.Errorf("Go raw dep is not a string import path: %v (%T)", dep, dep)
+		}
+
+		res[i] = &dep2.Resolution{Raw: dep}
+
+		rt, err := golang.ResolveDep(importPath, string(unit.Repo))
+		if err != nil {
+			res[i].Error = err.Error()
+			continue
+		}
+		res[i].Target = rt
 	}
 
 	if err := json.NewEncoder(os.Stdout).Encode(res); err != nil {
 		return err
 	}
 	return nil
+}
+
+func init() {
+	_, err := parser.AddCommand("graph",
+		"graph a Go package",
+		"Graph a Go package, producing all defs, refs, and docs.",
+		&graphCmd,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+type GraphCmd struct{}
+
+var graphCmd GraphCmd
+
+func (c *GraphCmd) Execute(args []string) error {
+	var unit *unit.SourceUnit
+	if err := json.NewDecoder(os.Stdin).Decode(&unit); err != nil {
+		return err
+	}
+	if err := os.Stdin.Close(); err != nil {
+		return err
+	}
+
+	if os.Getenv("IN_DOCKER_CONTAINER") != "" {
+		// Make a new GOPATH.
+		build.Default.GOPATH = "/tmp/gopath"
+
+		// Set up GOPATH so it has this repo.
+		dir := filepath.Join(build.Default.GOPATH, "src", string(unit.Repo))
+		if err := os.MkdirAll(filepath.Dir(dir), 0700); err != nil {
+			return err
+		}
+		if err := os.Symlink(cwd, dir); err != nil {
+			return err
+		}
+
+		if err := os.Chdir(dir); err != nil {
+			return err
+		}
+		cwd = dir
+
+		if err := os.Setenv("GOPATH", build.Default.GOPATH); err != nil {
+			return err
+		}
+
+		// Get and install deps. (Only deps not in this repo; if we call `go
+		// get` on this repo, we will either try to check out a different
+		// version or fail with 'stale checkout?' because the .dockerignore
+		// doesn't copy the .git dir.)
+		var externalDeps []string
+		for _, dep := range unit.Dependencies {
+			importPath := dep.(string)
+			if !strings.HasPrefix(importPath, string(unit.Repo)) {
+				externalDeps = append(externalDeps, importPath)
+			}
+		}
+		cmd := exec.Command("go", "get", "-t", "-v")
+		cmd.Args = append(cmd.Args, externalDeps...)
+		cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
+		log.Println(cmd.Args)
+		if err := cmd.Run(); err != nil {
+			return err
+		}
+	}
+
+	out, err := golang.Graph(unit)
+	if err != nil {
+		return err
+	}
+
+	// Make paths relative to repo.
+	for _, gs := range out.Symbols {
+		if gs.File == "" {
+			log.Printf("no file %+v", gs)
+		}
+	}
+	for _, gr := range out.Refs {
+		gr.File = relPath(cwd, gr.File)
+	}
+	for _, gd := range out.Docs {
+		if gd.File != "" {
+			gd.File = relPath(cwd, gd.File)
+		}
+	}
+
+	if err := json.NewEncoder(os.Stdout).Encode(out); err != nil {
+		return err
+	}
+	return nil
+}
+
+func relPath(cwd, path string) string {
+	rp, err := filepath.Rel(cwd, path)
+	if err != nil {
+		log.Fatalf("Failed to make path %q relative to %q: %s", path, cwd, err)
+	}
+	return rp
 }

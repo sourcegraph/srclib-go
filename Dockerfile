@@ -11,14 +11,8 @@ ENV GOBIN /usr/local/bin
 ENV PATH /usr/local/go/bin:$PATH
 ENV GOPATH /srclib
 
-# TMP: these are slow; pre-fetch them for faster builds
-RUN go get -d github.com/golang/gddo/gosrc
-RUN go get -d github.com/sourcegraph/go-vcsurl
+# TMP: this are slow; pre-fetch for faster builds
 RUN go get -d code.google.com/p/go.tools/go/loader
-RUN go get -d github.com/jessevdk/go-flags
-RUN go get -d github.com/sourcegraph/srclib/unit
-RUN go get -d github.com/jmoiron/sqlx/types
-RUN go get -d github.com/sourcegraph/go-nnz
 
 # Allow determining whether we're running in Docker
 ENV IN_DOCKER_CONTAINER true

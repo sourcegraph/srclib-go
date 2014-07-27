@@ -1,4 +1,4 @@
-// +build off
+//+build off
 
 package golang
 
