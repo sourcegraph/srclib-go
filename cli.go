@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"go/build"
 	"io"
@@ -14,6 +15,8 @@ import (
 	"strings"
 
 	"github.com/jessevdk/go-flags"
+	"github.com/sourcegraph/srclib/dep2"
+	"github.com/sourcegraph/srclib/toolchain"
 	"github.com/sourcegraph/srclib/unit"
 )
 
@@ -144,6 +147,7 @@ func (c *ScanCmd) Execute(args []string) error {
 			Files:        files,
 			Data:         pkg,
 			Dependencies: deps,
+			Ops:          map[string]*toolchain.ToolRef{"depresolve": nil, "graph": nil},
 		})
 	}
 	if err := cmd.Wait(); err != nil {
@@ -151,6 +155,41 @@ func (c *ScanCmd) Execute(args []string) error {
 	}
 
 	if err := json.NewEncoder(os.Stdout).Encode(units); err != nil {
+		return err
+	}
+	return nil
+}
+
+func init() {
+	_, err := parser.AddCommand("depresolve",
+		"resolve a Go package's imports",
+		"Resolve a Go package's imports to their repository clone URL.",
+		&depResolveCmd,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+type DepResolveCmd struct{}
+
+var depResolveCmd DepResolveCmd
+
+func (c *DepResolveCmd) Execute(args []string) error {
+	var unit *unit.SourceUnit
+	if err := json.NewDecoder(os.Stdin).Decode(&unit); err != nil {
+		return err
+	}
+	if err := os.Stdin.Close(); err != nil {
+		return err
+	}
+
+	res := make([]*dep2.Resolution, len(unit.Dependencies))
+	for i, dep := range unit.Dependencies {
+		res[i] = &dep2.Resolution{Error: fmt.Sprintf("TODO %v", dep)}
+	}
+
+	if err := json.NewEncoder(os.Stdout).Encode(res); err != nil {
 		return err
 	}
 	return nil
