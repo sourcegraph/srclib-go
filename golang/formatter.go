@@ -1,3 +1,5 @@
+//+build off
+
 package golang
 
 import (
@@ -6,8 +8,8 @@ import (
 
 	"strings"
 
-	"github.com/sourcegraph/srclib/graph"
 	"github.com/sourcegraph/srclib-go/gog"
+	"github.com/sourcegraph/srclib/graph"
 )
 
 func init() {

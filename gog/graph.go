@@ -138,22 +138,6 @@ func (g *Grapher) Graph(pkgInfo *loader.PackageInfo) error {
 	seen := make(map[ast.Node]struct{})
 	skipResolveObjs := make(map[types.Object]struct{})
 
-	for selExpr, sel := range pkgInfo.Selections {
-		switch sel.Kind() {
-		case types.PackageObj:
-			pkg := sel.Obj().Pkg()
-			pkgIdent := selExpr.X.(*ast.Ident)
-			pkgObj := types.NewPkgName(selExpr.X.Pos(), pkg, pkg.Name())
-			ref, err := g.NewRef(pkgIdent, pkgObj)
-			if err != nil {
-				return err
-			}
-			g.addRef(ref)
-
-			seen[pkgIdent] = struct{}{}
-		}
-	}
-
 	for node, obj := range pkgInfo.Implicits {
 		if importSpec, ok := node.(*ast.ImportSpec); ok {
 			ref, err := g.NewRef(importSpec, obj)

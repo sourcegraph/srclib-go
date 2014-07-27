@@ -1,3 +1,7 @@
+//+build off
+
+// TODO(sqs): re-add some notion of BaseImportPath in the config
+
 package golang
 
 import "github.com/sourcegraph/srclib/config"

@@ -8,7 +8,7 @@ import (
 )
 
 var Default = loader.Config{
-	TypeChecker:     types.Config{FakeImportC: true},
-	Build:           &build.Default,
-	AllowTypeErrors: true,
+	TypeChecker: types.Config{FakeImportC: true},
+	Build:       &build.Default,
+	AllowErrors: true,
 }

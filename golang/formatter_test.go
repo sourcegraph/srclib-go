@@ -1,3 +1,5 @@
+//+build off
+
 package golang
 
 import (
@@ -5,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/jmoiron/sqlx/types"
-	"github.com/sourcegraph/srclib/graph"
 	"github.com/sourcegraph/srclib-go/gog"
+	"github.com/sourcegraph/srclib/graph"
 )
 
 func symbolInfo(si SymbolData) types.JsonText {
