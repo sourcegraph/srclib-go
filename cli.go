@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"sort"
 	"strings"
 
 	"github.com/jessevdk/go-flags"
@@ -93,6 +94,30 @@ func (c *ScanCmd) Execute(args []string) error {
 			}
 		}
 
+		// collect all imports
+		depsMap := map[string]struct{}{}
+		for i := 0; i < pt.NumField(); i++ {
+			f := pt.Field(i)
+			if strings.HasSuffix(f.Name, "Imports") {
+				fv := pv.Field(i).Interface()
+				imports := fv.([]string)
+				for _, imp := range imports {
+					depsMap[imp] = struct{}{}
+				}
+			}
+		}
+		deps0 := make([]string, len(depsMap))
+		i := 0
+		for imp := range depsMap {
+			deps0[i] = imp
+			i++
+		}
+		sort.Strings(deps0)
+		deps := make([]interface{}, len(deps0))
+		for i, imp := range deps0 {
+			deps[i] = imp
+		}
+
 		// make all dirs relative to the current dir
 		for i := 0; i < pt.NumField(); i++ {
 			f := pt.Field(i)
@@ -114,10 +139,11 @@ func (c *ScanCmd) Execute(args []string) error {
 		pkg.ImportPath = filepath.Join(c.Repo, c.Subdir, pkg.Dir)
 
 		units = append(units, &unit.SourceUnit{
-			Name:  pkg.ImportPath,
-			Type:  "GoPackage",
-			Files: files,
-			Data:  pkg,
+			Name:         pkg.ImportPath,
+			Type:         "GoPackage",
+			Files:        files,
+			Data:         pkg,
+			Dependencies: deps,
 		})
 	}
 	if err := cmd.Wait(); err != nil {
