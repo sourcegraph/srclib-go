@@ -1,8 +1,32 @@
 {
   "Tools": [
-    "scan",
-    "graph",
-    "deplist",
-    "depresolve"
+    {
+      "Subcmd": "scan",
+      "Op": "scan",
+      "SourceUnitTypes": [
+        "GoPackage"
+      ]
+    },
+    {
+      "Subcmd": "graph",
+      "Op": "graph",
+      "SourceUnitTypes": [
+        "GoPackage"
+      ]
+    },
+    {
+      "Subcmd": "deplist",
+      "Op": "deplist",
+      "SourceUnitTypes": [
+        "GoPackage"
+      ]
+    },
+    {
+      "Subcmd": "depresolve",
+      "Op": "depresolve",
+      "SourceUnitTypes": [
+        "GoPackage"
+      ]
+    }
   ]
 }
