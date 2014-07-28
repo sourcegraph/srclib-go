@@ -15,13 +15,6 @@
       ]
     },
     {
-      "Subcmd": "deplist",
-      "Op": "deplist",
-      "SourceUnitTypes": [
-        "GoPackage"
-      ]
-    },
-    {
       "Subcmd": "depresolve",
       "Op": "depresolve",
       "SourceUnitTypes": [
