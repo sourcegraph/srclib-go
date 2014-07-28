@@ -69,10 +69,12 @@ func (c *ScanCmd) Execute(args []string) error {
 
 	// fix up import paths to be consistent when running as a program and as
 	// a Docker container.
-	for _, u := range units {
-		pkg := u.Data.(*build.Package)
-		pkg.ImportPath = filepath.Join(c.Repo, c.Subdir, pkg.Dir)
-		u.Name = pkg.ImportPath
+	if os.Getenv("IN_DOCKER_CONTAINER") != "" {
+		for _, u := range units {
+			pkg := u.Data.(*build.Package)
+			pkg.ImportPath = filepath.Join(c.Repo, c.Subdir, pkg.Dir)
+			u.Name = pkg.ImportPath
+		}
 	}
 
 	if err := json.NewEncoder(os.Stdout).Encode(units); err != nil {
@@ -153,6 +155,11 @@ func (c *GraphCmd) Execute(args []string) error {
 	}
 
 	if os.Getenv("IN_DOCKER_CONTAINER") != "" {
+		buildPkg, err := golang.UnitDataAsBuildPackage(unit)
+		if err != nil {
+			return err
+		}
+
 		// Make a new GOPATH.
 		build.Default.GOPATH = "/tmp/gopath"
 
@@ -185,7 +192,14 @@ func (c *GraphCmd) Execute(args []string) error {
 				externalDeps = append(externalDeps, importPath)
 			}
 		}
-		cmd := exec.Command("go", "get", "-t", "-v")
+		cmd := exec.Command("go", "get", "-d", "-t", "-v", "./"+buildPkg.Dir)
+		cmd.Args = append(cmd.Args, externalDeps...)
+		cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
+		log.Println(cmd.Args)
+		if err := cmd.Run(); err != nil {
+			return err
+		}
+		cmd = exec.Command("go", "build", "-i", "./"+buildPkg.Dir)
 		cmd.Args = append(cmd.Args, externalDeps...)
 		cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
 		log.Println(cmd.Args)
@@ -204,6 +218,7 @@ func (c *GraphCmd) Execute(args []string) error {
 		if gs.File == "" {
 			log.Printf("no file %+v", gs)
 		}
+		gs.File = relPath(cwd, gs.File)
 	}
 	for _, gr := range out.Refs {
 		gr.File = relPath(cwd, gr.File)
