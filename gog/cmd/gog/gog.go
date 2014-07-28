@@ -38,12 +38,12 @@ func main() {
 		log.Printf("Using build tags: %q", tags)
 	}
 
-	output, err := gog.Main(config, flag.Args()...)
+	output, err := gog.Main(config, flag.Args())
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = json.NewEncoder(os.Stdout).Encode(g.Output)
+	err = json.NewEncoder(os.Stdout).Encode(output)
 	if err != nil {
 		log.Fatal(err)
 	}
