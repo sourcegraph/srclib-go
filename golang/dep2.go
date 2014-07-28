@@ -3,6 +3,7 @@ package golang
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"runtime"
 
 	"strings"
@@ -55,9 +56,10 @@ func ResolveDep(importPath string, repoImportPath string) (*dep2.ResolvedTarget,
 		}, nil
 	}
 
+	// Special-case github.com/... import paths for performance.
 	if strings.HasPrefix(importPath, "github.com/") {
 		parts := strings.SplitN(importPath, "/", 4)
-		if len(parts) != 4 {
+		if len(parts) < 3 {
 			return nil, fmt.Errorf("import path starts with 'github.com/' but is not valid: %q", importPath)
 		}
 		return &dep2.ResolvedTarget{
@@ -67,9 +69,22 @@ func ResolveDep(importPath string, repoImportPath string) (*dep2.ResolvedTarget,
 		}, nil
 	}
 
+	// Special-case code.google.com/p/... import paths for performance.
+	if strings.HasPrefix(importPath, "code.google.com/p/") {
+		parts := strings.SplitN(importPath, "/", 4)
+		if len(parts) < 3 {
+			return nil, fmt.Errorf("import path starts with 'code.google.com/p/' but is not valid: %q", importPath)
+		}
+		return &dep2.ResolvedTarget{
+			ToRepoCloneURL: "https://" + strings.Join(parts[:3], "/"),
+			ToUnit:         importPath,
+			ToUnitType:     "GoPackage",
+		}, nil
+	}
+
 	log.Printf("Resolving Go dep: %s", importPath)
 
-	dir, err := gosrc.Get(nil, string(importPath), "")
+	dir, err := gosrc.Get(http.DefaultClient, string(importPath), "")
 	if err != nil {
 		if strings.Contains(err.Error(), "Git Repository is empty.") {
 			// Not fatal, just weird.
