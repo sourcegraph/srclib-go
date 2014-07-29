@@ -10,19 +10,19 @@ import (
 	"sync"
 
 	"github.com/golang/gddo/gosrc"
-	"github.com/sourcegraph/srclib/dep2"
+	"github.com/sourcegraph/srclib/dep"
 )
 
 var (
-	resolveCache   map[string]*dep2.ResolvedTarget
+	resolveCache   map[string]*dep.ResolvedTarget
 	resolveCacheMu sync.Mutex
 )
 
-func ResolveDep(importPath string, repoImportPath string) (*dep2.ResolvedTarget, error) {
+func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, error) {
 	// TODO(sqs): handle Go stdlib
 
 	// Look up in cache.
-	resolvedTarget := func() *dep2.ResolvedTarget {
+	resolvedTarget := func() *dep.ResolvedTarget {
 		resolveCacheMu.Lock()
 		defer resolveCacheMu.Unlock()
 		return resolveCache[importPath]
@@ -33,7 +33,7 @@ func ResolveDep(importPath string, repoImportPath string) (*dep2.ResolvedTarget,
 
 	// Check if this importPath is in this repository.
 	if strings.HasPrefix(importPath, repoImportPath) {
-		return &dep2.ResolvedTarget{
+		return &dep.ResolvedTarget{
 			// empty ToRepoCloneURL to indicate it's from this repository
 			ToRepoCloneURL: "",
 			ToUnit:         importPath,
@@ -47,7 +47,7 @@ func ResolveDep(importPath string, repoImportPath string) (*dep2.ResolvedTarget,
 	}
 
 	if gosrc.IsGoRepoPath(importPath) || importPath == "debug/goobj" || importPath == "debug/plan9obj" {
-		return &dep2.ResolvedTarget{
+		return &dep.ResolvedTarget{
 			ToRepoCloneURL:  "https://code.google.com/p/go",
 			ToVersionString: runtime.Version(),
 			ToRevSpec:       "", // TODO(sqs): fill in when graphing stdlib repo
@@ -62,7 +62,7 @@ func ResolveDep(importPath string, repoImportPath string) (*dep2.ResolvedTarget,
 		if len(parts) < 3 {
 			return nil, fmt.Errorf("import path starts with 'github.com/' but is not valid: %q", importPath)
 		}
-		return &dep2.ResolvedTarget{
+		return &dep.ResolvedTarget{
 			ToRepoCloneURL: "https://" + strings.Join(parts[:3], "/") + ".git",
 			ToUnit:         importPath,
 			ToUnitType:     "GoPackage",
@@ -75,7 +75,7 @@ func ResolveDep(importPath string, repoImportPath string) (*dep2.ResolvedTarget,
 		if len(parts) < 3 {
 			return nil, fmt.Errorf("import path starts with 'code.google.com/p/' but is not valid: %q", importPath)
 		}
-		return &dep2.ResolvedTarget{
+		return &dep.ResolvedTarget{
 			ToRepoCloneURL: "https://" + strings.Join(parts[:3], "/"),
 			ToUnit:         importPath,
 			ToUnitType:     "GoPackage",
@@ -96,7 +96,7 @@ func ResolveDep(importPath string, repoImportPath string) (*dep2.ResolvedTarget,
 	// gosrc returns code.google.com URLs ending in a slash. Remove it.
 	dir.ProjectURL = strings.TrimSuffix(dir.ProjectURL, "/")
 
-	resolvedTarget = &dep2.ResolvedTarget{
+	resolvedTarget = &dep.ResolvedTarget{
 		ToRepoCloneURL: dir.ProjectURL,
 		ToUnit:         importPath,
 		ToUnitType:     "GoPackage",
@@ -106,7 +106,7 @@ func ResolveDep(importPath string, repoImportPath string) (*dep2.ResolvedTarget,
 	resolveCacheMu.Lock()
 	defer resolveCacheMu.Unlock()
 	if resolveCache == nil {
-		resolveCache = make(map[string]*dep2.ResolvedTarget)
+		resolveCache = make(map[string]*dep.ResolvedTarget)
 	}
 	resolveCache[importPath] = resolvedTarget
 

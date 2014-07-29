@@ -13,7 +13,7 @@ import (
 
 	"github.com/jessevdk/go-flags"
 	"github.com/sourcegraph/srclib-go/golang"
-	"github.com/sourcegraph/srclib/dep2"
+	"github.com/sourcegraph/srclib/dep"
 	"github.com/sourcegraph/srclib/unit"
 )
 
@@ -107,14 +107,14 @@ func (c *DepResolveCmd) Execute(args []string) error {
 		return err
 	}
 
-	res := make([]*dep2.Resolution, len(unit.Dependencies))
-	for i, dep := range unit.Dependencies {
-		importPath, ok := dep.(string)
+	res := make([]*dep.Resolution, len(unit.Dependencies))
+	for i, rawDep := range unit.Dependencies {
+		importPath, ok := rawDep.(string)
 		if !ok {
-			return fmt.Errorf("Go raw dep is not a string import path: %v (%T)", dep, dep)
+			return fmt.Errorf("Go raw dep is not a string import path: %v (%T)", rawDep, rawDep)
 		}
 
-		res[i] = &dep2.Resolution{Raw: dep}
+		res[i] = &dep.Resolution{Raw: rawDep}
 
 		rt, err := golang.ResolveDep(importPath, string(unit.Repo))
 		if err != nil {
