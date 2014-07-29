@@ -8,12 +8,12 @@ import (
 
 	"github.com/sourcegraph/srclib-go/gog"
 	"github.com/sourcegraph/srclib/graph"
-	"github.com/sourcegraph/srclib/grapher2"
+	"github.com/sourcegraph/srclib/grapher"
 	"github.com/sourcegraph/srclib/repo"
 	"github.com/sourcegraph/srclib/unit"
 )
 
-func Graph(unit *unit.SourceUnit) (*grapher2.Output, error) {
+func Graph(unit *unit.SourceUnit) (*grapher.Output, error) {
 	pkg, err := UnitDataAsBuildPackage(unit)
 	if err != nil {
 		return nil, err
@@ -24,7 +24,7 @@ func Graph(unit *unit.SourceUnit) (*grapher2.Output, error) {
 		return nil, err
 	}
 
-	o2 := grapher2.Output{
+	o2 := grapher.Output{
 		Symbols: make([]*graph.Symbol, len(o.Symbols)),
 		Refs:    make([]*graph.Ref, len(o.Refs)),
 		Docs:    make([]*graph.Doc, len(o.Docs)),
