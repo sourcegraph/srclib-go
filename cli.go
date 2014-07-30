@@ -77,6 +77,14 @@ func (c *ScanCmd) Execute(args []string) error {
 		}
 	}
 
+	// make files relative to repository root
+	for _, u := range units {
+		pkgSubdir := filepath.Join(c.Subdir, u.Data.(*build.Package).Dir)
+		for i, f := range u.Files {
+			u.Files[i] = filepath.Join(pkgSubdir, f)
+		}
+	}
+
 	if err := json.NewEncoder(os.Stdout).Encode(units); err != nil {
 		return err
 	}
