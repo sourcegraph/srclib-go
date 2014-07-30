@@ -57,10 +57,10 @@ func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, 
 	}
 
 	// Special-case github.com/... import paths for performance.
-	if strings.HasPrefix(importPath, "github.com/") {
+	if strings.HasPrefix(importPath, "github.com/") || strings.HasPrefix(importPath, "sourcegraph.com/") {
 		parts := strings.SplitN(importPath, "/", 4)
 		if len(parts) < 3 {
-			return nil, fmt.Errorf("import path starts with 'github.com/' but is not valid: %q", importPath)
+			return nil, fmt.Errorf("import path starts with '(github|sourcegraph).com/' but is not valid: %q", importPath)
 		}
 		return &dep.ResolvedTarget{
 			ToRepoCloneURL: "https://" + strings.Join(parts[:3], "/") + ".git",
