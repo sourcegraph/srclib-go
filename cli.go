@@ -12,9 +12,9 @@ import (
 	"path/filepath"
 
 	"github.com/jessevdk/go-flags"
-	"github.com/sourcegraph/srclib-go/golang"
-	"github.com/sourcegraph/srclib/dep"
-	"github.com/sourcegraph/srclib/unit"
+	"sourcegraph.com/sourcegraph/srclib-go/golang"
+	"sourcegraph.com/sourcegraph/srclib/dep"
+	"sourcegraph.com/sourcegraph/srclib/unit"
 )
 
 var (

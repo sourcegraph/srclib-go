@@ -6,11 +6,11 @@ import (
 
 	"strings"
 
-	"github.com/sourcegraph/srclib-go/gog"
-	"github.com/sourcegraph/srclib/graph"
-	"github.com/sourcegraph/srclib/grapher"
-	"github.com/sourcegraph/srclib/repo"
-	"github.com/sourcegraph/srclib/unit"
+	"sourcegraph.com/sourcegraph/srclib-go/gog"
+	"sourcegraph.com/sourcegraph/srclib/graph"
+	"sourcegraph.com/sourcegraph/srclib/grapher"
+	"sourcegraph.com/sourcegraph/srclib/repo"
+	"sourcegraph.com/sourcegraph/srclib/unit"
 )
 
 func Graph(unit *unit.SourceUnit) (*grapher.Output, error) {

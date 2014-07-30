@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"go/build"
 
-	"github.com/sourcegraph/srclib/unit"
+	"sourcegraph.com/sourcegraph/srclib/unit"
 )
 
 func UnitDataAsBuildPackage(u *unit.SourceUnit) (*build.Package, error) {

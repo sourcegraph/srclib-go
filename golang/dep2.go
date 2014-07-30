@@ -10,7 +10,7 @@ import (
 	"sync"
 
 	"github.com/golang/gddo/gosrc"
-	"github.com/sourcegraph/srclib/dep"
+	"sourcegraph.com/sourcegraph/srclib/dep"
 )
 
 var (

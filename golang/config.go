@@ -4,7 +4,7 @@
 
 package golang
 
-import "github.com/sourcegraph/srclib/config"
+import "sourcegraph.com/sourcegraph/srclib/config"
 
 func init() {
 	config.Register("go", &Config{})

@@ -12,8 +12,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/sourcegraph/srclib/toolchain"
-	"github.com/sourcegraph/srclib/unit"
+	"sourcegraph.com/sourcegraph/srclib/toolchain"
+	"sourcegraph.com/sourcegraph/srclib/unit"
 )
 
 func Scan(pkgPattern string) ([]*unit.SourceUnit, error) {

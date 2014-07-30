@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/sourcegraph/srclib/config"
-	"github.com/sourcegraph/srclib/scan/unit"
+	"sourcegraph.com/sourcegraph/srclib/config"
+	"sourcegraph.com/sourcegraph/srclib/scan/unit"
 )
 
 // esc shell-escapes a string when it is interpolated into a Go template.
