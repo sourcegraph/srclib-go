@@ -18,8 +18,8 @@ RUN go get -d code.google.com/p/go.tools/go/loader
 ENV IN_DOCKER_CONTAINER true
 
 # Add this toolchain
-ADD . /srclib/src/github.com/sourcegraph/srclib-go/
-WORKDIR /srclib/src/github.com/sourcegraph/srclib-go
+ADD . /srclib/src/sourcegraph.com/sourcegraph/srclib-go/
+WORKDIR /srclib/src/sourcegraph.com/sourcegraph/srclib-go
 RUN go get -v -d
 RUN go install
 

@@ -9,7 +9,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/sourcegraph/srclib-go/gog"
+	"sourcegraph.com/sourcegraph/srclib-go/gog"
 )
 
 var buildTags = flag.String("tags", "", "a list of build tags to consider satisfied")

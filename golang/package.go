@@ -7,8 +7,8 @@ import (
 
 	"strings"
 
-	"github.com/sourcegraph/srclib/repo"
-	"github.com/sourcegraph/srclib/unit"
+	"sourcegraph.com/sourcegraph/srclib/repo"
+	"sourcegraph.com/sourcegraph/srclib/unit"
 )
 
 const goPackageUnitType = "GoPackage"
