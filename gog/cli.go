@@ -42,12 +42,9 @@ func Main(config *loader.Config, args []string) (*Output, error) {
 	g := New(prog)
 
 	var pkgs []*loader.PackageInfo
-	if len(prog.Created) > 0 {
-		pkgs = prog.Created
-	} else {
-		for _, pkg := range prog.Imported {
-			pkgs = append(pkgs, pkg)
-		}
+	pkgs = append(pkgs, prog.Created...)
+	for _, pkg := range prog.Imported {
+		pkgs = append(pkgs, pkg)
 	}
 
 	for _, pkg := range pkgs {
