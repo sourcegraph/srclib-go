@@ -6,7 +6,7 @@ go:
   - tip
 
 install:
-  - sudo -NO /usr/local/bin/src https://github.com/sourcegraph/srclib/releases/download/v0.0.2/src
+  - sudo wget -NO /usr/local/bin/src https://github.com/sourcegraph/srclib/releases/download/v0.0.2/src
   - sudo chmod +x /usr/local/bin/src
   - src toolchain add sourcegraph.com/sourcegraph/srclib-go
 
