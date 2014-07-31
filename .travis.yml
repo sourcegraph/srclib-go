@@ -1,0 +1,16 @@
+language: go
+
+go:
+  - 1.3
+  - 1.2
+  - tip
+
+install:
+  - sudo -NO /usr/local/bin/src https://github.com/sourcegraph/srclib/releases/download/v0.0.2/src
+  - sudo chmod +x /usr/local/bin/src
+  - src toolchain add sourcegraph.com/sourcegraph/srclib-go
+
+# TODO(sqs): add `go test`
+script:
+  - make
+  - src test -m program
