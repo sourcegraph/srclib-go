@@ -1,0 +1,102 @@
+{
+  "Symbols": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg/subpkg",
+      "Path": ".",
+      "TreePath": ".",
+      "Kind": "package",
+      "Name": "subpkg",
+      "Callable": false,
+      "File": "mypkg/subpkg",
+      "DefStart": 0,
+      "DefEnd": 0,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgName": "subpkg",
+        "TypeString": "",
+        "Kind": "package",
+        "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg/subpkg"
+      }
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg/subpkg",
+      "Path": "Subqux",
+      "TreePath": "./Subqux",
+      "Kind": "type",
+      "Name": "Subqux",
+      "Callable": false,
+      "File": "mypkg/subpkg/subfoo.go",
+      "DefStart": 67,
+      "DefEnd": 83,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgScope": true,
+        "PkgName": "subpkg",
+        "TypeString": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg/subpkg.Subqux",
+        "UnderlyingTypeString": "invalid type",
+        "Kind": "type",
+        "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg/subpkg"
+      }
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg/subpkg",
+      "Path": "subfunc",
+      "TreePath": "./subfunc",
+      "Kind": "func",
+      "Name": "subfunc",
+      "Callable": true,
+      "File": "mypkg/subpkg/subfoo.go",
+      "DefStart": 85,
+      "DefEnd": 116,
+      "Exported": false,
+      "Data": {
+        "PkgScope": true,
+        "PkgName": "subpkg",
+        "TypeString": "func()",
+        "UnderlyingTypeString": "func()",
+        "Kind": "func",
+        "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg/subpkg"
+      }
+    }
+  ],
+  "Refs": [
+    {
+      "SymbolRepo": "sourcegraph.com/sourcegraph/srclib-go",
+      "SymbolUnitType": "GoPackage",
+      "SymbolUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg/subpkg",
+      "SymbolPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "mypkg/subpkg/subfoo.go",
+      "Start": 8,
+      "End": 14
+    },
+    {
+      "SymbolRepo": "sourcegraph.com/sourcegraph/srclib-go",
+      "SymbolUnitType": "GoPackage",
+      "SymbolUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg/subpkg",
+      "SymbolPath": "Subqux",
+      "Def": true,
+      "Repo": "",
+      "File": "mypkg/subpkg/subfoo.go",
+      "Start": 67,
+      "End": 73
+    },
+    {
+      "SymbolRepo": "sourcegraph.com/sourcegraph/srclib-go",
+      "SymbolUnitType": "GoPackage",
+      "SymbolUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg/subpkg",
+      "SymbolPath": "subfunc",
+      "Def": true,
+      "Repo": "",
+      "File": "mypkg/subpkg/subfoo.go",
+      "Start": 90,
+      "End": 97
+    }
+  ]
+}

@@ -89,6 +89,11 @@ func Scan(pkgPattern string) ([]*unit.SourceUnit, error) {
 			}
 		}
 
+		// Root differs depending on the system, so it's hard to compare results
+		// across environments (when running as a program). Clear it so we can
+		// compare results in tests more easily.
+		pkg.Root = ""
+
 		units = append(units, &unit.SourceUnit{
 			Name:         pkg.ImportPath,
 			Type:         "GoPackage",
