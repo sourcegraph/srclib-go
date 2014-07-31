@@ -14,6 +14,7 @@ install:
   - sudo wget -NO /usr/local/bin/src https://github.com/sourcegraph/srclib/releases/download/v0.0.4/src
   - sudo chmod +x /usr/local/bin/src
   - src toolchain add sourcegraph.com/sourcegraph/srclib-go
+  - echo '{"DefaultScanners":[{"Toolchain":"sourcegraph.com/sourcegraph/srclib-go","Subcmd":"scan"}]}' > ~/.srclib/.srclibconfig
   - go get -d -v ./... && go build -v ./...
   - make
 
