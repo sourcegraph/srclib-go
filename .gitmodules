@@ -1,3 +1,3 @@
 [submodule "testdata/case/go-sample-0"]
 	path = testdata/case/go-sample-0
-	url = git@github.com:sgtest/go-sample-0.git
+	url = https://github.com/sgtest/go-sample-0.git
