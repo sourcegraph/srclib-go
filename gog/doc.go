@@ -15,7 +15,7 @@ import (
 )
 
 type Doc struct {
-	*SymbolKey
+	*DefKey
 
 	Format string
 	Data   string
@@ -137,7 +137,7 @@ func (g *Grapher) emitDoc(obj types.Object, dc *ast.CommentGroup, docstring stri
 	}
 	g.seenDocObjs[obj] = struct{}{}
 
-	key, _, err := g.symbolInfo(obj)
+	key, _, err := g.defInfo(obj)
 	if err != nil {
 		return err
 	}
@@ -161,14 +161,14 @@ func (g *Grapher) emitDoc(obj types.Object, dc *ast.CommentGroup, docstring stri
 	}
 
 	g.addDoc(&Doc{
-		SymbolKey: key,
+		DefKey: key,
 		Format:    "text/html",
 		Data:      htmlBuf.String(),
 		File:      filename,
 		Span:      span,
 	})
 	g.addDoc(&Doc{
-		SymbolKey: key,
+		DefKey: key,
 		Format:    "text/plain",
 		Data:      docstring,
 		File:      filename,

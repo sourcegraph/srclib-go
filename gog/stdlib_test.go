@@ -18,7 +18,7 @@ var stdlibPath = flag.String("test.stdlib-pkg", "", "in TestStdlib, only graph t
 
 var (
 	pkgCount         int // number of packages processed
-	symCount         int
+	defCount         int
 	refCount         int
 	unresolvedIdents int
 	start            time.Time
@@ -41,7 +41,7 @@ func TestStdlib(t *testing.T) {
 
 	if testing.Verbose() {
 		fmt.Println(pkgCount, "packages graphed in", time.Since(start))
-		fmt.Printf("totals: %d symbols, %d refs\n", symCount, refCount)
+		fmt.Printf("totals: %d defs, %d refs\n", defCount, refCount)
 		if unresolvedIdents > 0 {
 			t.Logf("unresolved idents: %d", unresolvedIdents)
 		}
@@ -67,10 +67,10 @@ func testPkg(t *testing.T, path string) {
 		t.Fatal(err)
 	}
 	if testing.Verbose() {
-		fmt.Printf("graphed %-22s\t% 4d msec   [% 6d symbols, % 6d refs]\n", path, time.Since(start)/time.Millisecond, len(g.Symbols), len(g.Refs))
+		fmt.Printf("graphed %-22s\t% 4d msec   [% 6d defs, % 6d refs]\n", path, time.Since(start)/time.Millisecond, len(g.Defs), len(g.Refs))
 	}
 	pkgCount++
-	symCount += len(g.Symbols)
+	defCount += len(g.Defs)
 	refCount += len(g.Refs)
 
 	checkAllIdents(t, g, prog)
@@ -78,13 +78,13 @@ func testPkg(t *testing.T, path string) {
 }
 
 func checkUnique(t *testing.T, g *Grapher, prog *loader.Program) {
-	syms := make(map[defPath]*Symbol, len(g.Symbols))
-	for _, s := range g.Symbols {
-		key := s.SymbolKey.defPath()
-		if x, present := syms[key]; present {
-			t.Errorf("symbol %+v %s:%d-%d already defined at %s:%d-%d", key, s.File, s.IdentSpan[0], s.IdentSpan[1], x.File, x.IdentSpan[0], x.IdentSpan[1])
+	defs := make(map[defPath]*Def, len(g.Defs))
+	for _, s := range g.Defs {
+		key := s.DefKey.defPath()
+		if x, present := defs[key]; present {
+			t.Errorf("def %+v %s:%d-%d already defined at %s:%d-%d", key, s.File, s.IdentSpan[0], s.IdentSpan[1], x.File, x.IdentSpan[0], x.IdentSpan[1])
 		} else {
-			syms[key] = s
+			defs[key] = s
 		}
 	}
 }

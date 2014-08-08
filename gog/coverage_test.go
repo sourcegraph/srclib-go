@@ -13,7 +13,7 @@ import (
 )
 
 var identFile = flag.String("test.idents", "", "print out all idents in files whose name contains this substring")
-var resolve = flag.Bool("test.resolve", false, "test that refs resolve to existing symbols")
+var resolve = flag.Bool("test.resolve", false, "test that refs resolve to existing defs")
 
 func TestIdentCoverage(t *testing.T) {
 	files, err := filepath.Glob("testdata/*.go")
@@ -27,17 +27,17 @@ func TestIdentCoverage(t *testing.T) {
 	checkAllIdents(t, g, prog)
 }
 
-func (s *SymbolKey) defPath() defPath {
+func (s *DefKey) defPath() defPath {
 	return defPath{s.PackageImportPath, strings.Join(s.Path, "/")}
 }
 
-// checkAllIdents checks that every *ast.Ident has a corresponding Symbol or
+// checkAllIdents checks that every *ast.Ident has a corresponding Def or
 // Ref.
 func checkAllIdents(t *testing.T, g *Grapher, prog *loader.Program) {
-	defs := make(map[defPath]struct{}, len(g.Symbols))
-	byIdentPos := make(map[identPos]interface{}, len(g.Symbols)+len(g.Refs))
-	for _, s := range g.Symbols {
-		defs[s.SymbolKey.defPath()] = struct{}{}
+	defs := make(map[defPath]struct{}, len(g.Defs))
+	byIdentPos := make(map[identPos]interface{}, len(g.Defs)+len(g.Refs))
+	for _, s := range g.Defs {
+		defs[s.DefKey.defPath()] = struct{}{}
 		byIdentPos[identPos{s.File, s.IdentSpan[0], s.IdentSpan[1]}] = s
 	}
 	for _, r := range g.Refs {
@@ -74,11 +74,11 @@ func checkIdents(t *testing.T, fset *token.FileSet, file *ast.File, idents map[i
 				t.Errorf("unresolved ident %q at %s", x.Name, pos)
 			} else if ref, ok := obj.(*Ref); ok {
 				if printAll {
-					t.Logf("ref to %+v from ident %q at %s:%d-%d", ref.Symbol, x.Name, pos.Filename, pos.Offset, end.Offset)
+					t.Logf("ref to %+v from ident %q at %s:%d-%d", ref.Def, x.Name, pos.Filename, pos.Offset, end.Offset)
 				}
 				if *resolve {
-					if _, resolved := defs[ref.Symbol.defPath()]; !resolved && !ignoreRef(ref.Symbol.defPath()) {
-						t.Errorf("unresolved ref %q to %+v at %s", x.Name, ref.Symbol.defPath(), pos)
+					if _, resolved := defs[ref.Def.defPath()]; !resolved && !ignoreRef(ref.Def.defPath()) {
+						t.Errorf("unresolved ref %q to %+v at %s", x.Name, ref.Def.defPath(), pos)
 						unresolvedIdents++
 					}
 				}

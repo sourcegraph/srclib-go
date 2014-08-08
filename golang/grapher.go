@@ -25,15 +25,15 @@ func Graph(unit *unit.SourceUnit) (*grapher.Output, error) {
 	}
 
 	o2 := grapher.Output{
-		Symbols: make([]*graph.Symbol, len(o.Symbols)),
-		Refs:    make([]*graph.Ref, len(o.Refs)),
-		Docs:    make([]*graph.Doc, len(o.Docs)),
+		Defs: make([]*graph.Def, len(o.Defs)),
+		Refs: make([]*graph.Ref, len(o.Refs)),
+		Docs: make([]*graph.Doc, len(o.Docs)),
 	}
 
 	uri := string(unit.Repo)
 
-	for i, gs := range o.Symbols {
-		o2.Symbols[i], err = convertGoSymbol(gs, uri)
+	for i, gs := range o.Defs {
+		o2.Defs[i], err = convertGoDef(gs, uri)
 		if err != nil {
 			return nil, err
 		}
@@ -54,29 +54,29 @@ func Graph(unit *unit.SourceUnit) (*grapher.Output, error) {
 	return &o2, nil
 }
 
-// SymbolData is extra Go-specific data about a symbol.
-type SymbolData struct {
-	gog.SymbolInfo
+// DefData is extra Go-specific data about a def.
+type DefData struct {
+	gog.DefInfo
 
 	// PackageImportPath is the import path of the package containing this
-	// symbol (if this symbol is not a package). If this symbol is a package,
+	// def (if this def is not a package). If this def is a package,
 	// PackageImportPath is its own import path.
 	PackageImportPath string `json:",omitempty"`
 }
 
-func convertGoSymbol(gs *gog.Symbol, repoURI string) (*graph.Symbol, error) {
-	resolvedTarget, err := ResolveDep(gs.SymbolKey.PackageImportPath, repoURI)
+func convertGoDef(gs *gog.Def, repoURI string) (*graph.Def, error) {
+	resolvedTarget, err := ResolveDep(gs.DefKey.PackageImportPath, repoURI)
 	if err != nil {
 		return nil, err
 	}
-	path := graph.SymbolPath(pathOrDot(strings.Join(gs.Path, "/")))
+	path := graph.DefPath(pathOrDot(strings.Join(gs.Path, "/")))
 	treePath := treePath(string(path))
 	if !treePath.IsValid() {
 		return nil, fmt.Errorf("'%s' is not a valid tree-path", treePath)
 	}
 
-	sym := &graph.Symbol{
-		SymbolKey: graph.SymbolKey{
+	def := &graph.Def{
+		DefKey: graph.DefKey{
 			Unit:     resolvedTarget.ToUnit,
 			UnitType: resolvedTarget.ToUnitType,
 			Path:     path,
@@ -84,34 +84,34 @@ func convertGoSymbol(gs *gog.Symbol, repoURI string) (*graph.Symbol, error) {
 		TreePath: treePath,
 
 		Name: gs.Name,
-		Kind: graph.SymbolKind(gog.GeneralKindMap[gs.Kind]),
+		Kind: graph.DefKind(gog.GeneralKindMap[gs.Kind]),
 
 		File:     gs.File,
 		DefStart: gs.DeclSpan[0],
 		DefEnd:   gs.DeclSpan[1],
 
-		Exported: gs.SymbolInfo.Exported,
+		Exported: gs.DefInfo.Exported,
 		Test:     strings.HasSuffix(gs.File, "_test.go"),
 	}
 
-	d := SymbolData{
-		PackageImportPath: gs.SymbolKey.PackageImportPath,
-		SymbolInfo:        gs.SymbolInfo,
+	d := DefData{
+		PackageImportPath: gs.DefKey.PackageImportPath,
+		DefInfo:           gs.DefInfo,
 	}
-	sym.Data, err = json.Marshal(d)
+	def.Data, err = json.Marshal(d)
 	if err != nil {
 		return nil, err
 	}
 
-	if sym.Kind == "func" {
-		sym.Callable = true
+	if def.Kind == "func" {
+		def.Callable = true
 	}
 
-	return sym, nil
+	return def, nil
 }
 
 func convertGoRef(gr *gog.Ref, repoURI string) (*graph.Ref, error) {
-	resolvedTarget, err := ResolveDep(gr.Symbol.PackageImportPath, repoURI)
+	resolvedTarget, err := ResolveDep(gr.Def.PackageImportPath, repoURI)
 	if err != nil {
 		return nil, err
 	}
@@ -120,14 +120,14 @@ func convertGoRef(gr *gog.Ref, repoURI string) (*graph.Ref, error) {
 	}
 
 	return &graph.Ref{
-		SymbolRepo:     uriOrEmpty(resolvedTarget.ToRepoCloneURL),
-		SymbolPath:     graph.SymbolPath(pathOrDot(strings.Join(gr.Symbol.Path, "/"))),
-		SymbolUnit:     resolvedTarget.ToUnit,
-		SymbolUnitType: resolvedTarget.ToUnitType,
-		Def:            gr.Def,
-		File:           gr.File,
-		Start:          gr.Span[0],
-		End:            gr.Span[1],
+		DefRepo:     uriOrEmpty(resolvedTarget.ToRepoCloneURL),
+		DefPath:     graph.DefPath(pathOrDot(strings.Join(gr.Def.Path, "/"))),
+		DefUnit:     resolvedTarget.ToUnit,
+		DefUnitType: resolvedTarget.ToUnitType,
+		Def:         gr.IsDef,
+		File:        gr.File,
+		Start:       gr.Span[0],
+		End:         gr.Span[1],
 	}, nil
 }
 
@@ -137,8 +137,8 @@ func convertGoDoc(gd *gog.Doc, repoURI string) (*graph.Doc, error) {
 		return nil, err
 	}
 	return &graph.Doc{
-		SymbolKey: graph.SymbolKey{
-			Path:     graph.SymbolPath(pathOrDot(strings.Join(gd.Path, "/"))),
+		DefKey: graph.DefKey{
+			Path:     graph.DefPath(pathOrDot(strings.Join(gd.Path, "/"))),
 			Unit:     resolvedTarget.ToUnit,
 			UnitType: resolvedTarget.ToUnitType,
 		},

@@ -222,7 +222,7 @@ func (c *GraphCmd) Execute(args []string) error {
 	}
 
 	// Make paths relative to repo.
-	for _, gs := range out.Symbols {
+	for _, gs := range out.Defs {
 		if gs.File == "" {
 			log.Printf("no file %+v", gs)
 		}

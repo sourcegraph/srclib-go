@@ -47,9 +47,9 @@ func TestPaths(t *testing.T) {
 		}
 
 		var paths []defPath
-		for _, s := range g.Symbols {
+		for _, s := range g.Defs {
 			if s.IdentSpan[0] >= start && s.IdentSpan[1] <= end {
-				paths = append(paths, s.SymbolKey.defPath())
+				paths = append(paths, s.DefKey.defPath())
 			}
 		}
 

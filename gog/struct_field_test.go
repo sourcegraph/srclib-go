@@ -11,19 +11,19 @@ func TestResolveStructFields(t *testing.T) {
 		pkgDefs   string
 		localDefs string
 		ref       string
-		wantRefs  []*SymbolKey
+		wantRefs  []*DefKey
 	}{
 		"basic struct field ref": {
 			pkgDefs:   `type A struct {x string};`,
 			localDefs: `var a A;`,
 			ref:       `a.x`,
-			wantRefs:  []*SymbolKey{{PackageImportPath: "foo", Path: []string{"A", "x"}}},
+			wantRefs:  []*DefKey{{PackageImportPath: "foo", Path: []string{"A", "x"}}},
 		},
 		"multi-level named struct field ref": {
 			pkgDefs:   `type A struct {a string};type B struct { a A };`,
 			localDefs: `var b B;`,
 			ref:       `b.a.a`,
-			wantRefs: []*SymbolKey{
+			wantRefs: []*DefKey{
 				{PackageImportPath: "foo", Path: []string{"A", "a"}},
 				{PackageImportPath: "foo", Path: []string{"B", "a"}},
 			},
@@ -32,42 +32,42 @@ func TestResolveStructFields(t *testing.T) {
 			pkgDefs:   `type A struct { B struct { c string } };`,
 			localDefs: `var a A;`,
 			ref:       `a.B.c`,
-			wantRefs:  []*SymbolKey{{PackageImportPath: "foo", Path: []string{"A", "B", "c"}}},
+			wantRefs:  []*DefKey{{PackageImportPath: "foo", Path: []string{"A", "B", "c"}}},
 		},
 		"field in embedded struct ref": {
 			pkgDefs:   `type A struct {a string};type B struct { A };`,
 			localDefs: `var b B;`,
 			ref:       `b.a`,
-			wantRefs:  []*SymbolKey{{PackageImportPath: "foo", Path: []string{"A", "a"}}},
+			wantRefs:  []*DefKey{{PackageImportPath: "foo", Path: []string{"A", "a"}}},
 		},
 		"embedded struct ref": {
 			pkgDefs:   `type A struct {a string};type B struct { A };`,
 			localDefs: `var b B;`,
 			ref:       `b.A`,
-			wantRefs:  []*SymbolKey{{PackageImportPath: "foo", Path: []string{"B", "A"}}},
+			wantRefs:  []*DefKey{{PackageImportPath: "foo", Path: []string{"B", "A"}}},
 		},
 
 		"local: basic struct field ref": {
 			pkgDefs:   ``,
 			localDefs: `type A struct {x string}; var a A;`,
 			ref:       `a.x`,
-			wantRefs:  []*SymbolKey{{PackageImportPath: "foo", Path: []string{"_", "A", "x"}}},
+			wantRefs:  []*DefKey{{PackageImportPath: "foo", Path: []string{"_", "A", "x"}}},
 		},
 
 		"anonymous struct field ref": {
 			ref:      `(struct{x int}{}).x`,
-			wantRefs: []*SymbolKey{{PackageImportPath: "foo", Path: []string{"x$sources[0]47"}}},
+			wantRefs: []*DefKey{{PackageImportPath: "foo", Path: []string{"x$sources[0]47"}}},
 		},
 
 		"stdlib struct field ref": {
 			pkgDefs:  `import "net/http";`,
 			ref:      "http.DefaultClient.Transport",
-			wantRefs: []*SymbolKey{{PackageImportPath: "net/http", Path: []string{"Client", "Transport"}}},
+			wantRefs: []*DefKey{{PackageImportPath: "net/http", Path: []string{"Client", "Transport"}}},
 		},
 		"stdlib method ref": {
 			pkgDefs:  `import "net/http";`,
 			ref:      "http.DefaultClient.CheckRedirect",
-			wantRefs: []*SymbolKey{{PackageImportPath: "net/http", Path: []string{"Client", "CheckRedirect"}}},
+			wantRefs: []*DefKey{{PackageImportPath: "net/http", Path: []string{"Client", "CheckRedirect"}}},
 		},
 	}
 
@@ -94,7 +94,7 @@ func TestResolveStructFields(t *testing.T) {
 		for _, wantRef := range c.wantRefs {
 			var found bool
 			for _, ref := range refs {
-				if reflect.DeepEqual(ref.Symbol, wantRef) {
+				if reflect.DeepEqual(ref.Def, wantRef) {
 					found = true
 				}
 			}
@@ -107,7 +107,7 @@ func TestResolveStructFields(t *testing.T) {
 		if printAllRefs {
 			t.Logf("%s\n### Code:\n%s\n### All refs:", label, src)
 			for _, ref := range refs {
-				t.Logf("  %+v @ %s:%d-%d", ref.Symbol, ref.File, ref.Span[0], ref.Span[1])
+				t.Logf("  %+v @ %s:%d-%d", ref.Def, ref.File, ref.Span[0], ref.Span[1])
 			}
 		}
 	}

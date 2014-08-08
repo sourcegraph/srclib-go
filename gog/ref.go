@@ -7,25 +7,25 @@ import (
 )
 
 func (g *Grapher) NewRef(node ast.Node, obj types.Object) (*Ref, error) {
-	key, err := g.symbolKey(obj)
+	key, err := g.defKey(obj)
 	if err != nil {
 		return nil, err
 	}
 
 	pos := g.program.Fset.Position(node.Pos())
 	return &Ref{
-		File:   pos.Filename,
-		Span:   makeSpan(g.program.Fset, node),
-		Symbol: key,
+		File: pos.Filename,
+		Span: makeSpan(g.program.Fset, node),
+		Def:  key,
 	}, nil
 }
 
 type Ref struct {
-	File   string
-	Span   [2]int
-	Symbol *SymbolKey
+	File string
+	Span [2]int
+	Def  *DefKey
 
-	// Def is true if ref is to the definition of Symbol, and false if it's to a
-	// use of Symbol.
-	Def bool
+	// IsDef is true if ref is to the definition of Def, and false if it's to a
+	// use of Def.
+	IsDef bool
 }
