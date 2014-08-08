@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"sourcegraph.com/sourcegraph/srclib-go/gog/definfo"
+
 	"code.google.com/p/go.tools/go/loader"
 	"code.google.com/p/go.tools/go/types"
 )
@@ -28,37 +30,7 @@ type Def struct {
 	IdentSpan [2]int
 	DeclSpan  [2]int
 
-	DefInfo
-}
-
-type DefInfo struct {
-	// Exported is whether this def is exported.
-	Exported bool `json:",omitempty"`
-
-	// PkgScope is whether this def is in Go package scope.
-	PkgScope bool `json:",omitempty"`
-
-	// PkgName is the name (not import path) of the package containing this
-	// def.
-	PkgName string
-
-	// Receiver is the receiver of this def (or the empty string if this
-	// def is not a method).
-	Receiver string `json:",omitempty"`
-
-	// FieldOfStruct is the struct that this def is a field of (or the empty string if this
-	// def is not a struct field).
-	FieldOfStruct string `json:",omitempty"`
-
-	// TypeString is a string describing this def's Go type.
-	TypeString string
-
-	// UnderlyingTypeString is the function or method signature, if this is a function or method.
-	UnderlyingTypeString string `json:",omitempty"`
-
-	// Kind is the kind of Go thing this def is: struct, interface, func,
-	// package, etc.
-	Kind string `json:",omitempty"`
+	definfo.DefInfo
 }
 
 // NewDef creates a new Def.
@@ -83,7 +55,7 @@ found:
 		return nil, err
 	}
 
-	si := DefInfo{
+	si := definfo.DefInfo{
 		Exported: info.exported,
 		PkgScope: info.pkgscope,
 		PkgName:  obj.Pkg().Name(),
@@ -141,10 +113,10 @@ func (g *Grapher) NewPackageDef(pkgInfo *loader.PackageInfo, pkg *types.Package)
 
 		File: pkgDir,
 
-		DefInfo: DefInfo{
+		DefInfo: definfo.DefInfo{
 			Exported: true,
 			PkgName:  pkg.Name(),
-			Kind:     Package,
+			Kind:     definfo.Package,
 		},
 	}, nil
 }
@@ -152,22 +124,22 @@ func (g *Grapher) NewPackageDef(pkgInfo *loader.PackageInfo, pkg *types.Package)
 func defKind(obj types.Object) string {
 	switch obj := obj.(type) {
 	case *types.PkgName:
-		return Package
+		return definfo.Package
 	case *types.Const:
-		return Const
+		return definfo.Const
 	case *types.TypeName:
-		return Type
+		return definfo.Type
 	case *types.Var:
 		if obj.IsField() {
-			return Field
+			return definfo.Field
 		}
-		return Var
+		return definfo.Var
 	case *types.Func:
 		sig := obj.Type().(*types.Signature)
 		if sig.Recv() == nil {
-			return Func
+			return definfo.Func
 		} else {
-			return Method
+			return definfo.Method
 		}
 	default:
 		panic(fmt.Sprintf("unhandled obj type %T", obj))

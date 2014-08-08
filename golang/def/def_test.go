@@ -1,11 +1,11 @@
-package golang
+package def
 
 import (
 	"encoding/json"
 	"testing"
 
 	"github.com/jmoiron/sqlx/types"
-	"sourcegraph.com/sourcegraph/srclib-go/gog"
+	"sourcegraph.com/sourcegraph/srclib-go/gog/definfo"
 	"sourcegraph.com/sourcegraph/srclib/graph"
 )
 
@@ -36,7 +36,7 @@ func TestDefFormatter_Name(t *testing.T) {
 			// qualify methods with receiver
 			def: &graph.Def{
 				Name: "name",
-				Data: defInfo(DefData{DefInfo: gog.DefInfo{Receiver: "*T", Kind: gog.Method}}),
+				Data: defInfo(DefData{DefInfo: definfo.DefInfo{Receiver: "*T", Kind: definfo.Method}}),
 			},
 			qual: graph.ScopeQualified,
 			want: "(*T).name",
@@ -45,7 +45,7 @@ func TestDefFormatter_Name(t *testing.T) {
 			// all funcs are at pkg scope
 			def: &graph.Def{
 				Name: "name",
-				Data: defInfo(DefData{DefInfo: gog.DefInfo{PkgName: "mypkg", Kind: gog.Func}}),
+				Data: defInfo(DefData{DefInfo: definfo.DefInfo{PkgName: "mypkg", Kind: definfo.Func}}),
 			},
 			qual: graph.ScopeQualified,
 			want: "name",
@@ -54,7 +54,7 @@ func TestDefFormatter_Name(t *testing.T) {
 			// qualify funcs with pkg
 			def: &graph.Def{
 				Name: "Name",
-				Data: defInfo(DefData{DefInfo: gog.DefInfo{PkgName: "mypkg", Kind: gog.Func}}),
+				Data: defInfo(DefData{DefInfo: definfo.DefInfo{PkgName: "mypkg", Kind: definfo.Func}}),
 			},
 			qual: graph.DepQualified,
 			want: "mypkg.Name",
@@ -63,7 +63,7 @@ func TestDefFormatter_Name(t *testing.T) {
 			// qualify methods with receiver pkg
 			def: &graph.Def{
 				Name: "Name",
-				Data: defInfo(DefData{DefInfo: gog.DefInfo{Receiver: "*T", PkgName: "mypkg", Kind: gog.Method}}),
+				Data: defInfo(DefData{DefInfo: definfo.DefInfo{Receiver: "*T", PkgName: "mypkg", Kind: definfo.Method}}),
 			},
 			qual: graph.DepQualified,
 			want: "(*mypkg.T).Name",
@@ -74,7 +74,7 @@ func TestDefFormatter_Name(t *testing.T) {
 				DefKey: graph.DefKey{Repo: "example.com/foo"},
 				Name:   "subpkg",
 				Kind:   "package",
-				Data:   defInfo(DefData{PackageImportPath: "example.com/foo/mypkg/subpkg", DefInfo: gog.DefInfo{PkgName: "subpkg", Kind: gog.Package}}),
+				Data:   defInfo(DefData{PackageImportPath: "example.com/foo/mypkg/subpkg", DefInfo: definfo.DefInfo{PkgName: "subpkg", Kind: definfo.Package}}),
 			},
 			qual: graph.RepositoryWideQualified,
 			want: "foo/mypkg/subpkg",
@@ -83,7 +83,7 @@ func TestDefFormatter_Name(t *testing.T) {
 			// qualify funcs with import path
 			def: &graph.Def{
 				Name: "Name",
-				Data: defInfo(DefData{PackageImportPath: "a/b", DefInfo: gog.DefInfo{PkgName: "x", Kind: gog.Func}}),
+				Data: defInfo(DefData{PackageImportPath: "a/b", DefInfo: definfo.DefInfo{PkgName: "x", Kind: definfo.Func}}),
 			},
 			qual: graph.LanguageWideQualified,
 			want: "a/b.Name",
@@ -92,7 +92,7 @@ func TestDefFormatter_Name(t *testing.T) {
 			// qualify methods with receiver pkg
 			def: &graph.Def{
 				Name: "Name",
-				Data: defInfo(DefData{PackageImportPath: "a/b", DefInfo: gog.DefInfo{Receiver: "*T", PkgName: "x", Kind: gog.Method}}),
+				Data: defInfo(DefData{PackageImportPath: "a/b", DefInfo: definfo.DefInfo{Receiver: "*T", PkgName: "x", Kind: definfo.Method}}),
 			},
 			qual: graph.LanguageWideQualified,
 			want: "(*a/b.T).Name",
@@ -101,7 +101,7 @@ func TestDefFormatter_Name(t *testing.T) {
 			// qualify pkgs with full import path
 			def: &graph.Def{
 				Name: "x",
-				Data: defInfo(DefData{PackageImportPath: "a/b", DefInfo: gog.DefInfo{PkgName: "x", Kind: gog.Package}}),
+				Data: defInfo(DefData{PackageImportPath: "a/b", DefInfo: definfo.DefInfo{PkgName: "x", Kind: definfo.Package}}),
 			},
 			qual: graph.LanguageWideQualified,
 			want: "a/b",
