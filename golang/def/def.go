@@ -1,4 +1,4 @@
-package golang
+package def
 
 import (
 	"encoding/json"
@@ -6,9 +6,19 @@ import (
 
 	"strings"
 
-	"sourcegraph.com/sourcegraph/srclib-go/gog"
+	"sourcegraph.com/sourcegraph/srclib-go/gog/definfo"
 	"sourcegraph.com/sourcegraph/srclib/graph"
 )
+
+// DefData is extra Go-specific data about a def.
+type DefData struct {
+	definfo.DefInfo
+
+	// PackageImportPath is the import path of the package containing this
+	// def (if this def is not a package). If this def is a package,
+	// PackageImportPath is its own import path.
+	PackageImportPath string `json:",omitempty"`
+}
 
 func init() {
 	graph.RegisterMakeDefFormatter("GoPackage", newDefFormatter)
@@ -33,15 +43,15 @@ func (f defFormatter) Language() string { return "Go" }
 
 func (f defFormatter) DefKeyword() string {
 	switch f.info.Kind {
-	case gog.Func:
+	case definfo.Func:
 		return "func"
-	case gog.Var:
+	case definfo.Var:
 		if f.info.FieldOfStruct == "" && f.info.PkgScope {
 			return "var"
 		}
-	case gog.Type:
+	case definfo.Type:
 		return "type"
-	case gog.Package:
+	case definfo.Package:
 		return "package"
 	}
 	return ""
@@ -68,15 +78,15 @@ func (f defFormatter) Name(qual graph.Qualification) string {
 	}
 
 	var recvlike string
-	if f.info.Kind == gog.Field {
+	if f.info.Kind == definfo.Field {
 		recvlike = f.info.FieldOfStruct
-	} else if f.info.Kind == gog.Method {
+	} else if f.info.Kind == definfo.Method {
 		recvlike = f.info.Receiver
 	}
 
 	pkg := f.pkgPath(qual)
 
-	if f.info.Kind == gog.Package {
+	if f.info.Kind == definfo.Package {
 		if qual == graph.ScopeQualified {
 			pkg = f.def.Name // otherwise it'd be empty
 		}
@@ -112,7 +122,7 @@ func fmtReceiver(recv string, pkg string) string {
 }
 
 func (f defFormatter) NameAndTypeSeparator() string {
-	if f.info.Kind == gog.Func || f.info.Kind == gog.Method {
+	if f.info.Kind == definfo.Func || f.info.Kind == definfo.Method {
 		return ""
 	}
 	return " "

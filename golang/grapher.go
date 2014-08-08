@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"sourcegraph.com/sourcegraph/srclib-go/gog"
+	"sourcegraph.com/sourcegraph/srclib-go/gog/definfo"
+	defpkg "sourcegraph.com/sourcegraph/srclib-go/golang/def"
 	"sourcegraph.com/sourcegraph/srclib/graph"
 	"sourcegraph.com/sourcegraph/srclib/grapher"
 	"sourcegraph.com/sourcegraph/srclib/repo"
@@ -54,16 +56,6 @@ func Graph(unit *unit.SourceUnit) (*grapher.Output, error) {
 	return &o2, nil
 }
 
-// DefData is extra Go-specific data about a def.
-type DefData struct {
-	gog.DefInfo
-
-	// PackageImportPath is the import path of the package containing this
-	// def (if this def is not a package). If this def is a package,
-	// PackageImportPath is its own import path.
-	PackageImportPath string `json:",omitempty"`
-}
-
 func convertGoDef(gs *gog.Def, repoURI string) (*graph.Def, error) {
 	resolvedTarget, err := ResolveDep(gs.DefKey.PackageImportPath, repoURI)
 	if err != nil {
@@ -84,7 +76,7 @@ func convertGoDef(gs *gog.Def, repoURI string) (*graph.Def, error) {
 		TreePath: treePath,
 
 		Name: gs.Name,
-		Kind: graph.DefKind(gog.GeneralKindMap[gs.Kind]),
+		Kind: graph.DefKind(definfo.GeneralKindMap[gs.Kind]),
 
 		File:     gs.File,
 		DefStart: gs.DeclSpan[0],
@@ -94,7 +86,7 @@ func convertGoDef(gs *gog.Def, repoURI string) (*graph.Def, error) {
 		Test:     strings.HasSuffix(gs.File, "_test.go"),
 	}
 
-	d := DefData{
+	d := defpkg.DefData{
 		PackageImportPath: gs.DefKey.PackageImportPath,
 		DefInfo:           gs.DefInfo,
 	}

@@ -1,4 +1,4 @@
-package gog
+package definfo
 
 const (
 	Package   = "package"
