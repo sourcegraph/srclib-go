@@ -1,5 +1,3 @@
-//+build off
-
 package golang
 
 import (
@@ -13,7 +11,7 @@ import (
 )
 
 func init() {
-	graph.RegisterMakeDefFormatter(goPackageUnitType, newDefFormatter)
+	graph.RegisterMakeDefFormatter("GoPackage", newDefFormatter)
 }
 
 func newDefFormatter(s *graph.Def) graph.DefFormatter {
@@ -27,8 +25,8 @@ func newDefFormatter(s *graph.Def) graph.DefFormatter {
 }
 
 type defFormatter struct {
-	def *graph.Def
-	info   *DefData
+	def  *graph.Def
+	info *DefData
 }
 
 func (f defFormatter) Language() string { return "Go" }

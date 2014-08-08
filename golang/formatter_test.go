@@ -1,5 +1,3 @@
-//+build off
-
 package golang
 
 import (
@@ -21,9 +19,9 @@ func defInfo(si DefData) types.JsonText {
 
 func TestDefFormatter_Name(t *testing.T) {
 	tests := []struct {
-		def *graph.Def
-		qual   graph.Qualification
-		want   string
+		def  *graph.Def
+		qual graph.Qualification
+		want string
 	}{
 		{
 			// unqualified
@@ -74,9 +72,9 @@ func TestDefFormatter_Name(t *testing.T) {
 			// qualify pkgs with import path relative to repo root
 			def: &graph.Def{
 				DefKey: graph.DefKey{Repo: "example.com/foo"},
-				Name:      "subpkg",
-				Kind:      "package",
-				Data:      defInfo(DefData{PackageImportPath: "example.com/foo/mypkg/subpkg", DefInfo: gog.DefInfo{PkgName: "subpkg", Kind: gog.Package}}),
+				Name:   "subpkg",
+				Kind:   "package",
+				Data:   defInfo(DefData{PackageImportPath: "example.com/foo/mypkg/subpkg", DefInfo: gog.DefInfo{PkgName: "subpkg", Kind: gog.Package}}),
 			},
 			qual: graph.RepositoryWideQualified,
 			want: "foo/mypkg/subpkg",
