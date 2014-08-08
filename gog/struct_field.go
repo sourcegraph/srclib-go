@@ -39,7 +39,7 @@ func (g *Grapher) buildStructFields(pkgInfo *loader.PackageInfo) {
 			sfobj, _, _ := types.LookupFieldOrMethod(derefType(sel.Recv()), pkg, selExpr.Sel.Name)
 
 			// Record that this field is in this struct so we can construct the
-			// right symbol path to the field.
+			// right def path to the field.
 			sf, _ := sfobj.(*types.Var)
 			g.structFields[sf] = &structField{sf, rt}
 		}

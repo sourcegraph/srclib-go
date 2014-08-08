@@ -1,5 +1,5 @@
 {
-  "Symbols": [
+  "Defs": [
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg/subpkg",
@@ -66,10 +66,10 @@
   ],
   "Refs": [
     {
-      "SymbolRepo": "sourcegraph.com/sourcegraph/srclib-go",
-      "SymbolUnitType": "GoPackage",
-      "SymbolUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg/subpkg",
-      "SymbolPath": ".",
+      "DefRepo": "sourcegraph.com/sourcegraph/srclib-go",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg/subpkg",
+      "DefPath": ".",
       "Def": false,
       "Repo": "",
       "File": "mypkg/subpkg/subfoo.go",
@@ -77,10 +77,10 @@
       "End": 14
     },
     {
-      "SymbolRepo": "sourcegraph.com/sourcegraph/srclib-go",
-      "SymbolUnitType": "GoPackage",
-      "SymbolUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg/subpkg",
-      "SymbolPath": "Subqux",
+      "DefRepo": "sourcegraph.com/sourcegraph/srclib-go",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg/subpkg",
+      "DefPath": "Subqux",
       "Def": true,
       "Repo": "",
       "File": "mypkg/subpkg/subfoo.go",
@@ -88,10 +88,10 @@
       "End": 73
     },
     {
-      "SymbolRepo": "sourcegraph.com/sourcegraph/srclib-go",
-      "SymbolUnitType": "GoPackage",
-      "SymbolUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg/subpkg",
-      "SymbolPath": "subfunc",
+      "DefRepo": "sourcegraph.com/sourcegraph/srclib-go",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg/subpkg",
+      "DefPath": "subfunc",
       "Def": true,
       "Repo": "",
       "File": "mypkg/subpkg/subfoo.go",

@@ -13,27 +13,27 @@ import (
 )
 
 func init() {
-	graph.RegisterMakeSymbolFormatter(goPackageUnitType, newSymbolFormatter)
+	graph.RegisterMakeDefFormatter(goPackageUnitType, newDefFormatter)
 }
 
-func newSymbolFormatter(s *graph.Symbol) graph.SymbolFormatter {
-	var si SymbolData
+func newDefFormatter(s *graph.Def) graph.DefFormatter {
+	var si DefData
 	if len(s.Data) > 0 {
 		if err := json.Unmarshal(s.Data, &si); err != nil {
-			panic("unmarshal Go symbol data: " + err.Error())
+			panic("unmarshal Go def data: " + err.Error())
 		}
 	}
-	return symbolFormatter{s, &si}
+	return defFormatter{s, &si}
 }
 
-type symbolFormatter struct {
-	symbol *graph.Symbol
-	info   *SymbolData
+type defFormatter struct {
+	def *graph.Def
+	info   *DefData
 }
 
-func (f symbolFormatter) Language() string { return "Go" }
+func (f defFormatter) Language() string { return "Go" }
 
-func (f symbolFormatter) DefKeyword() string {
+func (f defFormatter) DefKeyword() string {
 	switch f.info.Kind {
 	case gog.Func:
 		return "func"
@@ -49,24 +49,24 @@ func (f symbolFormatter) DefKeyword() string {
 	return ""
 }
 
-func (f symbolFormatter) Kind() string { return f.info.Kind }
+func (f defFormatter) Kind() string { return f.info.Kind }
 
-func (f symbolFormatter) pkgPath(qual graph.Qualification) string {
+func (f defFormatter) pkgPath(qual graph.Qualification) string {
 	switch qual {
 	case graph.DepQualified:
 		return f.info.PkgName
 	case graph.RepositoryWideQualified:
 		// keep the last path component from the repo
-		return strings.TrimPrefix(strings.TrimPrefix(f.info.PackageImportPath, filepath.Join(string(f.symbol.Repo), "..")), "/")
+		return strings.TrimPrefix(strings.TrimPrefix(f.info.PackageImportPath, filepath.Join(string(f.def.Repo), "..")), "/")
 	case graph.LanguageWideQualified:
 		return f.info.PackageImportPath
 	}
 	return ""
 }
 
-func (f symbolFormatter) Name(qual graph.Qualification) string {
+func (f defFormatter) Name(qual graph.Qualification) string {
 	if qual == graph.Unqualified {
-		return f.symbol.Name
+		return f.def.Name
 	}
 
 	var recvlike string
@@ -80,7 +80,7 @@ func (f symbolFormatter) Name(qual graph.Qualification) string {
 
 	if f.info.Kind == gog.Package {
 		if qual == graph.ScopeQualified {
-			pkg = f.symbol.Name // otherwise it'd be empty
+			pkg = f.def.Name // otherwise it'd be empty
 		}
 		return pkg
 	}
@@ -92,7 +92,7 @@ func (f symbolFormatter) Name(qual graph.Qualification) string {
 		prefix = pkg + "."
 	}
 
-	return prefix + f.symbol.Name
+	return prefix + f.def.Name
 }
 
 // fmtReceiver formats strings like `(*a/b.T).`.
@@ -113,16 +113,16 @@ func fmtReceiver(recv string, pkg string) string {
 	return "(" + ptrs + pkg + recvName + ")."
 }
 
-func (f symbolFormatter) NameAndTypeSeparator() string {
+func (f defFormatter) NameAndTypeSeparator() string {
 	if f.info.Kind == gog.Func || f.info.Kind == gog.Method {
 		return ""
 	}
 	return " "
 }
 
-func (f symbolFormatter) Type(qual graph.Qualification) string {
+func (f defFormatter) Type(qual graph.Qualification) string {
 	var ts string
-	switch f.symbol.Kind {
+	switch f.def.Kind {
 	case graph.Func:
 		ts = f.info.TypeString
 		ts = strings.TrimPrefix(ts, "func")

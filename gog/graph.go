@@ -13,9 +13,9 @@ import (
 )
 
 type Output struct {
-	Symbols []*Symbol
-	Refs    []*Ref
-	Docs    []*Doc
+	Defs []*Def
+	Refs []*Ref
+	Docs []*Doc
 }
 
 type Grapher struct {
@@ -23,13 +23,13 @@ type Grapher struct {
 
 	program *loader.Program
 
-	// imported is the set of imported packages' import paths (that we should emit symbols
+	// imported is the set of imported packages' import paths (that we should emit defs
 	// from).
 	imported map[string]struct{}
 
-	symbolCacheLock sync.Mutex
-	symbolInfoCache map[types.Object]*symbolInfo
-	symbolKeyCache  map[types.Object]*SymbolKey
+	defCacheLock sync.Mutex
+	defInfoCache map[types.Object]*defInfo
+	defKeyCache  map[types.Object]*DefKey
 
 	structFields map[*types.Var]*structField
 
@@ -58,10 +58,10 @@ func New(prog *loader.Program) *Grapher {
 	}
 
 	g := &Grapher{
-		program:         prog,
-		imported:        imported,
-		symbolInfoCache: make(map[types.Object]*symbolInfo),
-		symbolKeyCache:  make(map[types.Object]*SymbolKey),
+		program:      prog,
+		imported:     imported,
+		defInfoCache: make(map[types.Object]*defInfo),
+		defKeyCache:  make(map[types.Object]*DefKey),
 
 		structFields: make(map[*types.Var]*structField),
 
@@ -99,13 +99,13 @@ func (pi packageInfos) Len() int           { return len(pi) }
 func (pi packageInfos) Less(i, j int) bool { return pi[i].Pkg.Path() < pi[j].Pkg.Path() }
 func (pi packageInfos) Swap(i, j int)      { pi[i], pi[j] = pi[j], pi[i] }
 
-func (g *Grapher) addSymbol(symbol *Symbol) {
-	//	log.Printf("SYM %v %v", symbol.SymbolKey.PackageImportPath, symbol.SymbolKey.Path)
-	g.Symbols = append(g.Symbols, symbol)
+func (g *Grapher) addDef(def *Def) {
+	//	log.Printf("SYM %v %v", def.DefKey.PackageImportPath, def.DefKey.Path)
+	g.Defs = append(g.Defs, def)
 }
 
 func (g *Grapher) addRef(ref *Ref) {
-	//	log.Printf("REF %v %v at %s:%v", ref.Symbol.PackageImportPath, ref.Symbol.Path, ref.File, ref.Span)
+	//	log.Printf("REF %v %v at %s:%v", ref.Def.PackageImportPath, ref.Def.Path, ref.File, ref.Span)
 	g.Refs = append(g.Refs, ref)
 }
 
@@ -154,11 +154,11 @@ func (g *Grapher) Graph(pkgInfo *loader.PackageInfo) error {
 		}
 	}
 
-	pkgSym, err := g.NewPackageSymbol(pkgInfo, pkgInfo.Pkg)
+	pkgDef, err := g.NewPackageDef(pkgInfo, pkgInfo.Pkg)
 	if err != nil {
 		return err
 	}
-	g.addSymbol(pkgSym)
+	g.addDef(pkgDef)
 
 	for ident, obj := range pkgInfo.Defs {
 		_, isLabel := obj.(*types.Label)
@@ -178,18 +178,18 @@ func (g *Grapher) Graph(pkgInfo *loader.PackageInfo) error {
 		_, isPkg := obj.(*types.PkgName)
 
 		if !isPkg {
-			sym, err := g.NewSymbol(obj, ident)
+			def, err := g.NewDef(obj, ident)
 			if err != nil {
 				return err
 			}
-			g.addSymbol(sym)
+			g.addDef(def)
 		}
 
 		ref, err := g.NewRef(ident, obj)
 		if err != nil {
 			return err
 		}
-		ref.Def = true
+		ref.IsDef = true
 		g.addRef(ref)
 	}
 
@@ -242,21 +242,21 @@ func (g *Grapher) Graph(pkgInfo *loader.PackageInfo) error {
 	return nil
 }
 
-type symbolInfo struct {
+type defInfo struct {
 	exported bool
 	pkgscope bool
 }
 
-func (g *Grapher) symbolKey(obj types.Object) (*SymbolKey, error) {
-	key, _, err := g.symbolInfo(obj)
+func (g *Grapher) defKey(obj types.Object) (*DefKey, error) {
+	key, _, err := g.defInfo(obj)
 	if err != nil {
 		return nil, err
 	}
 	return key, nil
 }
 
-func (g *Grapher) symbolInfo(obj types.Object) (*SymbolKey, *symbolInfo, error) {
-	key, info := g.lookupSymbolInfo(obj)
+func (g *Grapher) defInfo(obj types.Object) (*DefKey, *defInfo, error) {
+	key, info := g.lookupDefInfo(obj)
 	if key != nil && info != nil {
 		return key, info, nil
 	}
@@ -265,39 +265,39 @@ func (g *Grapher) symbolInfo(obj types.Object) (*SymbolKey, *symbolInfo, error) 
 	// might duplicate effort, but it's better than allowing only one goroutine
 	// to do this at a time.
 
-	key, info, err := g.makeSymbolInfo(obj)
+	key, info, err := g.makeDefInfo(obj)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	g.symbolCacheLock.Lock()
-	defer g.symbolCacheLock.Unlock()
-	g.symbolKeyCache[obj] = key
-	g.symbolInfoCache[obj] = info
+	g.defCacheLock.Lock()
+	defer g.defCacheLock.Unlock()
+	g.defKeyCache[obj] = key
+	g.defInfoCache[obj] = info
 	return key, info, nil
 }
 
-func (g *Grapher) lookupSymbolInfo(obj types.Object) (*SymbolKey, *symbolInfo) {
-	g.symbolCacheLock.Lock()
-	defer g.symbolCacheLock.Unlock()
-	return g.symbolKeyCache[obj], g.symbolInfoCache[obj]
+func (g *Grapher) lookupDefInfo(obj types.Object) (*DefKey, *defInfo) {
+	g.defCacheLock.Lock()
+	defer g.defCacheLock.Unlock()
+	return g.defKeyCache[obj], g.defInfoCache[obj]
 }
 
-func (g *Grapher) makeSymbolInfo(obj types.Object) (*SymbolKey, *symbolInfo, error) {
+func (g *Grapher) makeDefInfo(obj types.Object) (*DefKey, *defInfo, error) {
 	switch obj := obj.(type) {
 	case *types.Builtin:
-		return &SymbolKey{"builtin", []string{obj.Name()}}, &symbolInfo{pkgscope: false, exported: true}, nil
+		return &DefKey{"builtin", []string{obj.Name()}}, &defInfo{pkgscope: false, exported: true}, nil
 	case *types.Nil:
-		return &SymbolKey{"builtin", []string{"nil"}}, &symbolInfo{pkgscope: false, exported: true}, nil
+		return &DefKey{"builtin", []string{"nil"}}, &defInfo{pkgscope: false, exported: true}, nil
 	case *types.TypeName:
 		if basic, ok := obj.Type().(*types.Basic); ok {
-			return &SymbolKey{"builtin", []string{basic.Name()}}, &symbolInfo{pkgscope: false, exported: true}, nil
+			return &DefKey{"builtin", []string{basic.Name()}}, &defInfo{pkgscope: false, exported: true}, nil
 		}
 		if obj.Name() == "error" {
-			return &SymbolKey{"builtin", []string{obj.Name()}}, &symbolInfo{pkgscope: false, exported: true}, nil
+			return &DefKey{"builtin", []string{obj.Name()}}, &defInfo{pkgscope: false, exported: true}, nil
 		}
 	case *types.PkgName:
-		return &SymbolKey{obj.Pkg().Path(), []string{}}, &symbolInfo{pkgscope: false, exported: true}, nil
+		return &DefKey{obj.Pkg().Path(), []string{}}, &defInfo{pkgscope: false, exported: true}, nil
 	case *types.Const:
 		var pkg string
 		if obj.Pkg() == nil {
@@ -306,14 +306,14 @@ func (g *Grapher) makeSymbolInfo(obj types.Object) (*SymbolKey, *symbolInfo, err
 			pkg = obj.Pkg().Path()
 		}
 		if obj.Val().Kind() == exact.Bool {
-			return &SymbolKey{pkg, []string{obj.Name()}}, &symbolInfo{pkgscope: false, exported: true}, nil
+			return &DefKey{pkg, []string{obj.Name()}}, &defInfo{pkgscope: false, exported: true}, nil
 		}
 	}
 
 	if obj.Pkg() == nil {
 		// builtin
-		return &SymbolKey{"builtin", []string{obj.Name()}}, &symbolInfo{pkgscope: false, exported: true}, nil
+		return &DefKey{"builtin", []string{obj.Name()}}, &defInfo{pkgscope: false, exported: true}, nil
 	}
 
-	return &SymbolKey{obj.Pkg().Path(), g.path(obj)}, &symbolInfo{pkgscope: g.pkgscope[obj], exported: g.exported[obj]}, nil
+	return &DefKey{obj.Pkg().Path(), g.path(obj)}, &defInfo{pkgscope: g.pkgscope[obj], exported: g.exported[obj]}, nil
 }

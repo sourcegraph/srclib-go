@@ -11,7 +11,7 @@ import (
 	"sourcegraph.com/sourcegraph/srclib/graph"
 )
 
-func symbolInfo(si SymbolData) types.JsonText {
+func defInfo(si DefData) types.JsonText {
 	b, err := json.Marshal(si)
 	if err != nil {
 		panic(err)
@@ -19,15 +19,15 @@ func symbolInfo(si SymbolData) types.JsonText {
 	return b
 }
 
-func TestSymbolFormatter_Name(t *testing.T) {
+func TestDefFormatter_Name(t *testing.T) {
 	tests := []struct {
-		symbol *graph.Symbol
+		def *graph.Def
 		qual   graph.Qualification
 		want   string
 	}{
 		{
 			// unqualified
-			symbol: &graph.Symbol{
+			def: &graph.Def{
 				Name: "name",
 				Data: types.JsonText(`{}`),
 			},
@@ -36,84 +36,84 @@ func TestSymbolFormatter_Name(t *testing.T) {
 		},
 		{
 			// qualify methods with receiver
-			symbol: &graph.Symbol{
+			def: &graph.Def{
 				Name: "name",
-				Data: symbolInfo(SymbolData{SymbolInfo: gog.SymbolInfo{Receiver: "*T", Kind: gog.Method}}),
+				Data: defInfo(DefData{DefInfo: gog.DefInfo{Receiver: "*T", Kind: gog.Method}}),
 			},
 			qual: graph.ScopeQualified,
 			want: "(*T).name",
 		},
 		{
 			// all funcs are at pkg scope
-			symbol: &graph.Symbol{
+			def: &graph.Def{
 				Name: "name",
-				Data: symbolInfo(SymbolData{SymbolInfo: gog.SymbolInfo{PkgName: "mypkg", Kind: gog.Func}}),
+				Data: defInfo(DefData{DefInfo: gog.DefInfo{PkgName: "mypkg", Kind: gog.Func}}),
 			},
 			qual: graph.ScopeQualified,
 			want: "name",
 		},
 		{
 			// qualify funcs with pkg
-			symbol: &graph.Symbol{
+			def: &graph.Def{
 				Name: "Name",
-				Data: symbolInfo(SymbolData{SymbolInfo: gog.SymbolInfo{PkgName: "mypkg", Kind: gog.Func}}),
+				Data: defInfo(DefData{DefInfo: gog.DefInfo{PkgName: "mypkg", Kind: gog.Func}}),
 			},
 			qual: graph.DepQualified,
 			want: "mypkg.Name",
 		},
 		{
 			// qualify methods with receiver pkg
-			symbol: &graph.Symbol{
+			def: &graph.Def{
 				Name: "Name",
-				Data: symbolInfo(SymbolData{SymbolInfo: gog.SymbolInfo{Receiver: "*T", PkgName: "mypkg", Kind: gog.Method}}),
+				Data: defInfo(DefData{DefInfo: gog.DefInfo{Receiver: "*T", PkgName: "mypkg", Kind: gog.Method}}),
 			},
 			qual: graph.DepQualified,
 			want: "(*mypkg.T).Name",
 		},
 		{
 			// qualify pkgs with import path relative to repo root
-			symbol: &graph.Symbol{
-				SymbolKey: graph.SymbolKey{Repo: "example.com/foo"},
+			def: &graph.Def{
+				DefKey: graph.DefKey{Repo: "example.com/foo"},
 				Name:      "subpkg",
 				Kind:      "package",
-				Data:      symbolInfo(SymbolData{PackageImportPath: "example.com/foo/mypkg/subpkg", SymbolInfo: gog.SymbolInfo{PkgName: "subpkg", Kind: gog.Package}}),
+				Data:      defInfo(DefData{PackageImportPath: "example.com/foo/mypkg/subpkg", DefInfo: gog.DefInfo{PkgName: "subpkg", Kind: gog.Package}}),
 			},
 			qual: graph.RepositoryWideQualified,
 			want: "foo/mypkg/subpkg",
 		},
 		{
 			// qualify funcs with import path
-			symbol: &graph.Symbol{
+			def: &graph.Def{
 				Name: "Name",
-				Data: symbolInfo(SymbolData{PackageImportPath: "a/b", SymbolInfo: gog.SymbolInfo{PkgName: "x", Kind: gog.Func}}),
+				Data: defInfo(DefData{PackageImportPath: "a/b", DefInfo: gog.DefInfo{PkgName: "x", Kind: gog.Func}}),
 			},
 			qual: graph.LanguageWideQualified,
 			want: "a/b.Name",
 		},
 		{
 			// qualify methods with receiver pkg
-			symbol: &graph.Symbol{
+			def: &graph.Def{
 				Name: "Name",
-				Data: symbolInfo(SymbolData{PackageImportPath: "a/b", SymbolInfo: gog.SymbolInfo{Receiver: "*T", PkgName: "x", Kind: gog.Method}}),
+				Data: defInfo(DefData{PackageImportPath: "a/b", DefInfo: gog.DefInfo{Receiver: "*T", PkgName: "x", Kind: gog.Method}}),
 			},
 			qual: graph.LanguageWideQualified,
 			want: "(*a/b.T).Name",
 		},
 		{
 			// qualify pkgs with full import path
-			symbol: &graph.Symbol{
+			def: &graph.Def{
 				Name: "x",
-				Data: symbolInfo(SymbolData{PackageImportPath: "a/b", SymbolInfo: gog.SymbolInfo{PkgName: "x", Kind: gog.Package}}),
+				Data: defInfo(DefData{PackageImportPath: "a/b", DefInfo: gog.DefInfo{PkgName: "x", Kind: gog.Package}}),
 			},
 			qual: graph.LanguageWideQualified,
 			want: "a/b",
 		},
 	}
 	for _, test := range tests {
-		sf := newSymbolFormatter(test.symbol)
+		sf := newDefFormatter(test.def)
 		name := sf.Name(test.qual)
 		if name != test.want {
-			t.Errorf("%v qual %q: got %q, want %q", test.symbol, test.qual, name, test.want)
+			t.Errorf("%v qual %q: got %q, want %q", test.def, test.qual, name, test.want)
 		}
 	}
 }
