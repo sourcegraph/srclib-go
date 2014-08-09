@@ -71,6 +71,36 @@ this toolchain.
 
 ![screenshot](https://s3-us-west-2.amazonaws.com/sourcegraph-assets/emacs-sourcegraph-mode-screenshot-1.png "Emacs Go screenshot")
 
+## Srcfile configuration
+
+Go repositories built with this toolchain may specify the following
+properties in their Srcfile's `Config` property:
+
+* `"GoBaseImportPath:DIR": "IMPORT-PATH-PREFIX"`: this tells srclib-go to treat
+  the directory tree DIR (relative to the Srcfile's directory) as being the root
+  of the given import path prefix. This is used when your repository's import
+  path doesn't correspond to its clone URL, or when you have a nonstandard
+  repository layout.
+
+  Both DIR and IMPORT-PATH-PREFIX can be `.` or any relative path, such as
+  `a/b/c`.
+
+  If no GoBaseImportPath is specified for a package's tree, its import path is
+  constructed by looking at its position in the GOPATH (for the program
+  execution method) or its repository's clone URL (for the Docker execution
+  method). If multiple overlapping GoBaseImportPaths are specified, the behavior
+  is undefined.
+
+  For example, specifying `"GoBaseImportPath:.": "example.com/foo"` would mean
+  that the top-level package's import path is considered to be
+  `example.com/foo`, and a package in the `bar` subdirectory would have an
+  import path of `example.com/foo/bar`.
+
+  The Go standard library is considered to have an import path prefix of `.`,
+  even though they originate from the repository `code.google.com/p/go`
+  subdirectory `src/pkg`. Therefore, when building the Go stdlib, srclib-go uses
+  the following configuration: `"GoBaseImportPath:src/pkg": "."`.
+
 ## Known issues
 
 srclib-go is alpha-quality software. It powers code analysis on
