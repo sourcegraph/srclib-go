@@ -91,7 +91,7 @@ func (c *GraphCmd) Execute(args []string) error {
 		var externalDeps []string
 		for _, dep := range unit.Dependencies {
 			importPath := dep.(string)
-			if !strings.HasPrefix(importPath, string(unit.Repo)) {
+			if !strings.HasPrefix(importPath, string(unit.Repo)) && importPath != "C" {
 				externalDeps = append(externalDeps, importPath)
 			}
 		}
@@ -138,6 +138,15 @@ func relPath(base, path string) string {
 	if err != nil {
 		log.Fatalf("Failed to make path %q relative to %q: %s", path, base, err)
 	}
+
+	// TODO(sqs): hack
+	if strings.HasPrefix(rp, "../../../") && dockerCWD != "" {
+		rp, err = filepath.Rel(dockerCWD, path)
+		if err != nil {
+			log.Fatalf("Failed to make path %q relative to %q: %s", path, cwd, err)
+		}
+	}
+
 	return rp
 }
 
