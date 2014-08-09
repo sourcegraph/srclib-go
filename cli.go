@@ -51,8 +51,9 @@ func init() {
 }
 
 type ScanCmd struct {
-	Repo   string `long:"repo" description:"repository URI" value-name:"URI"`
-	Subdir string `long:"subdir" description:"subdirectory in repository" value-name:"DIR"`
+	Repo   string   `long:"repo" description:"repository URI" value-name:"URI"`
+	Subdir string   `long:"subdir" description:"subdirectory in repository" value-name:"DIR"`
+	Config []string `long:"config" description:"config property from Srcfile" value-name:"KEY=VALUE"`
 }
 
 var scanCmd ScanCmd
@@ -85,10 +86,72 @@ func (c *ScanCmd) Execute(args []string) error {
 		}
 	}
 
+	// apply GoBaseImportPath config
+	cfg, err := parseConfig(c.Config)
+	if err != nil {
+		return err
+	}
+	for dir, ipp := range cfg.GoBaseImportPath {
+		for _, u := range units {
+			pkg := u.Data.(*build.Package)
+			// rewrite all import paths using the new base
+			if pathHasPrefix(pkg.Dir, dir) {
+				importPathSubdirRelToDir, err := filepath.Rel(dir, pkg.Dir)
+				if err != nil {
+					return err
+				}
+				newImportPath := filepath.Join(ipp, importPathSubdirRelToDir)
+				log.Printf("GoBaseImportPath: mapping package in dir %q with import path %q to new import path %q", pkg.Dir, pkg.ImportPath, newImportPath)
+				u.Name = newImportPath
+				pkg.ImportPath = newImportPath
+			}
+		}
+	}
+
 	if err := json.NewEncoder(os.Stdout).Encode(units); err != nil {
 		return err
 	}
 	return nil
+}
+
+type config struct {
+	// GoBaseImportPath corresponds to the GoBaseImportPath Srcfile config
+	// property. The keys are the DIRs and the values are the
+	// IMPORT-PATH-PREFIXes.
+	GoBaseImportPath map[string]string
+}
+
+// parseConfig is called on the Config []string field of the Srcfile.
+func parseConfig(propStrs []string) (*config, error) {
+	c := config{}
+	for _, propStr := range propStrs {
+		if directive := "GoBaseImportPath:"; strings.HasPrefix(propStr, directive) {
+			dir, ipp, err := splitConfigProperty(propStr[len(directive):])
+			if err != nil {
+				return nil, err
+			}
+
+			dir = filepath.Clean(dir)
+			ipp = filepath.Clean(ipp)
+			if c.GoBaseImportPath == nil {
+				c.GoBaseImportPath = map[string]string{}
+			}
+			c.GoBaseImportPath[dir] = ipp
+		}
+	}
+
+	return &c, nil
+}
+
+func splitConfigProperty(s string) (string, string, error) {
+	if i := strings.Index(s, "="); i != -1 {
+		return s[:i], s[i+1:], nil
+	}
+	return "", "", fmt.Errorf("expected property in the form KEY=VAL, got %q", s)
+}
+
+func pathHasPrefix(path, prefix string) bool {
+	return prefix == "." || path == prefix || strings.HasPrefix(path, prefix+"/")
 }
 
 func init() {
@@ -102,7 +165,9 @@ func init() {
 	}
 }
 
-type DepResolveCmd struct{}
+type DepResolveCmd struct {
+	Config []string `long:"config" description:"config property from Srcfile" value-name:"KEY=VALUE"`
+}
 
 var depResolveCmd DepResolveCmd
 
@@ -149,7 +214,9 @@ func init() {
 	}
 }
 
-type GraphCmd struct{}
+type GraphCmd struct {
+	Config []string `long:"config" description:"config property from Srcfile" value-name:"KEY=VALUE"`
+}
 
 var graphCmd GraphCmd
 
@@ -161,6 +228,8 @@ func (c *GraphCmd) Execute(args []string) error {
 	if err := os.Stdin.Close(); err != nil {
 		return err
 	}
+
+	// TODO(sqs) TMP remove
 
 	if os.Getenv("IN_DOCKER_CONTAINER") != "" {
 		buildPkg, err := golang.UnitDataAsBuildPackage(unit)
@@ -215,6 +284,13 @@ func (c *GraphCmd) Execute(args []string) error {
 			return err
 		}
 	}
+
+	c.Config = []string{"GoBaseImportPath:src/pkg=."}
+	cfg, err := parseConfig(c.Config)
+	if err != nil {
+		return err
+	}
+	_ = cfg
 
 	out, err := golang.Graph(unit)
 	if err != nil {
