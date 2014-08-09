@@ -17,6 +17,17 @@ import (
 	"sourcegraph.com/sourcegraph/srclib/unit"
 )
 
+func init() {
+	_, err := parser.AddCommand("scan",
+		"scan for Go packages",
+		"Scan the directory tree rooted at the current directory for Go packages.",
+		&scanCmd,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 type ScanCmd struct {
 	Repo   string   `long:"repo" description:"repository URI" value-name:"URI"`
 	Subdir string   `long:"subdir" description:"subdirectory in repository" value-name:"DIR"`
