@@ -1,4 +1,4 @@
-package def
+package golang_def
 
 import (
 	"encoding/json"
