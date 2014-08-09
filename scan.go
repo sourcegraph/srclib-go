@@ -29,9 +29,8 @@ func init() {
 }
 
 type ScanCmd struct {
-	Repo   string   `long:"repo" description:"repository URI" value-name:"URI"`
-	Subdir string   `long:"subdir" description:"subdirectory in repository" value-name:"DIR"`
-	Config []string `long:"config" description:"config property from Srcfile" value-name:"KEY=VALUE"`
+	Repo   string `long:"repo" description:"repository URI" value-name:"URI"`
+	Subdir string `long:"subdir" description:"subdirectory in repository" value-name:"DIR"`
 }
 
 var scanCmd ScanCmd
@@ -41,14 +40,26 @@ func (c *ScanCmd) Execute(args []string) error {
 		log.Println("Warning: no --repo specified, and tool is running in a Docker container (i.e., without awareness of host's GOPATH). Go import paths in source units produced by the scanner may be inaccurate. To fix this, ensure that the --repo URI is specified. Report this issue if you are seeing it unexpectedly.")
 	}
 
+	if err := json.NewDecoder(os.Stdin).Decode(&config); err != nil {
+		return err
+	}
+	if err := os.Stdin.Close(); err != nil {
+		return err
+	}
+	if err := config.apply(); err != nil {
+		return err
+	}
+
 	units, err := scan("./...")
 	if err != nil {
 		return err
 	}
 
-	// fix up import paths to be consistent when running as a program and as
-	// a Docker container.
-	if os.Getenv("IN_DOCKER_CONTAINER") != "" {
+	// Fix up import paths to be consistent when running as a program and as
+	// a Docker container. But if a GOROOT is set, then we probably want import
+	// paths to not contain the repo, so only do this if there's no GOROOT set
+	// in the Srcfile.
+	if os.Getenv("IN_DOCKER_CONTAINER") != "" && config.GOROOT == "" {
 		for _, u := range units {
 			pkg := u.Data.(*build.Package)
 			pkg.ImportPath = filepath.Join(c.Repo, c.Subdir, pkg.Dir)
@@ -64,28 +75,6 @@ func (c *ScanCmd) Execute(args []string) error {
 		}
 	}
 
-	// apply GoBaseImportPath config
-	cfg, err := parseConfig(c.Config)
-	if err != nil {
-		return err
-	}
-	for dir, ipp := range cfg.GoBaseImportPath {
-		for _, u := range units {
-			pkg := u.Data.(*build.Package)
-			// rewrite all import paths using the new base
-			if pathHasPrefix(pkg.Dir, dir) {
-				importPathSubdirRelToDir, err := filepath.Rel(dir, pkg.Dir)
-				if err != nil {
-					return err
-				}
-				newImportPath := filepath.Join(ipp, importPathSubdirRelToDir)
-				log.Printf("GoBaseImportPath: mapping package in dir %q with import path %q to new import path %q", pkg.Dir, pkg.ImportPath, newImportPath)
-				u.Name = newImportPath
-				pkg.ImportPath = newImportPath
-			}
-		}
-	}
-
 	if err := json.NewEncoder(os.Stdout).Encode(units); err != nil {
 		return err
 	}
@@ -93,7 +82,11 @@ func (c *ScanCmd) Execute(args []string) error {
 }
 
 func scan(pkgPattern string) ([]*unit.SourceUnit, error) {
+	// TODO(sqs): include xtest, but we'll have to make them have a distinctly
+	// namespaced def path from the non-xtest pkg.
+
 	cmd := exec.Command("go", "list", "-e", "-json", pkgPattern)
+	cmd.Env = config.env()
 	cmd.Stderr = os.Stderr
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -173,6 +166,7 @@ func scan(pkgPattern string) ([]*unit.SourceUnit, error) {
 		units = append(units, &unit.SourceUnit{
 			Name:         pkg.ImportPath,
 			Type:         "GoPackage",
+			Dir:          pkg.Dir,
 			Files:        files,
 			Data:         pkg,
 			Dependencies: deps,

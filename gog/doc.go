@@ -4,10 +4,13 @@ import (
 	"bytes"
 	"fmt"
 	"go/ast"
+	"go/build"
 	"go/doc"
 	"go/parser"
 	"go/token"
+	"io"
 	"log"
+	"os"
 	"sort"
 
 	"code.google.com/p/go.tools/go/loader"
@@ -26,12 +29,26 @@ type Doc struct {
 
 func parseFiles(fset *token.FileSet, filenames []string) (map[string]*ast.File, error) {
 	files := make(map[string]*ast.File)
-	for _, f := range filenames {
-		file, err := parser.ParseFile(fset, f, nil, parser.ParseComments)
+	for _, path := range filenames {
+		// read file contents using go/build context so we use our vfs if
+		// present
+		var f io.ReadCloser
+		var err error
+		if build.Default.OpenFile != nil {
+			f, err = build.Default.OpenFile(path)
+		} else {
+			f, err = os.Open(path)
+		}
 		if err != nil {
 			return nil, err
 		}
-		files[f] = file
+		defer f.Close()
+
+		file, err := parser.ParseFile(fset, path, f, parser.ParseComments)
+		if err != nil {
+			return nil, err
+		}
+		files[path] = file
 	}
 	return files, nil
 }
@@ -162,17 +179,17 @@ func (g *Grapher) emitDoc(obj types.Object, dc *ast.CommentGroup, docstring stri
 
 	g.addDoc(&Doc{
 		DefKey: key,
-		Format:    "text/html",
-		Data:      htmlBuf.String(),
-		File:      filename,
-		Span:      span,
+		Format: "text/html",
+		Data:   htmlBuf.String(),
+		File:   filename,
+		Span:   span,
 	})
 	g.addDoc(&Doc{
 		DefKey: key,
-		Format:    "text/plain",
-		Data:      docstring,
-		File:      filename,
-		Span:      span,
+		Format: "text/plain",
+		Data:   docstring,
+		File:   filename,
+		Span:   span,
 	})
 
 	return nil

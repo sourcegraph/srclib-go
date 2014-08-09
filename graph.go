@@ -4,11 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"go/build"
+	"io"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"code.google.com/p/go.tools/go/loader"
+	"code.google.com/p/go.tools/godoc/vfs"
 
 	"sourcegraph.com/sourcegraph/srclib-go/gog"
 	"sourcegraph.com/sourcegraph/srclib-go/gog/definfo"
@@ -30,9 +34,7 @@ func init() {
 	}
 }
 
-type GraphCmd struct {
-	Config []string `long:"config" description:"config property from Srcfile" value-name:"KEY=VALUE"`
-}
+type GraphCmd struct{}
 
 var graphCmd GraphCmd
 
@@ -45,7 +47,12 @@ func (c *GraphCmd) Execute(args []string) error {
 		return err
 	}
 
-	// TODO(sqs) TMP remove
+	if err := unmarshalTypedConfig(unit.Config); err != nil {
+		return err
+	}
+	if err := config.apply(); err != nil {
+		return err
+	}
 
 	if os.Getenv("IN_DOCKER_CONTAINER") != "" {
 		buildPkg, err := UnitDataAsBuildPackage(unit)
@@ -54,24 +61,27 @@ func (c *GraphCmd) Execute(args []string) error {
 		}
 
 		// Make a new GOPATH.
-		build.Default.GOPATH = "/tmp/gopath"
+		buildContext.GOPATH = "/tmp/gopath"
 
 		// Set up GOPATH so it has this repo.
-		dir := filepath.Join(build.Default.GOPATH, "src", string(unit.Repo))
+		log.Printf("Setting up a new GOPATH at %s", buildContext.GOPATH)
+		dir := filepath.Join(buildContext.GOPATH, "src", string(unit.Repo))
 		if err := os.MkdirAll(filepath.Dir(dir), 0700); err != nil {
 			return err
 		}
+		log.Printf("Creating symlink to oldname %q at newname %q.", cwd, dir)
 		if err := os.Symlink(cwd, dir); err != nil {
 			return err
 		}
 
+		log.Printf("Changing directory to %q.", dir)
 		if err := os.Chdir(dir); err != nil {
 			return err
 		}
-		cwd = dir
+		dockerCWD = cwd
 
-		if err := os.Setenv("GOPATH", build.Default.GOPATH); err != nil {
-			return err
+		if config.GOROOT == "" {
+			cwd = dir
 		}
 
 		// Get and install deps. (Only deps not in this repo; if we call `go
@@ -87,26 +97,14 @@ func (c *GraphCmd) Execute(args []string) error {
 		}
 		cmd := exec.Command("go", "get", "-d", "-t", "-v", "./"+buildPkg.Dir)
 		cmd.Args = append(cmd.Args, externalDeps...)
+		cmd.Env = config.env()
 		cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
-		log.Println(cmd.Args)
+		log.Printf("Downloading import dependencies: %v (env vars: %v).", cmd.Args, cmd.Env)
 		if err := cmd.Run(); err != nil {
 			return err
 		}
-		cmd = exec.Command("go", "build", "-i", "./"+buildPkg.Dir)
-		cmd.Args = append(cmd.Args, externalDeps...)
-		cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
-		log.Println(cmd.Args)
-		if err := cmd.Run(); err != nil {
-			return err
-		}
+		log.Printf("Finished downloading dependencies.")
 	}
-
-	c.Config = []string{"GoBaseImportPath:src/pkg=."}
-	cfg, err := parseConfig(c.Config)
-	if err != nil {
-		return err
-	}
-	_ = cfg
 
 	out, err := Graph(unit)
 	if err != nil {
@@ -135,10 +133,10 @@ func (c *GraphCmd) Execute(args []string) error {
 	return nil
 }
 
-func relPath(cwd, path string) string {
-	rp, err := filepath.Rel(cwd, path)
+func relPath(base, path string) string {
+	rp, err := filepath.Rel(base, path)
 	if err != nil {
-		log.Fatalf("Failed to make path %q relative to %q: %s", path, cwd, err)
+		log.Fatalf("Failed to make path %q relative to %q: %s", path, base, err)
 	}
 	return rp
 }
@@ -149,7 +147,7 @@ func Graph(unit *unit.SourceUnit) (*grapher.Output, error) {
 		return nil, err
 	}
 
-	o, err := gog.Main(&gog.Default, []string{pkg.ImportPath})
+	o, err := doGraph(pkg.ImportPath)
 	if err != nil {
 		return nil, err
 	}
@@ -289,4 +287,75 @@ func treePath(path string) graph.TreePath {
 		return graph.TreePath(".")
 	}
 	return graph.TreePath(fmt.Sprintf("./%s", path))
+}
+
+func doGraph(importPath string) (*gog.Output, error) {
+	// If we've overridden GOROOT and we're building a package not in
+	// $GOROOT/src/pkg (such as "cmd/go"), then we need to virtualize GOROOT
+	// because we can't set GOPATH=GOROOT (go/build ignores GOPATH in that
+	// case).
+	if config.GOROOT != "" && strings.HasPrefix(importPath, "cmd/") {
+		// Unset our custom GOROOT (since we're routing FS ops to it using
+		// vfs) and set it as our GOPATH.
+		buildContext.GOROOT = build.Default.GOROOT
+		buildContext.GOPATH = config.GOROOT
+
+		virtualCWD = build.Default.GOROOT
+
+		ns := vfs.NameSpace{}
+		ns.Bind(filepath.Join(buildContext.GOROOT, "src/pkg"), vfs.OS(filepath.Join(config.GOROOT, "src/pkg")), "/", vfs.BindBefore)
+		ns.Bind("/", vfs.OS("/"), "/", vfs.BindAfter)
+		buildContext.IsDir = func(path string) bool {
+			fi, err := ns.Stat(path)
+			return err == nil && fi.Mode().IsDir()
+		}
+		buildContext.HasSubdir = func(root, dir string) (rel string, ok bool) { panic("unexpected") }
+		buildContext.OpenFile = func(path string) (io.ReadCloser, error) {
+			f, err := ns.Open(path)
+			return f, err
+		}
+		buildContext.ReadDir = ns.ReadDir
+
+		// We can't compile (easily?) in these false paths, so just analyze the
+		// source.
+		loaderConfig.SourceImports = true
+	}
+
+	// TODO(sqs): don't always use source imports.
+	loaderConfig.SourceImports = true
+
+	importUnsafe := importPath == "unsafe"
+
+	if err := loaderConfig.ImportWithTests(importPath); err != nil {
+		return nil, err
+	}
+
+	if importUnsafe {
+		// Special-case "unsafe" because go/loader does not let you load it
+		// directly.
+		if loaderConfig.ImportPkgs == nil {
+			loaderConfig.ImportPkgs = make(map[string]bool)
+		}
+		loaderConfig.ImportPkgs["unsafe"] = true
+	}
+
+	prog, err := loaderConfig.Load()
+	if err != nil {
+		return nil, err
+	}
+
+	g := gog.New(prog)
+
+	var pkgs []*loader.PackageInfo
+	for _, pkg := range prog.Imported {
+		pkgs = append(pkgs, pkg)
+	}
+
+	for _, pkg := range pkgs {
+		if err := g.Graph(pkg); err != nil {
+			return nil, err
+		}
+	}
+
+	return &g.Output, nil
 }

@@ -12,7 +12,8 @@ ENV PATH /usr/local/go/bin:$PATH
 ENV GOPATH /srclib
 
 # TMP: this are slow; pre-fetch for faster builds
-RUN go get -d code.google.com/p/go.tools/go/loader
+RUN go get code.google.com/p/go.tools/go/loader code.google.com/p/go.tools/go/types code.google.com/p/go.tools/godoc/vfs
+RUN go get github.com/golang/gddo/gosrc github.com/jessevdk/go-flags sourcegraph.com/sourcegraph/srclib/graph sourcegraph.com/sourcegraph/srclib/src
 
 # Allow determining whether we're running in Docker
 ENV IN_DOCKER_CONTAINER true

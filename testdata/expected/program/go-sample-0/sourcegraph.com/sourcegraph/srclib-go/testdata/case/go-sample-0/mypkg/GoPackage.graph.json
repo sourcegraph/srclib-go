@@ -109,7 +109,7 @@
   ],
   "Refs": [
     {
-      "DefRepo": "sourcegraph.com/sourcegraph/srclib-go",
+      "DefRepo": "",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "DefPath": ".",
@@ -120,7 +120,7 @@
       "End": 13
     },
     {
-      "DefRepo": "sourcegraph.com/sourcegraph/srclib-go",
+      "DefRepo": "",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "DefPath": ".",
@@ -131,7 +131,7 @@
       "End": 13
     },
     {
-      "DefRepo": "sourcegraph.com/sourcegraph/srclib-go",
+      "DefRepo": "",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "DefPath": "Foo",
@@ -142,7 +142,7 @@
       "End": 73
     },
     {
-      "DefRepo": "sourcegraph.com/sourcegraph/srclib-go",
+      "DefRepo": "",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "DefPath": "Foo",
@@ -153,7 +153,7 @@
       "End": 23
     },
     {
-      "DefRepo": "sourcegraph.com/sourcegraph/srclib-go",
+      "DefRepo": "",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "DefPath": "Qux",
@@ -164,7 +164,7 @@
       "End": 46
     },
     {
-      "DefRepo": "sourcegraph.com/sourcegraph/srclib-go",
+      "DefRepo": "",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "DefPath": "Qux",
@@ -175,7 +175,7 @@
       "End": 47
     },
     {
-      "DefRepo": "sourcegraph.com/sourcegraph/srclib-go",
+      "DefRepo": "",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "DefPath": "main",
@@ -186,7 +186,7 @@
       "End": 64
     },
     {
-      "DefRepo": "sourcegraph.com/sourcegraph/srclib-go",
+      "DefRepo": "",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "DefPath": "numcolors",

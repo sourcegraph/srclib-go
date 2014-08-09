@@ -9,19 +9,19 @@ import (
 
 var (
 	parser = flags.NewNamedParser("srclib-go", flags.Default)
-	cwd    string
+	cwd    = getCWD()
 )
 
 func init() {
 	parser.LongDescription = "srclib-go performs Go package, dependency, and source analysis."
 }
 
-func init() {
-	var err error
-	cwd, err = os.Getwd()
+func getCWD() string {
+	cwd, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
 	}
+	return cwd
 }
 
 func main() {
