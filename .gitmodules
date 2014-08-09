@@ -1,3 +1,6 @@
 [submodule "testdata/case/go-sample-0"]
 	path = testdata/case/go-sample-0
 	url = https://github.com/sgtest/go-sample-0.git
+[submodule "testdata/case/minimal-go-stdlib"]
+	path = testdata/case/minimal-go-stdlib
+	url = https://github.com/sgtest/minimal-go-stdlib.git
