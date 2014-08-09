@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"go/build"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -33,7 +34,8 @@ var (
 )
 
 type srcfileConfig struct {
-	GOROOT string
+	GOROOT        string
+	SourceImports bool
 }
 
 // unmarshalTypedConfig parses config from the Config field of the source unit.
@@ -69,16 +71,16 @@ func (c *srcfileConfig) apply() error {
 
 		buildContext.GOROOT = c.GOROOT
 		loaderConfig.Build = &buildContext
-
-		// TODO(sqs): make it so we don't need to use source imports
-		loaderConfig.SourceImports = true
 	}
+
+	loaderConfig.SourceImports = config.SourceImports
 
 	return nil
 }
 
 func (c *srcfileConfig) env() []string {
 	return []string{
+		"PATH=" + os.Getenv("PATH"),
 		"GOARCH=" + buildContext.GOARCH,
 		"GOOS=" + buildContext.GOOS,
 		"GOROOT=" + buildContext.GOROOT,
