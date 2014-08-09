@@ -95,7 +95,7 @@ func (c *GraphCmd) Execute(args []string) error {
 				externalDeps = append(externalDeps, importPath)
 			}
 		}
-		cmd := exec.Command("go", "get", "-d", "-t", "-v", "./"+buildPkg.Dir)
+		cmd := exec.Command("go", "get", "-x", "-d", "-t", "-v", "./"+buildPkg.Dir)
 		cmd.Args = append(cmd.Args, externalDeps...)
 		cmd.Env = config.env()
 		cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
@@ -339,6 +339,7 @@ func doGraph(importPath string) (*gog.Output, error) {
 			cmd.Dir = filepath.Join(cwd, "src")
 			cmd.Env = config.env()
 			cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
+			log.Printf("Bootstrapping: %v (env vars: %v)", cmd.Args, cmd.Env)
 			if err := cmd.Run(); err != nil {
 				return nil, err
 			}
@@ -346,13 +347,19 @@ func doGraph(importPath string) (*gog.Output, error) {
 	}
 
 	if !loaderConfig.SourceImports {
-		// Build pkg.
-		cmd := exec.Command("go", "install", importPath)
+		// Install pkg.
+		cmd := exec.Command("go", "install", "-x", "-v", importPath)
 		cmd.Env = config.env()
 		cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
+		log.Printf("Install %q: %v (env vars: %v)", importPath, cmd.Args, cmd.Env)
 		if err := cmd.Run(); err != nil {
 			return nil, err
 		}
+
+		log.Println("\n\n############### AFTER BUILD ###############\n\n")
+		out, err := exec.Command("find", "/tmp/gopath").Output()
+		log.Println(string(out))
+		log.Println(err)
 	}
 
 	importUnsafe := importPath == "unsafe"
@@ -369,6 +376,8 @@ func doGraph(importPath string) (*gog.Output, error) {
 		}
 		loaderConfig.ImportPkgs["unsafe"] = true
 	}
+
+	build.Default = *loaderConfig.Build
 
 	prog, err := loaderConfig.Load()
 	if err != nil {

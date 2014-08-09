@@ -1,0 +1,37 @@
+{
+  "Defs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "runtime",
+      "Path": ".",
+      "TreePath": ".",
+      "Kind": "package",
+      "Name": "runtime",
+      "Callable": false,
+      "File": "src/pkg/runtime",
+      "DefStart": 0,
+      "DefEnd": 0,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgName": "runtime",
+        "TypeString": "",
+        "Kind": "package",
+        "PackageImportPath": "runtime"
+      }
+    }
+  ],
+  "Refs": [
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "runtime",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "src/pkg/runtime/runtime.go",
+      "Start": 8,
+      "End": 15
+    }
+  ]
+}
