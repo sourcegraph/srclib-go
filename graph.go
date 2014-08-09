@@ -330,8 +330,30 @@ func doGraph(importPath string) (*gog.Output, error) {
 		loaderConfig.SourceImports = true
 	}
 
-	// TODO(sqs): don't always use source imports.
-	loaderConfig.SourceImports = true
+	// If we're using a custom GOROOT, we need to bootstrap the installation.
+	if config.GOROOT != "" && !loaderConfig.SourceImports {
+		if _, err := os.Stat("src/make.bash"); err == nil {
+			// TODO(sqs): in docker, we can't write to this dir, so we'll have to
+			// move it elsewhere
+			cmd := exec.Command("bash", "make.bash")
+			cmd.Dir = filepath.Join(cwd, "src")
+			cmd.Env = config.env()
+			cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
+			if err := cmd.Run(); err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	if !loaderConfig.SourceImports {
+		// Build pkg.
+		cmd := exec.Command("go", "install", importPath)
+		cmd.Env = config.env()
+		cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
+		if err := cmd.Run(); err != nil {
+			return nil, err
+		}
+	}
 
 	importUnsafe := importPath == "unsafe"
 
