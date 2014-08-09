@@ -1,0 +1,81 @@
+{
+  "Defs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "dummy1",
+      "Path": ".",
+      "TreePath": ".",
+      "Kind": "package",
+      "Name": "dummy1",
+      "Callable": false,
+      "File": "src/pkg/dummy1",
+      "DefStart": 0,
+      "DefEnd": 0,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgName": "dummy1",
+        "TypeString": "",
+        "Kind": "package",
+        "PackageImportPath": "dummy1"
+      }
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "dummy1",
+      "Path": "MyType",
+      "TreePath": "./MyType",
+      "Kind": "type",
+      "Name": "MyType",
+      "Callable": false,
+      "File": "src/pkg/dummy1/dummy1.go",
+      "DefStart": 21,
+      "DefEnd": 31,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgScope": true,
+        "PkgName": "dummy1",
+        "TypeString": "dummy1.MyType",
+        "UnderlyingTypeString": "int",
+        "Kind": "type",
+        "PackageImportPath": "dummy1"
+      }
+    }
+  ],
+  "Refs": [
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy1",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "src/pkg/dummy1/dummy1.go",
+      "Start": 8,
+      "End": 14
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy1",
+      "DefPath": "MyType",
+      "Def": true,
+      "Repo": "",
+      "File": "src/pkg/dummy1/dummy1.go",
+      "Start": 21,
+      "End": 27
+    },
+    {
+      "DefRepo": "code.google.com/p/go",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "builtin",
+      "DefPath": "int",
+      "Def": false,
+      "Repo": "",
+      "File": "src/pkg/dummy1/dummy1.go",
+      "Start": 28,
+      "End": 31
+    }
+  ]
+}

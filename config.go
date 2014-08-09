@@ -1,45 +1,89 @@
 package main
 
 import (
-	"fmt"
+	"encoding/json"
+	"go/build"
 	"path/filepath"
 	"strings"
+
+	"code.google.com/p/go.tools/go/loader"
+	"code.google.com/p/go.tools/go/types"
 )
 
-type config struct {
-	// GoBaseImportPath corresponds to the GoBaseImportPath Srcfile config
-	// property. The keys are the DIRs and the values are the
-	// IMPORT-PATH-PREFIXes.
-	GoBaseImportPath map[string]string
+var (
+	buildContext = build.Default
+
+	loaderConfig = loader.Config{
+		TypeChecker: types.Config{FakeImportC: true},
+		Build:       &buildContext,
+		AllowErrors: true,
+	}
+
+	config *srcfileConfig
+
+	// virtualCWD is the vfs cwd that corresponds to the non-vfs cwd, when using
+	// vfs. It is used to determine whether a vfs path is effectively underneath
+	// the cwd.
+	virtualCWD string
+
+	// dockerCWD is the original docker cwd before symlinking. If set (and if
+	// running in Docker), it is used to determine whether a path is effectively
+	// underneath the cwd.
+	dockerCWD string
+)
+
+type srcfileConfig struct {
+	GOROOT string
 }
 
-// parseConfig is called on the Config []string field of the Srcfile.
-func parseConfig(propStrs []string) (*config, error) {
-	c := config{}
-	for _, propStr := range propStrs {
-		if directive := "GoBaseImportPath:"; strings.HasPrefix(propStr, directive) {
-			dir, ipp, err := splitConfigProperty(propStr[len(directive):])
-			if err != nil {
-				return nil, err
-			}
+// unmarshalTypedConfig parses config from the Config field of the source unit.
+// It stores it in the config global variable.
+//
+// Callers should typically call config.apply() after calling
+// unmarshalTypedConfig to actually apply the config.
+func unmarshalTypedConfig(cfg map[string]interface{}) error {
+	data, err := json.Marshal(cfg)
+	if err != nil {
+		return err
+	}
 
-			dir = filepath.Clean(dir)
-			ipp = filepath.Clean(ipp)
-			if c.GoBaseImportPath == nil {
-				c.GoBaseImportPath = map[string]string{}
-			}
-			c.GoBaseImportPath[dir] = ipp
+	if err := json.Unmarshal(data, &config); err != nil {
+		return err
+	}
+
+	if config == nil {
+		config = &srcfileConfig{}
+	}
+
+	return config.apply()
+}
+
+// apply applies the configuration.
+func (c *srcfileConfig) apply() error {
+	if config.GOROOT != "" {
+		// clean/absolutize all paths
+		config.GOROOT = filepath.Clean(config.GOROOT)
+		if !filepath.IsAbs(config.GOROOT) {
+			config.GOROOT = filepath.Join(cwd, config.GOROOT)
 		}
+
+		buildContext.GOROOT = c.GOROOT
+		loaderConfig.Build = &buildContext
+
+		// TODO(sqs): make it so we don't need to use source imports
+		loaderConfig.SourceImports = true
 	}
 
-	return &c, nil
+	return nil
 }
 
-func splitConfigProperty(s string) (string, string, error) {
-	if i := strings.Index(s, "="); i != -1 {
-		return s[:i], s[i+1:], nil
+func (c *srcfileConfig) env() []string {
+	return []string{
+		"GOARCH=" + buildContext.GOARCH,
+		"GOOS=" + buildContext.GOOS,
+		"GOROOT=" + buildContext.GOROOT,
+		"GOPATH=" + buildContext.GOPATH,
 	}
-	return "", "", fmt.Errorf("expected property in the form KEY=VAL, got %q", s)
 }
 
 func pathHasPrefix(path, prefix string) bool {

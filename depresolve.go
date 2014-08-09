@@ -8,6 +8,8 @@ import (
 	"os"
 	"runtime"
 
+	"go/build"
+
 	"github.com/golang/gddo/gosrc"
 
 	"strings"
@@ -43,6 +45,13 @@ func (c *DepResolveCmd) Execute(args []string) error {
 		return err
 	}
 
+	if err := unmarshalTypedConfig(unit.Config); err != nil {
+		return err
+	}
+	if err := config.apply(); err != nil {
+		return err
+	}
+
 	res := make([]*dep.Resolution, len(unit.Dependencies))
 	for i, rawDep := range unit.Dependencies {
 		importPath, ok := rawDep.(string)
@@ -72,8 +81,6 @@ var (
 )
 
 func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, error) {
-	// TODO(sqs): handle Go stdlib
-
 	// Look up in cache.
 	resolvedTarget := func() *dep.ResolvedTarget {
 		resolveCacheMu.Lock()
@@ -83,8 +90,25 @@ func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, 
 	if resolvedTarget != nil {
 		return resolvedTarget, nil
 	}
+	if strings.HasSuffix(importPath, "_test") {
+		// TODO(sqs): handle xtest packages - these should not be appearing here
+		// as import paths, but they are, so suppress errors
+		return nil, fmt.Errorf("xtest package (%s) is not yet supported", importPath)
+	}
 
-	// Check if this importPath is in this repository.
+	// Check if this import path is in this tree.
+	if pkg, err := buildContext.Import(importPath, "", build.FindOnly); err == nil && (pathHasPrefix(pkg.Dir, cwd) || (virtualCWD != "" && pathHasPrefix(pkg.Dir, virtualCWD)) || (dockerCWD != "" && pathHasPrefix(pkg.Dir, dockerCWD))) {
+		return &dep.ResolvedTarget{
+			// empty ToRepoCloneURL to indicate it's from this repository
+			ToRepoCloneURL: "",
+			ToUnit:         importPath,
+			ToUnitType:     "GoPackage",
+		}, nil
+	} else {
+		log.Printf("IIIIIIII pkg.Dir=%q cwd=%q virtualCWD=%q dockerCWD=%q", pkg.Dir, cwd, virtualCWD, dockerCWD)
+	}
+
+	// Check if this import path is in this repository.
 	if strings.HasPrefix(importPath, repoImportPath) {
 		return &dep.ResolvedTarget{
 			// empty ToRepoCloneURL to indicate it's from this repository

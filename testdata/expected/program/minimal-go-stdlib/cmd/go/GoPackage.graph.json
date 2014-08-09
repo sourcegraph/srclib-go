@@ -1,0 +1,144 @@
+{
+  "Defs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "cmd/go",
+      "Path": ".",
+      "TreePath": ".",
+      "Kind": "package",
+      "Name": "main",
+      "Callable": false,
+      "File": "src/cmd/go",
+      "DefStart": 0,
+      "DefEnd": 0,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgName": "main",
+        "TypeString": "",
+        "Kind": "package",
+        "PackageImportPath": "cmd/go"
+      }
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "cmd/go",
+      "Path": "main",
+      "TreePath": "./main",
+      "Kind": "func",
+      "Name": "main",
+      "Callable": true,
+      "File": "src/cmd/go/main.go",
+      "DefStart": 31,
+      "DefEnd": 313,
+      "Exported": false,
+      "Data": {
+        "PkgScope": true,
+        "PkgName": "main",
+        "TypeString": "func()",
+        "UnderlyingTypeString": "func()",
+        "Kind": "func",
+        "PackageImportPath": "cmd/go"
+      }
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "cmd/go",
+      "Path": "main/v",
+      "TreePath": "./main/v",
+      "Kind": "var",
+      "Name": "v",
+      "Callable": false,
+      "File": "src/cmd/go/main.go",
+      "DefStart": 284,
+      "DefEnd": 304,
+      "Exported": false,
+      "Data": {
+        "PkgName": "main",
+        "TypeString": "dummy1.MyType",
+        "UnderlyingTypeString": "int",
+        "Kind": "var",
+        "PackageImportPath": "cmd/go"
+      }
+    }
+  ],
+  "Refs": [
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "cmd/go",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "src/cmd/go/main.go",
+      "Start": 8,
+      "End": 12
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy0",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "src/cmd/go/main.go",
+      "Start": 21,
+      "End": 29
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy0",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "src/cmd/go/main.go",
+      "Start": 289,
+      "End": 295
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy0",
+      "DefPath": "MyFunc",
+      "Def": false,
+      "Repo": "",
+      "File": "src/cmd/go/main.go",
+      "Start": 296,
+      "End": 302
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "cmd/go",
+      "DefPath": "main/v",
+      "Def": true,
+      "Repo": "",
+      "File": "src/cmd/go/main.go",
+      "Start": 284,
+      "End": 285
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "cmd/go",
+      "DefPath": "main/v",
+      "Def": false,
+      "Repo": "",
+      "File": "src/cmd/go/main.go",
+      "Start": 310,
+      "End": 311
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "cmd/go",
+      "DefPath": "main",
+      "Def": true,
+      "Repo": "",
+      "File": "src/cmd/go/main.go",
+      "Start": 36,
+      "End": 40
+    }
+  ]
+}
