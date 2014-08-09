@@ -104,8 +104,6 @@ func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, 
 			ToUnit:         importPath,
 			ToUnitType:     "GoPackage",
 		}, nil
-	} else {
-		log.Printf("IIIIIIII pkg.Dir=%q cwd=%q virtualCWD=%q dockerCWD=%q", pkg.Dir, cwd, virtualCWD, dockerCWD)
 	}
 
 	// Check if this import path is in this repository.
