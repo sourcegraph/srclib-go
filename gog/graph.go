@@ -3,6 +3,7 @@ package gog
 import (
 	"go/ast"
 	"log"
+	"path/filepath"
 	"sort"
 	"sync"
 
@@ -101,11 +102,19 @@ func (pi packageInfos) Swap(i, j int)      { pi[i], pi[j] = pi[j], pi[i] }
 
 func (g *Grapher) addDef(def *Def) {
 	//	log.Printf("SYM %v %v", def.DefKey.PackageImportPath, def.DefKey.Path)
+	if filepath.Base(def.File) == "C" {
+		// skip cgo-generated file
+		return
+	}
 	g.Defs = append(g.Defs, def)
 }
 
 func (g *Grapher) addRef(ref *Ref) {
-	//	log.Printf("REF %v %v at %s:%v", ref.Def.PackageImportPath, ref.Def.Path, ref.File, ref.Span)
+	//	log.Printf("REF %v %v at %s:%v", ref.Def.PackageImportPath,	ref.Def.Path, ref.File, ref.Span)
+	if filepath.Base(ref.File) == "C" {
+		// skip cgo-generated file
+		return
+	}
 	g.Refs = append(g.Refs, ref)
 }
 

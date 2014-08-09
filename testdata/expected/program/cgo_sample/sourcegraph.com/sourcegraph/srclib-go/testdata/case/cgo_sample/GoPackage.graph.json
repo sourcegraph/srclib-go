@@ -1,0 +1,167 @@
+{
+  "Defs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/cgo_sample",
+      "Path": ".",
+      "TreePath": ".",
+      "Kind": "package",
+      "Name": "cgo_sample",
+      "Callable": false,
+      "File": ".",
+      "DefStart": 0,
+      "DefEnd": 0,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgName": "cgo_sample",
+        "TypeString": "",
+        "Kind": "package",
+        "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/cgo_sample"
+      }
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/cgo_sample",
+      "Path": "Foo",
+      "TreePath": "./Foo",
+      "Kind": "func",
+      "Name": "Foo",
+      "Callable": true,
+      "File": "foo.go",
+      "DefStart": 532,
+      "DefEnd": 607,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgScope": true,
+        "PkgName": "cgo_sample",
+        "TypeString": "func()",
+        "UnderlyingTypeString": "func()",
+        "Kind": "func",
+        "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/cgo_sample"
+      }
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/cgo_sample",
+      "Path": "Foo/s",
+      "TreePath": "./Foo/s",
+      "Kind": "var",
+      "Name": "s",
+      "Callable": false,
+      "File": "foo.go",
+      "DefStart": 546,
+      "DefEnd": 589,
+      "Exported": false,
+      "Data": {
+        "PkgName": "cgo_sample",
+        "TypeString": "string",
+        "UnderlyingTypeString": "string",
+        "Kind": "var",
+        "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/cgo_sample"
+      }
+    }
+  ],
+  "Refs": [
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/cgo_sample",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "foo.go",
+      "Start": 134,
+      "End": 144
+    },
+    {
+      "DefRepo": "code.google.com/p/go",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "fmt",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "foo.go",
+      "Start": 339,
+      "End": 344
+    },
+    {
+      "DefRepo": "code.google.com/p/go",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "fmt",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "foo.go",
+      "Start": 591,
+      "End": 594
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/cgo_sample",
+      "DefPath": "Foo/s",
+      "Def": true,
+      "Repo": "",
+      "File": "foo.go",
+      "Start": 546,
+      "End": 547
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/cgo_sample",
+      "DefPath": "Foo/s",
+      "Def": false,
+      "Repo": "",
+      "File": "foo.go",
+      "Start": 603,
+      "End": 604
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/cgo_sample",
+      "DefPath": "Foo",
+      "Def": true,
+      "Repo": "",
+      "File": "foo.go",
+      "Start": 537,
+      "End": 540
+    },
+    {
+      "DefRepo": "code.google.com/p/go",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "fmt",
+      "DefPath": "Println",
+      "Def": false,
+      "Repo": "",
+      "File": "foo.go",
+      "Start": 595,
+      "End": 602
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/cgo_sample",
+      "DefPath": "_Cfunc_CString",
+      "Def": false,
+      "Repo": "",
+      "File": "foo.go",
+      "Start": 567,
+      "End": 581
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/cgo_sample",
+      "DefPath": "_Cfunc_GoString",
+      "Def": false,
+      "Repo": "",
+      "File": "foo.go",
+      "Start": 551,
+      "End": 566
+    }
+  ]
+}

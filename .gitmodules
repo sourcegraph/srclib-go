@@ -4,3 +4,6 @@
 [submodule "testdata/case/minimal-go-stdlib"]
 	path = testdata/case/minimal-go-stdlib
 	url = https://github.com/sgtest/minimal-go-stdlib.git
+[submodule "testdata/case/cgo_sample"]
+	path = testdata/case/cgo_sample
+	url = https://github.com/sgtest/cgo_sample.git

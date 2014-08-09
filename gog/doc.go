@@ -11,6 +11,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 	"sort"
 
 	"code.google.com/p/go.tools/go/loader"
@@ -61,7 +62,12 @@ func (g *Grapher) emitDocs(pkgInfo *loader.PackageInfo) error {
 
 	var filenames []string
 	for _, f := range pkgInfo.Files {
-		filenames = append(filenames, g.program.Fset.Position(f.Name.Pos()).Filename)
+		name := g.program.Fset.Position(f.Name.Pos()).Filename
+		if filepath.Base(name) == "C" {
+			// skip cgo-generated file
+			continue
+		}
+		filenames = append(filenames, name)
 	}
 	sort.Strings(filenames)
 	files, err := parseFiles(g.program.Fset, filenames)
