@@ -160,7 +160,7 @@ func Graph(unit *unit.SourceUnit) (*grapher.Output, error) {
 		return nil, err
 	}
 
-	o, err := doGraph(pkg.ImportPath)
+	o, err := doGraph(pkg)
 	if err != nil {
 		return nil, err
 	}
@@ -312,7 +312,9 @@ func treePath(path string) graph.TreePath {
 	return graph.TreePath(fmt.Sprintf("./%s", path))
 }
 
-func doGraph(importPath string) (*gog.Output, error) {
+func doGraph(pkg *build.Package) (*gog.Output, error) {
+	importPath := pkg.ImportPath
+
 	// If we've overridden GOROOT and we're building a package not in
 	// $GOROOT/src/pkg (such as "cmd/go"), then we need to virtualize GOROOT
 	// because we can't set GOPATH=GOROOT (go/build ignores GOPATH in that
@@ -353,8 +355,28 @@ func doGraph(importPath string) (*gog.Output, error) {
 
 	importUnsafe := importPath == "unsafe"
 
-	if err := loaderConfig.ImportWithTests(importPath); err != nil {
-		return nil, err
+	// Special-case: if this is a Cgo package, treat the CgoFiles as GoFiles or
+	// else the character offsets will be junk.
+	//
+	// See https://codereview.appspot.com/86140043.
+	loaderConfig.Build.CgoEnabled = false
+	build.Default = *loaderConfig.Build
+	if len(pkg.CgoFiles) > 0 {
+		var allGoFiles []string
+		allGoFiles = append(allGoFiles, pkg.GoFiles...)
+		allGoFiles = append(allGoFiles, pkg.CgoFiles...)
+		allGoFiles = append(allGoFiles, pkg.TestGoFiles...)
+		for i, f := range allGoFiles {
+			allGoFiles[i] = filepath.Join(cwd, pkg.Dir, f)
+		}
+		if err := loaderConfig.CreateFromFilenames(pkg.ImportPath, allGoFiles...); err != nil {
+			return nil, err
+		}
+	} else {
+		// Normal import
+		if err := loaderConfig.ImportWithTests(importPath); err != nil {
+			return nil, err
+		}
 	}
 
 	if importUnsafe {
@@ -366,8 +388,6 @@ func doGraph(importPath string) (*gog.Output, error) {
 		loaderConfig.ImportPkgs["unsafe"] = true
 	}
 
-	build.Default = *loaderConfig.Build
-
 	prog, err := loaderConfig.Load()
 	if err != nil {
 		return nil, err
@@ -376,6 +396,13 @@ func doGraph(importPath string) (*gog.Output, error) {
 	g := gog.New(prog)
 
 	var pkgs []*loader.PackageInfo
+	for _, pkg := range prog.Created {
+		if strings.HasSuffix(pkg.Pkg.Name(), "_test") {
+			// ignore xtest packages
+			continue
+		}
+		pkgs = append(pkgs, pkg)
+	}
 	for _, pkg := range prog.Imported {
 		pkgs = append(pkgs, pkg)
 	}

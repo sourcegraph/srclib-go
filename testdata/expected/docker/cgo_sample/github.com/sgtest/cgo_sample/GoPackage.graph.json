@@ -23,6 +23,28 @@
     {
       "UnitType": "GoPackage",
       "Unit": "github.com/sgtest/cgo_sample",
+      "Path": "Bar",
+      "TreePath": "./Bar",
+      "Kind": "func",
+      "Name": "Bar",
+      "Callable": true,
+      "File": "bar.go",
+      "DefStart": 255,
+      "DefEnd": 268,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgScope": true,
+        "PkgName": "cgo_sample",
+        "TypeString": "func()",
+        "UnderlyingTypeString": "func()",
+        "Kind": "func",
+        "PackageImportPath": "github.com/sgtest/cgo_sample"
+      }
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/cgo_sample",
       "Path": "Foo",
       "TreePath": "./Foo",
       "Kind": "func",
@@ -71,6 +93,17 @@
       "DefPath": ".",
       "Def": false,
       "Repo": "",
+      "File": "bar.go",
+      "Start": 8,
+      "End": 18
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/cgo_sample",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
       "File": "foo.go",
       "Start": 62,
       "End": 72
@@ -96,6 +129,17 @@
       "File": "foo.go",
       "Start": 231,
       "End": 234
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/cgo_sample",
+      "DefPath": "Bar",
+      "Def": true,
+      "Repo": "",
+      "File": "bar.go",
+      "Start": 260,
+      "End": 263
     },
     {
       "DefRepo": "",
