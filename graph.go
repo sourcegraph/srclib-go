@@ -340,36 +340,15 @@ func doGraph(importPath string) (*gog.Output, error) {
 		buildContext.ReadDir = ns.ReadDir
 	}
 
-	// If we're using a custom GOROOT, we need to bootstrap the installation.
-	if config.GOROOT != "" && !loaderConfig.SourceImports {
-		if _, err := os.Stat("src/make.bash"); err == nil {
-			// TODO(sqs): in docker, we can't write to this dir, so we'll have to
-			// move it elsewhere
-			cmd := exec.Command("bash", "make.bash")
-			cmd.Dir = filepath.Join(cwd, "src")
-			cmd.Env = config.env()
-			cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
-			log.Printf("Bootstrapping: %v (env vars: %v)", cmd.Args, cmd.Env)
-			if err := cmd.Run(); err != nil {
-				return nil, err
-			}
-		}
-	}
-
 	if !loaderConfig.SourceImports {
 		// Install pkg.
-		cmd := exec.Command("go", "install", "-x", "-v", importPath)
+		cmd := exec.Command("go", "build", "-i", "-x", "-v", importPath)
 		cmd.Env = config.env()
 		cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
 		log.Printf("Install %q: %v (env vars: %v)", importPath, cmd.Args, cmd.Env)
 		if err := cmd.Run(); err != nil {
 			return nil, err
 		}
-
-		log.Println("\n\n############### AFTER BUILD ###############\n\n")
-		out, err := exec.Command("find", "/tmp/gopath").Output()
-		log.Println(string(out))
-		log.Println(err)
 	}
 
 	importUnsafe := importPath == "unsafe"
