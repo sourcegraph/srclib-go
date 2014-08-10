@@ -324,10 +324,6 @@ func doGraph(importPath string) (*gog.Output, error) {
 			return f, err
 		}
 		buildContext.ReadDir = ns.ReadDir
-
-		// We can't compile (easily?) in these false paths, so just analyze the
-		// source.
-		loaderConfig.SourceImports = true
 	}
 
 	// If we're using a custom GOROOT, we need to bootstrap the installation.
