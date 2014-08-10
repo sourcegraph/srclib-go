@@ -24,10 +24,6 @@ type Grapher struct {
 
 	program *loader.Program
 
-	// imported is the set of imported packages' import paths (that we should emit defs
-	// from).
-	imported map[string]struct{}
-
 	defCacheLock sync.Mutex
 	defInfoCache map[types.Object]*defInfo
 	defKeyCache  map[types.Object]*DefKey
@@ -53,14 +49,8 @@ type Grapher struct {
 }
 
 func New(prog *loader.Program) *Grapher {
-	imported := make(map[string]struct{})
-	for importPath, _ := range prog.Imported {
-		imported[importPath] = struct{}{}
-	}
-
 	g := &Grapher{
 		program:      prog,
-		imported:     imported,
 		defInfoCache: make(map[types.Object]*defInfo),
 		defKeyCache:  make(map[types.Object]*DefKey),
 
