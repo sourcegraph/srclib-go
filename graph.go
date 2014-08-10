@@ -116,10 +116,14 @@ func (c *GraphCmd) Execute(args []string) error {
 		if gs.File == "" {
 			log.Printf("no file %+v", gs)
 		}
-		gs.File = relPath(cwd, gs.File)
+		if gs.File != "" {
+			gs.File = relPath(cwd, gs.File)
+		}
 	}
 	for _, gr := range out.Refs {
-		gr.File = relPath(cwd, gr.File)
+		if gr.File != "" {
+			gr.File = relPath(cwd, gr.File)
+		}
 	}
 	for _, gd := range out.Docs {
 		if gd.File != "" {
@@ -161,30 +165,35 @@ func Graph(unit *unit.SourceUnit) (*grapher.Output, error) {
 		return nil, err
 	}
 
-	o2 := grapher.Output{
-		Defs: make([]*graph.Def, len(o.Defs)),
-		Refs: make([]*graph.Ref, len(o.Refs)),
-		Docs: make([]*graph.Doc, len(o.Docs)),
-	}
+	o2 := grapher.Output{}
 
 	uri := string(unit.Repo)
 
-	for i, gs := range o.Defs {
-		o2.Defs[i], err = convertGoDef(gs, uri)
+	for _, gs := range o.Defs {
+		d, err := convertGoDef(gs, uri)
 		if err != nil {
 			return nil, err
 		}
+		if d != nil {
+			o2.Defs = append(o2.Defs, d)
+		}
 	}
-	for i, gr := range o.Refs {
-		o2.Refs[i], err = convertGoRef(gr, uri)
+	for _, gr := range o.Refs {
+		r, err := convertGoRef(gr, uri)
 		if err != nil {
 			return nil, err
 		}
+		if r != nil {
+			o2.Refs = append(o2.Refs, r)
+		}
 	}
-	for i, gd := range o.Docs {
-		o2.Docs[i], err = convertGoDoc(gd, uri)
+	for _, gd := range o.Docs {
+		d, err := convertGoDoc(gd, uri)
 		if err != nil {
 			return nil, err
+		}
+		if d != nil {
+			o2.Docs = append(o2.Docs, d)
 		}
 	}
 
@@ -232,6 +241,11 @@ func convertGoDef(gs *gog.Def, repoURI string) (*graph.Def, error) {
 
 	if def.Kind == "func" {
 		def.Callable = true
+	}
+
+	if def.File == "" {
+		// some cgo defs have empty File; omit them
+		return nil, nil
 	}
 
 	return def, nil
