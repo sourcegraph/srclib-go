@@ -51,8 +51,8 @@
       "Name": "Foo",
       "Callable": true,
       "File": "foo.go",
-      "DefStart": 172,
-      "DefEnd": 247,
+      "DefStart": 45,
+      "DefEnd": 110,
       "Exported": true,
       "Data": {
         "Exported": true,
@@ -73,13 +73,13 @@
       "Name": "s",
       "Callable": false,
       "File": "foo.go",
-      "DefStart": 186,
-      "DefEnd": 229,
+      "DefStart": 59,
+      "DefEnd": 92,
       "Exported": false,
       "Data": {
         "PkgName": "cgo_sample",
-        "TypeString": "string",
-        "UnderlyingTypeString": "string",
+        "TypeString": "invalid type",
+        "UnderlyingTypeString": "invalid type",
         "Kind": "var",
         "PackageImportPath": "github.com/sgtest/cgo_sample"
       }
@@ -105,8 +105,8 @@
       "Def": false,
       "Repo": "",
       "File": "foo.go",
-      "Start": 62,
-      "End": 72
+      "Start": 8,
+      "End": 18
     },
     {
       "DefRepo": "code.google.com/p/go",
@@ -116,8 +116,8 @@
       "Def": false,
       "Repo": "",
       "File": "foo.go",
-      "Start": 123,
-      "End": 128
+      "Start": 38,
+      "End": 43
     },
     {
       "DefRepo": "code.google.com/p/go",
@@ -127,8 +127,8 @@
       "Def": false,
       "Repo": "",
       "File": "foo.go",
-      "Start": 231,
-      "End": 234
+      "Start": 94,
+      "End": 97
     },
     {
       "DefRepo": "",
@@ -146,22 +146,22 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/cgo_sample",
       "DefPath": "Foo/s",
-      "Def": true,
+      "Def": false,
       "Repo": "",
       "File": "foo.go",
-      "Start": 186,
-      "End": 187
+      "Start": 106,
+      "End": 107
     },
     {
       "DefRepo": "",
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/cgo_sample",
       "DefPath": "Foo/s",
-      "Def": false,
+      "Def": true,
       "Repo": "",
       "File": "foo.go",
-      "Start": 243,
-      "End": 244
+      "Start": 59,
+      "End": 60
     },
     {
       "DefRepo": "",
@@ -171,8 +171,8 @@
       "Def": true,
       "Repo": "",
       "File": "foo.go",
-      "Start": 177,
-      "End": 180
+      "Start": 50,
+      "End": 53
     },
     {
       "DefRepo": "code.google.com/p/go",
@@ -182,30 +182,8 @@
       "Def": false,
       "Repo": "",
       "File": "foo.go",
-      "Start": 235,
-      "End": 242
-    },
-    {
-      "DefRepo": "",
-      "DefUnitType": "GoPackage",
-      "DefUnit": "github.com/sgtest/cgo_sample",
-      "DefPath": "_Cfunc_CString",
-      "Def": false,
-      "Repo": "",
-      "File": "foo.go",
-      "Start": 207,
-      "End": 221
-    },
-    {
-      "DefRepo": "",
-      "DefUnitType": "GoPackage",
-      "DefUnit": "github.com/sgtest/cgo_sample",
-      "DefPath": "_Cfunc_GoString",
-      "Def": false,
-      "Repo": "",
-      "File": "foo.go",
-      "Start": 191,
-      "End": 206
+      "Start": 98,
+      "End": 105
     }
   ]
 }
