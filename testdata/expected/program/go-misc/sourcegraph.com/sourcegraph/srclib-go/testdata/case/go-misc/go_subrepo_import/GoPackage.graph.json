@@ -1,0 +1,242 @@
+{
+  "Defs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import",
+      "Path": ".",
+      "TreePath": ".",
+      "Kind": "package",
+      "Name": "go_subrepo_import",
+      "Callable": false,
+      "File": "go_subrepo_import",
+      "DefStart": 0,
+      "DefEnd": 0,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgName": "go_subrepo_import",
+        "TypeString": "",
+        "Kind": "package",
+        "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import"
+      }
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import",
+      "Path": "Foo",
+      "TreePath": "./Foo",
+      "Kind": "func",
+      "Name": "Foo",
+      "Callable": true,
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "DefStart": 238,
+      "DefEnd": 306,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgScope": true,
+        "PkgName": "go_subrepo_import",
+        "TypeString": "func()",
+        "UnderlyingTypeString": "func()",
+        "Kind": "func",
+        "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import"
+      }
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import",
+      "Path": "Foo/c",
+      "TreePath": "./Foo/c",
+      "Kind": "var",
+      "Name": "c",
+      "Callable": false,
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "DefStart": 252,
+      "DefEnd": 268,
+      "Exported": false,
+      "Data": {
+        "PkgName": "go_subrepo_import",
+        "TypeString": "code.google.com/p/go.net/ipv6.Conn",
+        "UnderlyingTypeString": "struct{code.google.com/p/go.net/ipv6.genericOpt}",
+        "Kind": "var",
+        "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import"
+      }
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import",
+      "Path": "Foo/t",
+      "TreePath": "./Foo/t",
+      "Kind": "var",
+      "Name": "t",
+      "Callable": false,
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "DefStart": 278,
+      "DefEnd": 297,
+      "Exported": false,
+      "Data": {
+        "PkgName": "go_subrepo_import",
+        "TypeString": "code.google.com/p/go.tools/go/types.Config",
+        "UnderlyingTypeString": "struct{IgnoreFuncBodies bool; FakeImportC bool; Packages map[string]*code.google.com/p/go.tools/go/types.Package; Error func(err error); Import code.google.com/p/go.tools/go/types.Importer; Sizes code.google.com/p/go.tools/go/types.Sizes}",
+        "Kind": "var",
+        "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import"
+      }
+    }
+  ],
+  "Refs": [
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 135,
+      "End": 152
+    },
+    {
+      "DefRepo": "code.google.com/p/go.net",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "code.google.com/p/go.net/ipv6",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 164,
+      "End": 195
+    },
+    {
+      "DefRepo": "code.google.com/p/go.net",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "code.google.com/p/go.net/ipv6",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 257,
+      "End": 261
+    },
+    {
+      "DefRepo": "code.google.com/p/go.tools",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "code.google.com/p/go.tools/go/types",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 197,
+      "End": 234
+    },
+    {
+      "DefRepo": "code.google.com/p/go.tools",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "code.google.com/p/go.tools/go/types",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 283,
+      "End": 288
+    },
+    {
+      "DefRepo": "code.google.com/p/go.tools",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "code.google.com/p/go.tools/go/types",
+      "DefPath": "Config",
+      "Def": false,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 289,
+      "End": 295
+    },
+    {
+      "DefRepo": "code.google.com/p/go.net",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "code.google.com/p/go.net/ipv6",
+      "DefPath": "Conn",
+      "Def": false,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 262,
+      "End": 266
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import",
+      "DefPath": "Foo/c",
+      "Def": true,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 252,
+      "End": 253
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import",
+      "DefPath": "Foo/c",
+      "Def": false,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 274,
+      "End": 275
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import",
+      "DefPath": "Foo/t",
+      "Def": true,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 278,
+      "End": 279
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import",
+      "DefPath": "Foo/t",
+      "Def": false,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 303,
+      "End": 304
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import",
+      "DefPath": "Foo",
+      "Def": true,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 243,
+      "End": 246
+    }
+  ],
+  "Docs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import",
+      "Path": ".",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\nPackage go_subrepo_import tests that srclib-go properly resolves imports of\nGo subrepositories (code.google.com/p/go.*).\n\u003c/p\u003e\n",
+      "File": "",
+      "Start": 0,
+      "End": 0
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import",
+      "Path": ".",
+      "Format": "text/plain",
+      "Data": "Package go_subrepo_import tests that srclib-go properly resolves imports of\nGo subrepositories (code.google.com/p/go.*).\n",
+      "File": "",
+      "Start": 0,
+      "End": 0
+    }
+  ]
+}
