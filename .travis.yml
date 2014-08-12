@@ -13,6 +13,8 @@ install:
   - sudo chmod +x /usr/local/bin/src
   - src toolchain add sourcegraph.com/sourcegraph/srclib-go
   - go get -d -v ./... && go build -v ./...
+  # for tests
+  - go get code.google.com/p/go.net/ipv6 code.google.com/p/go.tools/go/types
   - make
 
 # TODO(sqs): add `go test`
