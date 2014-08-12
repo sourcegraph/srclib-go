@@ -1,0 +1,176 @@
+{
+  "Defs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/go_subrepo_import",
+      "Path": ".",
+      "TreePath": ".",
+      "Kind": "package",
+      "Name": "go_subrepo_import",
+      "Callable": false,
+      "File": "go_subrepo_import",
+      "DefStart": 0,
+      "DefEnd": 0,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgName": "go_subrepo_import",
+        "TypeString": "",
+        "Kind": "package",
+        "PackageImportPath": "github.com/sgtest/go-misc/go_subrepo_import"
+      }
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/go_subrepo_import",
+      "Path": "Foo",
+      "TreePath": "./Foo",
+      "Kind": "func",
+      "Name": "Foo",
+      "Callable": true,
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "DefStart": 238,
+      "DefEnd": 306,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgScope": true,
+        "PkgName": "go_subrepo_import",
+        "TypeString": "func()",
+        "UnderlyingTypeString": "func()",
+        "Kind": "func",
+        "PackageImportPath": "github.com/sgtest/go-misc/go_subrepo_import"
+      }
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/go_subrepo_import",
+      "Path": "Foo/c",
+      "TreePath": "./Foo/c",
+      "Kind": "var",
+      "Name": "c",
+      "Callable": false,
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "DefStart": 252,
+      "DefEnd": 268,
+      "Exported": false,
+      "Data": {
+        "PkgName": "go_subrepo_import",
+        "TypeString": "invalid type",
+        "UnderlyingTypeString": "invalid type",
+        "Kind": "var",
+        "PackageImportPath": "github.com/sgtest/go-misc/go_subrepo_import"
+      }
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/go_subrepo_import",
+      "Path": "Foo/t",
+      "TreePath": "./Foo/t",
+      "Kind": "var",
+      "Name": "t",
+      "Callable": false,
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "DefStart": 278,
+      "DefEnd": 297,
+      "Exported": false,
+      "Data": {
+        "PkgName": "go_subrepo_import",
+        "TypeString": "invalid type",
+        "UnderlyingTypeString": "invalid type",
+        "Kind": "var",
+        "PackageImportPath": "github.com/sgtest/go-misc/go_subrepo_import"
+      }
+    }
+  ],
+  "Refs": [
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/go_subrepo_import",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 135,
+      "End": 152
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/go_subrepo_import",
+      "DefPath": "Foo/c",
+      "Def": true,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 252,
+      "End": 253
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/go_subrepo_import",
+      "DefPath": "Foo/c",
+      "Def": false,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 274,
+      "End": 275
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/go_subrepo_import",
+      "DefPath": "Foo/t",
+      "Def": true,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 278,
+      "End": 279
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/go_subrepo_import",
+      "DefPath": "Foo/t",
+      "Def": false,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 303,
+      "End": 304
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/go_subrepo_import",
+      "DefPath": "Foo",
+      "Def": true,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 243,
+      "End": 246
+    }
+  ],
+  "Docs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/go_subrepo_import",
+      "Path": ".",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\nPackage go_subrepo_import tests that srclib-go properly resolves imports of\nGo subrepositories (code.google.com/p/go.*).\n\u003c/p\u003e\n",
+      "File": "",
+      "Start": 0,
+      "End": 0
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/go_subrepo_import",
+      "Path": ".",
+      "Format": "text/plain",
+      "Data": "Package go_subrepo_import tests that srclib-go properly resolves imports of\nGo subrepositories (code.google.com/p/go.*).\n",
+      "File": "",
+      "Start": 0,
+      "End": 0
+    }
+  ]
+}

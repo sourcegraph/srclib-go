@@ -7,3 +7,6 @@
 [submodule "testdata/case/cgo_sample"]
 	path = testdata/case/cgo_sample
 	url = https://github.com/sgtest/cgo_sample.git
+[submodule "testdata/case/go-misc"]
+	path = testdata/case/go-misc
+	url = https://github.com/sgtest/go-misc.git
