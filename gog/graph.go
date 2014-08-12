@@ -304,7 +304,7 @@ func (g *Grapher) makeDefInfo(obj types.Object) (*DefKey, *defInfo, error) {
 		} else {
 			pkg = obj.Pkg().Path()
 		}
-		if obj.Val().Kind() == exact.Bool {
+		if obj.Val().Kind() == exact.Bool && pkg == "builtin" {
 			return &DefKey{pkg, []string{obj.Name()}}, &defInfo{pkgscope: false, exported: true}, nil
 		}
 	}

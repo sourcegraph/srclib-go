@@ -32,6 +32,8 @@ func TestPaths(t *testing.T) {
 
 		// Test that the 2 `x`s have unique paths.
 		{`func init() { x:=0;_=x};func init() { x:=0;_=x}`, []defPath{{"foo", "init/x"}, {"foo", "init$1/x"}}, nil},
+
+		{`func a() { const x = false; _ = x}; const x`, []defPath{{"foo", "a/x"}, {"foo", "x"}}, nil},
 	}
 
 	for _, c := range cases {
