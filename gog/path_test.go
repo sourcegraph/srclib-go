@@ -30,8 +30,10 @@ func TestPaths(t *testing.T) {
 		{`type I interface { A(x int); B(x int) }`, []defPath{{"foo", "I/A/x"}, {"foo", "I/B/x"}}, nil},
 		{`type f func(i int); type g func(i int)`, []defPath{{"foo", "$sources[0]/$sources[0]0/i"}, {"foo", "$sources[0]/$sources[0]1/i"}}, nil},
 
-		// Test that the 2 `x`s have unique paths.
-		{`func init() { x:=0;_=x};func init() { x:=0;_=x}`, []defPath{{"foo", "init/x"}, {"foo", "init$1/x"}}, nil},
+		// Test that the 2 `x`s have unique paths. This doesn't test that they'd
+		// have unique paths if they were defined in different files (which was
+		// a persistent issue).
+		{`func init() { x:=0;_=x};func init() { x:=0;_=x}`, []defPath{{"foo", "init$sources[0]28/x"}, {"foo", "init$sources[0]52/x"}}, nil},
 
 		{`func a() { const x = false; _ = x}; const x`, []defPath{{"foo", "a/x"}, {"foo", "x"}}, nil},
 	}
