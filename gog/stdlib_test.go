@@ -25,6 +25,10 @@ var (
 )
 
 func TestStdlib(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
+
 	if data, err := exec.Command("go", "list", "std").Output(); err == nil {
 		lines := bytes.Split(data, []byte{'\n'})
 		start = time.Now()
