@@ -98,12 +98,22 @@ func (g *Grapher) scopeLabel(s *types.Scope) (path []string) {
 			if f.Recv != nil {
 				path = []string{derefNode(f.Recv.List[0].Type).(*ast.Ident).Name}
 			}
-			path = append(path, f.Name.Name)
+			var uniqName string
+			if f.Name.Name == "init" {
+				// init function can appear multiple times in each file and
+				// package, so need to uniquify it
+				uniqName = f.Name.Name + uniqID(g.program.Fset.Position(f.Name.Pos()))
+			} else {
+				uniqName = f.Name.Name
+			}
+			path = append(path, uniqName)
 			return path
 		}
 	}
 
 	// get this scope's index in parent
+	// TODO(sqs): is it necessary to uniquify this here now that we're handling
+	// init above?
 	p := s.Parent()
 	var prefix []string
 	if fs, ok := g.scopeNodes[p].(*ast.File); ok {
