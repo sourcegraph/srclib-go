@@ -5,6 +5,5 @@ makefileDir := $(dir $(firstword $(CURRENT_MAKEFILE_LIST)))
 
 install:
 	@mkdir -p .bin
-# TODO(sqs): need to set GOPATH and GOBIN for this (can use makefileDir to get
-# the dir containing this Makefile)
+	go get -d ./...
 	go build -o .bin/srclib-go
