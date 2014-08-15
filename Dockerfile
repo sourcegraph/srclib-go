@@ -1,7 +1,7 @@
 FROM ubuntu:14.04
 
 RUN apt-get update -qq && echo 2014-08-11
-RUN apt-get install -qq curl git mercurial build-essential
+RUN apt-get install -qq curl git mercurial bzr subversion build-essential
 
 # Install Go
 RUN curl -Lo /tmp/golang.tgz https://storage.googleapis.com/golang/go1.3.linux-amd64.tar.gz
