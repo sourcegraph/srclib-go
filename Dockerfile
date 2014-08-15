@@ -1,6 +1,6 @@
 FROM ubuntu:14.04
 
-RUN apt-get update -qq && echo 2014-08-11
+RUN apt-get update -qq && echo 2014-08-12
 RUN apt-get install -qq curl git mercurial bzr subversion build-essential
 
 # Install Go
