@@ -71,6 +71,18 @@ this toolchain.
 
 ![screenshot](https://s3-us-west-2.amazonaws.com/sourcegraph-assets/emacs-sourcegraph-mode-screenshot-1.png "Emacs Go screenshot")
 
+## Usage
+
+srclib-go only works with code that exists in a proper
+[GOPATH](https://golang.org/doc/code.html#GOPATH). When you run the `src`
+tool, it should use this GOPATH environment variable.
+
+If you are using an editor plugin that calls `src`, it may not inherit the
+correct GOPATH. To ensure it does use the correct GOPATH, try launching your
+editor from a shell that has GOPATH set to the desired value, or use the
+editor's internal mechanism (e.g., `setenv` in Emacs) for setting environment
+variables.
+
 ## Srcfile configuration
 
 Go repositories built with this toolchain may specify the following
