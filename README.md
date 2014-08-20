@@ -100,18 +100,7 @@ properties in their Srcfile's `Config` property:
 
 srclib-go is alpha-quality software. It powers code analysis on
 [Sourcegraph.com](https://sourcegraph.com) but has not been widely tested or
-adapted for other use cases. It also has several limitations.
-
-* Does not properly special-case analysis of the Go standard library when
-  checked out as a repository (code.google.com/p/go). It should rewrite import
-  paths to eliminate the `code.google.com/p/go/` prefix and resolve internal
-  references to its own packages, not the GOROOT standard packages for the
-  currently installed version of Go. The version of this toolchain running on
-  [Sourcegraph.com](https://sourcegraph.com) handles this correctly, but the
-  functionality hasn't been ported yet.
-* In some cases, multiple `init` functions in the same package with local
-  variables of the same name are emitted using the same definition path, which
-  causes an error. E.g., `func init() { x := 3; _ = x }; func init() { x := 3; _ = x }`.
+adapted for other use cases.
 
 
 ## Tests
