@@ -21,6 +21,7 @@ ENV IN_DOCKER_CONTAINER true
 # Add this toolchain
 ADD . /srclib/src/sourcegraph.com/sourcegraph/srclib-go/
 WORKDIR /srclib/src/sourcegraph.com/sourcegraph/srclib-go
+RUN go get -u sourcegraph.com/sourcegraph/srclib/...
 RUN go get -v -d
 RUN go install
 
