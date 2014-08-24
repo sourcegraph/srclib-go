@@ -221,7 +221,7 @@ func convertGoDef(gs *gog.Def, repoURI string) (*graph.Def, error) {
 		TreePath: treePath,
 
 		Name: gs.Name,
-		Kind: graph.DefKind(definfo.GeneralKindMap[gs.Kind]),
+		Kind: definfo.GeneralKindMap[gs.Kind],
 
 		File:     gs.File,
 		DefStart: gs.DeclSpan[0],
@@ -238,10 +238,6 @@ func convertGoDef(gs *gog.Def, repoURI string) (*graph.Def, error) {
 	def.Data, err = json.Marshal(d)
 	if err != nil {
 		return nil, err
-	}
-
-	if def.Kind == "func" {
-		def.Callable = true
 	}
 
 	if def.File == "" {

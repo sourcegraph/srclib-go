@@ -131,10 +131,10 @@ func (f defFormatter) NameAndTypeSeparator() string {
 func (f defFormatter) Type(qual graph.Qualification) string {
 	var ts string
 	switch f.def.Kind {
-	case graph.Func:
+	case "func":
 		ts = f.info.TypeString
 		ts = strings.TrimPrefix(ts, "func")
-	case graph.Type:
+	case "type":
 		ts = f.info.UnderlyingTypeString
 		if i := strings.Index(ts, "{"); i != -1 {
 			ts = ts[:i]
