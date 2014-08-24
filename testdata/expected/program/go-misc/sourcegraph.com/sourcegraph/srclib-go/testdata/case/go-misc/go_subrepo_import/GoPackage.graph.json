@@ -53,8 +53,8 @@
       "Exported": false,
       "Data": {
         "PkgName": "go_subrepo_import",
-        "TypeString": "invalid type",
-        "UnderlyingTypeString": "invalid type",
+        "TypeString": "code.google.com/p/go.net/ipv6.Conn",
+        "UnderlyingTypeString": "struct{code.google.com/p/go.net/ipv6.genericOpt}",
         "Kind": "var",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import"
       }
@@ -92,6 +92,28 @@
       "End": 152
     },
     {
+      "DefRepo": "code.google.com/p/go.net",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "code.google.com/p/go.net/ipv6",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 164,
+      "End": 195
+    },
+    {
+      "DefRepo": "code.google.com/p/go.net",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "code.google.com/p/go.net/ipv6",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 257,
+      "End": 261
+    },
+    {
       "DefRepo": "code.google.com/p/go.tools",
       "DefUnitType": "GoPackage",
       "DefUnit": "code.google.com/p/go.tools/go/types",
@@ -123,6 +145,17 @@
       "File": "go_subrepo_import/go_subrepo_import.go",
       "Start": 289,
       "End": 295
+    },
+    {
+      "DefRepo": "code.google.com/p/go.net",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "code.google.com/p/go.net/ipv6",
+      "DefPath": "Conn",
+      "Def": false,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 262,
+      "End": 266
     },
     {
       "DefRepo": "",
