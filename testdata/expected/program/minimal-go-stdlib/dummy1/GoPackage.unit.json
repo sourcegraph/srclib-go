@@ -1,1 +1,66 @@
-{"Name":"dummy1","Type":"GoPackage","Repo":"github.com/sgtest/minimal-go-stdlib","Globs":null,"Files":["src/pkg/dummy1/dummy1.go","src/pkg/dummy1/dummy1_x_test.go"],"Dir":"src/pkg/dummy1","Dependencies":["dummy1"],"Data":{"AllTags":null,"BinDir":"","CFiles":null,"CXXFiles":null,"CgoCFLAGS":null,"CgoCPPFLAGS":null,"CgoCXXFLAGS":null,"CgoFiles":null,"CgoLDFLAGS":null,"CgoPkgConfig":null,"ConflictDir":"","Dir":"src/pkg/dummy1","Doc":"","GoFiles":["dummy1.go"],"Goroot":true,"HFiles":null,"IgnoredGoFiles":null,"ImportPath":"dummy1","ImportPos":null,"Imports":null,"MFiles":null,"Name":"dummy1","PkgObj":"","PkgRoot":"","Root":"","SFiles":null,"SrcRoot":"","SwigCXXFiles":null,"SwigFiles":null,"SysoFiles":null,"TestGoFiles":null,"TestImportPos":null,"TestImports":null,"XTestGoFiles":["dummy1_x_test.go"],"XTestImportPos":null,"XTestImports":["dummy1"]},"Config":{"GOROOT":".","SourceImports":true},"Ops":{"depresolve":null,"graph":null}}
+{
+  "Name": "dummy1",
+  "Type": "GoPackage",
+  "Repo": "github.com/sgtest/minimal-go-stdlib",
+  "Globs": null,
+  "Files": [
+    "src/pkg/dummy1/dummy1.go",
+    "src/pkg/dummy1/dummy1_x_test.go"
+  ],
+  "Dir": "src/pkg/dummy1",
+  "Dependencies": [
+    "dummy1"
+  ],
+  "Data": {
+    "AllTags": null,
+    "BinDir": "",
+    "CFiles": null,
+    "CXXFiles": null,
+    "CgoCFLAGS": null,
+    "CgoCPPFLAGS": null,
+    "CgoCXXFLAGS": null,
+    "CgoFiles": null,
+    "CgoLDFLAGS": null,
+    "CgoPkgConfig": null,
+    "ConflictDir": "",
+    "Dir": "src/pkg/dummy1",
+    "Doc": "",
+    "GoFiles": [
+      "dummy1.go"
+    ],
+    "Goroot": true,
+    "HFiles": null,
+    "IgnoredGoFiles": null,
+    "ImportPath": "dummy1",
+    "ImportPos": null,
+    "Imports": null,
+    "MFiles": null,
+    "Name": "dummy1",
+    "PkgObj": "",
+    "PkgRoot": "",
+    "Root": "",
+    "SFiles": null,
+    "SrcRoot": "",
+    "SwigCXXFiles": null,
+    "SwigFiles": null,
+    "SysoFiles": null,
+    "TestGoFiles": null,
+    "TestImportPos": null,
+    "TestImports": null,
+    "XTestGoFiles": [
+      "dummy1_x_test.go"
+    ],
+    "XTestImportPos": null,
+    "XTestImports": [
+      "dummy1"
+    ]
+  },
+  "Config": {
+    "GOROOT": ".",
+    "SourceImports": true
+  },
+  "Ops": {
+    "depresolve": null,
+    "graph": null
+  }
+}
