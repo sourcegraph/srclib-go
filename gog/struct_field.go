@@ -36,7 +36,7 @@ func (g *Grapher) buildStructFields(pkgInfo *loader.PackageInfo) {
 			default:
 				panic("unhandled field recv type " + rt.String())
 			}
-			sfobj, _, _ := types.LookupFieldOrMethod(derefType(sel.Recv()), pkg, selExpr.Sel.Name)
+			sfobj, _, _ := types.LookupFieldOrMethod(derefType(sel.Recv()), false, pkg, selExpr.Sel.Name)
 
 			// Record that this field is in this struct so we can construct the
 			// right def path to the field.

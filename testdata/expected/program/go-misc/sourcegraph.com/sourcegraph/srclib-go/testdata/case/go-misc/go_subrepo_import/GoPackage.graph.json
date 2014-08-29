@@ -73,7 +73,7 @@
       "Data": {
         "PkgName": "go_subrepo_import",
         "TypeString": "code.google.com/p/go.tools/go/types.Config",
-        "UnderlyingTypeString": "struct{IgnoreFuncBodies bool; FakeImportC bool; Packages map[string]*code.google.com/p/go.tools/go/types.Package; Error func(err error); Import code.google.com/p/go.tools/go/types.Importer; Sizes code.google.com/p/go.tools/go/types.Sizes}",
+        "UnderlyingTypeString": "struct{Strict bool; IgnoreFuncBodies bool; FakeImportC bool; Packages map[string]*code.google.com/p/go.tools/go/types.Package; Error func(err error); Import code.google.com/p/go.tools/go/types.Importer; Sizes code.google.com/p/go.tools/go/types.Sizes}",
         "Kind": "var",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import"
       }
