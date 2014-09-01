@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"code.google.com/p/go.tools/go/loader"
@@ -343,6 +344,21 @@ func doGraph(pkg *build.Package) (*gog.Output, error) {
 		tmpfile, err := ioutil.TempFile("", filepath.Base(importPath))
 		if err != nil {
 			return nil, err
+		}
+
+		// Check that we have the '-i' flag.
+		cmd := exec.Command("go", "help", "build")
+		o, err := cmd.Output()
+		if err != nil {
+			log.Fatal(err)
+		}
+		usage := strings.Split(string(o), "\n")[0] // The usage is on the first line.
+		matched, err := regexp.MatchString("-i", usage)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if !matched {
+			log.Fatal("'go build' does not have the '-i' flag. Please upgrade to go1.3+.")
 		}
 
 		// Install pkg.
