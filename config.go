@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"go/build"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -32,6 +33,12 @@ var (
 	// underneath the cwd.
 	dockerCWD string
 )
+
+func init() {
+	if buildContext.GOPATH == "" {
+		log.Fatal("GOPATH must be set.")
+	}
+}
 
 type srcfileConfig struct {
 	GOROOT        string
