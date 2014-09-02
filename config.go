@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	buildContext build.Context
+	buildContext = build.Default
 
 	loaderConfig = loader.Config{
 		TypeChecker: types.Config{FakeImportC: true},
@@ -35,7 +35,6 @@ var (
 )
 
 func init() {
-	buildContext = build.Default
 	if buildContext.GOPATH == "" {
 		log.Fatal("GOPATH must be set.")
 	}
