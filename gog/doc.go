@@ -81,7 +81,7 @@ func (g *Grapher) emitDocs(pkgInfo *loader.PackageInfo) error {
 	docPkg := doc.New(astPkg, pkgInfo.Pkg.Path(), doc.AllDecls)
 
 	if docPkg.Doc != "" {
-		err := g.emitDoc(types.NewPkgName(0, pkgInfo.Pkg, pkgInfo.Pkg.Path()), nil, docPkg.Doc)
+		err := g.emitDoc(types.NewPkgName(0, pkgInfo.Pkg, pkgInfo.Pkg.Path(), nil), nil, docPkg.Doc)
 		if err != nil {
 			return err
 		}
