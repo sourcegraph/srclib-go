@@ -221,9 +221,10 @@ func (g *Grapher) Graph(pkgInfo *loader.PackageInfo) error {
 		g.addRef(ref)
 	}
 
-	// Find refs to current package in the "package" clause in each file.
+	// Create a ref that represent the name of the package ("package foo")
+	// for each file.
 	for _, f := range pkgInfo.Files {
-		pkgObj := types.NewPkgName(f.Name.Pos(), pkgInfo.Pkg, pkgInfo.Pkg.Name())
+		pkgObj := types.NewPkgName(f.Name.Pos(), pkgInfo.Pkg, pkgInfo.Pkg.Name(), nil)
 		ref, err := g.NewRef(f.Name, pkgObj)
 		if err != nil {
 			return err
