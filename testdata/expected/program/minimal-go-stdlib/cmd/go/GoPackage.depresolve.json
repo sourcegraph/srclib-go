@@ -1,1 +1,12 @@
-[{"Raw":"dummy0","Target":{"ToRepoCloneURL":"","ToUnit":"dummy0","ToUnitType":"GoPackage","ToVersionString":"","ToRevSpec":""}}]
+[
+  {
+    "Raw": "dummy0",
+    "Target": {
+      "ToRepoCloneURL": "",
+      "ToUnit": "dummy0",
+      "ToUnitType": "GoPackage",
+      "ToVersionString": "",
+      "ToRevSpec": ""
+    }
+  }
+]
