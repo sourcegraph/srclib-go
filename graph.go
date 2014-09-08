@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"go/build"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -356,24 +355,28 @@ func doGraph(pkg *build.Package) (*gog.Output, error) {
 	}
 
 	if !loaderConfig.SourceImports {
-		tmpfile, err := ioutil.TempFile("", filepath.Base(importPath))
-		if err != nil {
-			return nil, err
+		imports := map[string]struct{}{}
+		for _, imp := range pkg.Imports {
+			imports[imp] = struct{}{}
+		}
+		for _, imp := range pkg.TestImports {
+			imports[imp] = struct{}{}
+		}
+		for _, imp := range pkg.XTestImports {
+			imports[imp] = struct{}{}
 		}
 
-		// Install pkg.
-		cmd := exec.Command("go", "build", "-o", tmpfile.Name(), "-i", "-v", importPath)
-		cmd.Env = config.env()
-		cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
-		log.Printf("Install %q: %v (env vars: %v)", importPath, cmd.Args, cmd.Env)
-		if err := cmd.Run(); err != nil {
-			return nil, err
-		}
-		if err := tmpfile.Close(); err != nil {
-			return nil, err
-		}
-		if err := os.Remove(tmpfile.Name()); err != nil {
-			return nil, err
+		for imp, _ := range imports {
+			if imp == "C" {
+				continue
+			}
+			cmd := exec.Command("go", "install", "-v", imp)
+			cmd.Env = config.env()
+			cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
+			log.Printf("Install %q: %v (env vars: %v)", importPath, cmd.Args, cmd.Env)
+			if err := cmd.Run(); err != nil {
+				return nil, err
+			}
 		}
 	}
 
