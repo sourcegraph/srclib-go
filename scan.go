@@ -50,7 +50,13 @@ func (c *ScanCmd) Execute(args []string) error {
 		return err
 	}
 
-	units, err := scan("./...")
+	var pkgPatterns []string
+	if config.PkgPatterns != nil {
+		pkgPatterns = config.PkgPatterns
+	} else {
+		pkgPatterns = []string{"./..."}
+	}
+	units, err := scan(pkgPatterns)
 	if err != nil {
 		return err
 	}
@@ -85,11 +91,12 @@ func (c *ScanCmd) Execute(args []string) error {
 	return nil
 }
 
-func scan(pkgPattern string) ([]*unit.SourceUnit, error) {
+func scan(pkgPatterns []string) ([]*unit.SourceUnit, error) {
 	// TODO(sqs): include xtest, but we'll have to make them have a distinctly
 	// namespaced def path from the non-xtest pkg.
 
-	cmd := exec.Command("go", "list", "-e", "-json", pkgPattern)
+	cmd := exec.Command("go", "list", "-e", "-json")
+	cmd.Args = append(cmd.Args, pkgPatterns...)
 	cmd.Env = config.env()
 	cmd.Stderr = os.Stderr
 	stdout, err := cmd.StdoutPipe()

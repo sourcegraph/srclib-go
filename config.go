@@ -42,6 +42,7 @@ func init() {
 
 type srcfileConfig struct {
 	GOROOT        string
+	PkgPatterns   []string // pattern passed to `go list` (defaults to {"./..."})
 	SourceImports bool
 }
 
