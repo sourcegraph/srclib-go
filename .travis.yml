@@ -7,6 +7,8 @@ before_install:
   - mkdir -p $HOME/gopath/src/sourcegraph.com/sourcegraph
   - mv $TRAVIS_BUILD_DIR $HOME/gopath/src/sourcegraph.com/sourcegraph/srclib-go
   - export TRAVIS_BUILD_DIR=$HOME/gopath/src/sourcegraph.com/sourcegraph/srclib-go
+  - export PATH=$PATH:$HOME/gopath/bin
+  - export GOBIN=$HOME/gopath/bin
 
 install:
   - sudo wget -NO /tmp/src.zip 'https://api.equinox.io/1/Applications/ap_BQxVz1iWMxmjQnbVGd85V58qz6/Updates/Asset/src-0.0.22.zip?os=linux&arch=amd64&channel=stable'
@@ -14,9 +16,8 @@ install:
   - sudo mv /usr/local/bin/src-* /usr/local/bin/src
   - sudo chmod +x /usr/local/bin/src
   - src toolchain add sourcegraph.com/sourcegraph/srclib-go
-  - go get -d -v ./... && go build -v ./...
   # for tests
-  - go get code.google.com/p/go.net/ipv6 code.google.com/p/go.tools/go/types
+  - go get -d -v code.google.com/p/go.net/ipv6 code.google.com/p/go.tools/go/types
   - make
 
 # TODO(sqs): add `go test`

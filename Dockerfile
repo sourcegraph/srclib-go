@@ -11,9 +11,7 @@ ENV GOBIN /usr/local/bin
 ENV PATH /usr/local/go/bin:$PATH
 ENV GOPATH /srclib
 
-# TMP: this are slow; pre-fetch for faster builds
-RUN go get code.google.com/p/go.tools/go/loader code.google.com/p/go.tools/go/types code.google.com/p/go.tools/godoc/vfs
-RUN go get github.com/golang/gddo/gosrc github.com/jessevdk/go-flags sourcegraph.com/sourcegraph/srclib/graph sourcegraph.com/sourcegraph/srclib/src
+RUN go get github.com/kr/godep
 
 # Allow determining whether we're running in Docker
 ENV IN_DOCKER_CONTAINER true
@@ -21,9 +19,7 @@ ENV IN_DOCKER_CONTAINER true
 # Add this toolchain
 ADD . /srclib/src/sourcegraph.com/sourcegraph/srclib-go/
 WORKDIR /srclib/src/sourcegraph.com/sourcegraph/srclib-go
-RUN go get -u sourcegraph.com/sourcegraph/srclib/...
-RUN go get -v -d
-RUN go install
+RUN godep go install
 
 RUN useradd -ms /bin/bash srclib
 RUN mkdir /src
