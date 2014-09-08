@@ -69,7 +69,11 @@ func (c *DepResolveCmd) Execute(args []string) error {
 		res[i].Target = rt
 	}
 
-	if err := json.NewEncoder(os.Stdout).Encode(res); err != nil {
+	b, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return err
+	}
+	if _, err := os.Stdout.Write(b); err != nil {
 		return err
 	}
 	return nil

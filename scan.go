@@ -75,7 +75,11 @@ func (c *ScanCmd) Execute(args []string) error {
 		}
 	}
 
-	if err := json.NewEncoder(os.Stdout).Encode(units); err != nil {
+	b, err := json.MarshalIndent(units, "", "  ")
+	if err != nil {
+		return err
+	}
+	if _, err := os.Stdout.Write(b); err != nil {
 		return err
 	}
 	return nil
