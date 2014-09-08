@@ -7,7 +7,7 @@
       "TreePath": ".",
       "Name": "fmt",
       "Kind": "package",
-      "File": "src/pkg/fmt",
+      "File": "src/fmt",
       "DefStart": 0,
       "DefEnd": 0,
       "Exported": true,
@@ -26,7 +26,7 @@
       "TreePath": "./FakePrintf",
       "Name": "FakePrintf",
       "Kind": "func",
-      "File": "src/pkg/fmt/fake_fmt.go",
+      "File": "src/fmt/fake_fmt.go",
       "DefStart": 181,
       "DefEnd": 209,
       "Exported": true,
@@ -47,7 +47,7 @@
       "TreePath": "./FakePrintf/s",
       "Name": "s",
       "Kind": "var",
-      "File": "src/pkg/fmt/fake_fmt.go",
+      "File": "src/fmt/fake_fmt.go",
       "DefStart": 197,
       "DefEnd": 205,
       "Exported": false,
@@ -68,7 +68,7 @@
       "DefPath": ".",
       "Def": false,
       "Repo": "",
-      "File": "src/pkg/fmt/fake_fmt.go",
+      "File": "src/fmt/fake_fmt.go",
       "Start": 8,
       "End": 11
     },
@@ -79,7 +79,7 @@
       "DefPath": "FakePrintf/s",
       "Def": true,
       "Repo": "",
-      "File": "src/pkg/fmt/fake_fmt.go",
+      "File": "src/fmt/fake_fmt.go",
       "Start": 197,
       "End": 198
     },
@@ -90,7 +90,7 @@
       "DefPath": "FakePrintf",
       "Def": true,
       "Repo": "",
-      "File": "src/pkg/fmt/fake_fmt.go",
+      "File": "src/fmt/fake_fmt.go",
       "Start": 186,
       "End": 196
     },
@@ -101,7 +101,7 @@
       "DefPath": "string",
       "Def": false,
       "Repo": "",
-      "File": "src/pkg/fmt/fake_fmt.go",
+      "File": "src/fmt/fake_fmt.go",
       "Start": 199,
       "End": 205
     }
