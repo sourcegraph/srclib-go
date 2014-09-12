@@ -12,6 +12,8 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/golang/gddo/gosrc"
+
 	"code.google.com/p/go.tools/go/loader"
 	"code.google.com/p/go.tools/godoc/vfs"
 
@@ -324,6 +326,10 @@ func treePath(path string) graph.TreePath {
 	return graph.TreePath(fmt.Sprintf("./%s", path))
 }
 
+// allowErrorsInGraph is whether the grapher should continue after
+// encountering "reasonably common" errors (such as compile errors).
+var allowErrorsInGraph = true
+
 func doGraph(pkg *build.Package) (*gog.Output, error) {
 	importPath := pkg.ImportPath
 
@@ -370,12 +376,23 @@ func doGraph(pkg *build.Package) (*gog.Output, error) {
 			if imp == "C" {
 				continue
 			}
+			if gosrc.IsGoRepoPath(imp) {
+				// Optimization: don't bother installing builtin
+				// packages because they're already installed. (But if
+				// we accidentally install one, it's OK and not going
+				// to cause any problems.)
+				continue
+			}
 			cmd := exec.Command("go", "install", "-v", imp)
 			cmd.Env = config.env()
 			cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
 			log.Printf("Install %q: %v (env vars: %v)", importPath, cmd.Args, cmd.Env)
 			if err := cmd.Run(); err != nil {
-				return nil, err
+				if allowErrorsInGraph {
+					log.Printf("Warning: failed to install package %q (command %v, env vars %v): %s. Continuing...", imp, cmd.Args, cmd.Env)
+				} else {
+					return nil, err
+				}
 			}
 		}
 	}
