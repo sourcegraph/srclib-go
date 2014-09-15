@@ -41,8 +41,13 @@ func init() {
 }
 
 type srcfileConfig struct {
-	GOROOT        string
-	PkgPatterns   []string // pattern passed to `go list` (defaults to {"./..."})
+	// GOROOT, if specified, is made absolute (prefixed with the
+	// directory that the repository being built is checked out to)
+	// and is set as the GOROOT environment variable.
+	GOROOT string
+
+	PkgPatterns []string // pattern passed to `go list` (defaults to {"./..."})
+
 	SourceImports bool
 }
 
