@@ -96,6 +96,15 @@ properties in their Srcfile's `Config` property:
   repository `code.google.com/p/go` without having the system Go stdlib packages
   interfere with analysis.
 
+* **GOPATH**: a colon-separated list of directories that are appended
+  to the build GOPATH. If relative, the dirs are made absolute by prefixing
+  the directory containing the Srcfile.
+
+  Set GOPATH when you have vendored dependencies within your repository that you
+  import using import paths relative to the vendored dir (as with godep and
+  third_party.go).
+
+
 ## Known issues
 
 srclib-go is alpha-quality software. It powers code analysis on

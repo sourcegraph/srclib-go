@@ -76,12 +76,17 @@ func (c *GraphCmd) Execute(args []string) error {
 			return err
 		}
 
-		// Make a new GOPATH.
-		buildContext.GOPATH = "/tmp/gopath"
+		// Make a new primary GOPATH.
+		mainGOPATHDir := "/tmp/gopath"
+		if buildContext.GOPATH == "" {
+			buildContext.GOPATH = mainGOPATHDir
+		} else {
+			buildContext.GOPATH = mainGOPATHDir + ":" + buildContext.GOPATH
+		}
 
 		// Set up GOPATH so it has this repo.
-		log.Printf("Setting up a new GOPATH at %s", buildContext.GOPATH)
-		dir := filepath.Join(buildContext.GOPATH, "src", string(unit.Repo))
+		log.Printf("Setting up a new GOPATH at %s", mainGOPATHDir)
+		dir := filepath.Join(mainGOPATHDir, "src", string(unit.Repo))
 		if err := os.MkdirAll(filepath.Dir(dir), 0700); err != nil {
 			return err
 		}

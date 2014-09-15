@@ -46,6 +46,12 @@ type srcfileConfig struct {
 	// and is set as the GOROOT environment variable.
 	GOROOT string
 
+	// GOPATH's colon-separated dirs, if specified, are made absolute
+	// (prefixed with the directory that the repository being built is
+	// checked out to) and the resulting value is appended to the
+	// GOPATH environment variable during the build.
+	GOPATH string
+
 	PkgPatterns []string // pattern passed to `go list` (defaults to {"./..."})
 
 	SourceImports bool
@@ -83,6 +89,22 @@ func (c *srcfileConfig) apply() error {
 		}
 
 		buildContext.GOROOT = c.GOROOT
+		loaderConfig.Build = &buildContext
+	}
+
+	if config.GOPATH != "" {
+		// clean/absolutize all paths
+		dirs := strings.Split(config.GOPATH, ":")
+		for i, dir := range dirs {
+			dir = filepath.Clean(dir)
+			if !filepath.IsAbs(dir) {
+				dir = filepath.Join(cwd, dir)
+			}
+			dirs[i] = dir
+		}
+		config.GOPATH = strings.Join(dirs, ":")
+
+		buildContext.GOPATH += ":" + config.GOPATH
 		loaderConfig.Build = &buildContext
 	}
 
