@@ -55,6 +55,10 @@ type GraphCmd struct{}
 
 var graphCmd GraphCmd
 
+// allowErrorsInGoGet is whether the grapher should continue after
+// if `go get` fails.
+var allowErrorsInGoGet = true
+
 func (c *GraphCmd) Execute(args []string) error {
 	var unit *unit.SourceUnit
 	if err := json.NewDecoder(os.Stdin).Decode(&unit); err != nil {
@@ -140,17 +144,24 @@ func (c *GraphCmd) Execute(args []string) error {
 		var externalDeps []string
 		for _, dep := range unit.Dependencies {
 			importPath := dep.(string)
-			if !strings.HasPrefix(importPath, string(unit.Repo)) && importPath != "C" && strings.Count(importPath, "/") > 0 {
+			if !strings.HasPrefix(importPath, string(unit.Repo)) && importPath != "C" && strings.Count(filepath.Clean(importPath), "/") > 0 {
 				externalDeps = append(externalDeps, importPath)
 			}
 		}
-		cmd := exec.Command("go", "get", "-d", "-t", "-v", "./"+buildPkg.Dir)
-		cmd.Args = append(cmd.Args, externalDeps...)
-		cmd.Env = config.env()
-		cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
-		log.Printf("Downloading import dependencies: %v (env vars: %v).", cmd.Args, cmd.Env)
-		if err := cmd.Run(); err != nil {
-			return err
+		deps := append([]string{"./" + buildPkg.Dir}, externalDeps...)
+		for _, dep := range deps {
+			cmd := exec.Command("go", "get", "-d", "-t", "-v", dep)
+			cmd.Args = append(cmd.Args)
+			cmd.Env = config.env()
+			cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
+			log.Printf("%v (env vars: %v).", cmd.Args, cmd.Env)
+			if err := cmd.Run(); err != nil {
+				if allowErrorsInGoGet {
+					log.Printf("%v failed: %s (continuing)", cmd.Args, err)
+				} else {
+					return err
+				}
+			}
 		}
 		log.Printf("Finished downloading dependencies.")
 	}
