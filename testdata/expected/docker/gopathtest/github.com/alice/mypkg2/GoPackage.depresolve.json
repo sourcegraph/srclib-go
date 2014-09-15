@@ -1,0 +1,12 @@
+[
+  {
+    "Raw": "github.com/alice/mypkg",
+    "Target": {
+      "ToRepoCloneURL": "",
+      "ToUnit": "github.com/alice/mypkg",
+      "ToUnitType": "GoPackage",
+      "ToVersionString": "",
+      "ToRevSpec": ""
+    }
+  }
+]

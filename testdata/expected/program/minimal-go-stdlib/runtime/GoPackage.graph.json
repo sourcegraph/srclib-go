@@ -7,7 +7,7 @@
       "TreePath": ".",
       "Name": "runtime",
       "Kind": "package",
-      "File": "src/pkg/runtime",
+      "File": "src/runtime",
       "DefStart": 0,
       "DefEnd": 0,
       "Exported": true,
@@ -28,7 +28,7 @@
       "DefPath": ".",
       "Def": false,
       "Repo": "",
-      "File": "src/pkg/runtime/runtime.go",
+      "File": "src/runtime/runtime.go",
       "Start": 8,
       "End": 15
     }
