@@ -41,7 +41,7 @@
   ],
   "Refs": [
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/alice/mypkg2",
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg2",
       "DefPath": ".",
@@ -52,7 +52,7 @@
       "End": 73
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/alice/mypkg",
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": ".",
@@ -63,7 +63,7 @@
       "End": 129
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/alice/mypkg",
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": ".",
@@ -74,7 +74,7 @@
       "End": 106
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/alice/mypkg",
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": "Foo",
@@ -85,7 +85,7 @@
       "End": 133
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/alice/mypkg2",
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg2",
       "DefPath": "init$mypkg2113",

@@ -94,7 +94,7 @@ func (c *srcfileConfig) apply() error {
 
 	if config.GOPATH != "" {
 		// clean/absolutize all paths
-		dirs := strings.Split(config.GOPATH, ":")
+		dirs := uniq(strings.Split(config.GOPATH, ":"))
 		for i, dir := range dirs {
 			dir = filepath.Clean(dir)
 			if !filepath.IsAbs(dir) {
@@ -125,4 +125,18 @@ func (c *srcfileConfig) env() []string {
 
 func pathHasPrefix(path, prefix string) bool {
 	return prefix == "." || path == prefix || strings.HasPrefix(path, prefix+"/")
+}
+
+// uniq maintains the order of s.
+func uniq(s []string) []string {
+	seen := make(map[string]struct{}, len(s))
+	var uniq []string
+	for _, s := range s {
+		if _, seen := seen[s]; seen {
+			continue
+		}
+		seen[s] = struct{}{}
+		uniq = append(uniq, s)
+	}
+	return uniq
 }

@@ -102,6 +102,7 @@ func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, 
 
 	// Check if this import path is in this tree.
 	if pkg, err := buildContext.Import(importPath, "", build.FindOnly); err == nil && (pathHasPrefix(pkg.Dir, cwd) || (virtualCWD != "" && pathHasPrefix(pkg.Dir, virtualCWD)) || (dockerCWD != "" && pathHasPrefix(pkg.Dir, dockerCWD))) {
+		// TODO(sqs): do we want to link refs to vendored deps to their external repo? that's what it's doing now.
 		return &dep.ResolvedTarget{
 			// empty ToRepoCloneURL to indicate it's from this repository
 			ToRepoCloneURL: "",

@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/golang/gddo/gosrc"
@@ -95,6 +96,30 @@ func (c *GraphCmd) Execute(args []string) error {
 			return err
 		}
 
+		// For every GOPATH that was in the Srcfile (or autodetected),
+		// move it to a writable dir. (/src is not writable.)
+		if config.GOPATH != "" {
+			dirs := strings.Split(buildContext.GOPATH, ":")
+			for i, dir := range dirs {
+				if dir == mainGOPATHDir || dir == os.Getenv("GOPATH") {
+					continue
+				}
+
+				oldSrcDir := filepath.Join(dir, "src")
+				newGOPATH := filepath.Join("/tmp/gopath-" + strconv.Itoa(i) + "-" + filepath.Base(dir))
+				newSrcDir := filepath.Join(newGOPATH, "src")
+				log.Printf("Creating symlink for non-primary GOPATH to oldname %q at newname %q.", oldSrcDir, newSrcDir)
+				if err := os.MkdirAll(filepath.Dir(newSrcDir), 0700); err != nil {
+					return err
+				}
+				if err := os.Symlink(oldSrcDir, newSrcDir); err != nil {
+					return err
+				}
+				dirs[i] = newGOPATH
+			}
+			buildContext.GOPATH = strings.Join(dirs, ":")
+		}
+
 		log.Printf("Changing directory to %q.", dir)
 		if err := os.Chdir(dir); err != nil {
 			return err
@@ -173,6 +198,11 @@ func relPath(base, path string) string {
 		if err != nil {
 			log.Fatalf("Failed to make path %q relative to %q: %s", path, cwd, err)
 		}
+	}
+
+	// TODO(sqs): hack
+	if prefix := "../tmp/gopath-"; strings.HasPrefix(rp, prefix) {
+		rp = rp[len(prefix)+2:]
 	}
 
 	return rp
