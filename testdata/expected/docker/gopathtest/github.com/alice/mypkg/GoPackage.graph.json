@@ -43,7 +43,7 @@
   ],
   "Refs": [
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/alice/mypkg",
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": ".",
@@ -54,7 +54,7 @@
       "End": 56
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/alice/mypkg",
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": "Foo",
