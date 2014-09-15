@@ -8,7 +8,7 @@
       "ToRepoCloneURL": "https://code.google.com/p/go",
       "ToUnit": "fmt",
       "ToUnitType": "GoPackage",
-      "ToVersionString": "go1.3.1",
+      "ToVersionString": "devel +e54b1a srclib",
       "ToRevSpec": ""
     }
   }
