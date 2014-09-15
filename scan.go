@@ -46,6 +46,24 @@ func (c *ScanCmd) Execute(args []string) error {
 	if err := os.Stdin.Close(); err != nil {
 		return err
 	}
+
+	// Automatically detect vendored dirs (check for vendor/src and
+	// Godeps/_workspace/src) and set up GOPATH pointing to them if
+	// they exist.
+	var setAutoGOPATH bool
+	if config.GOPATH == "" {
+		vendorDirs := []string{"vendor", "Godeps/_workspace"}
+		var foundGOPATHs []string
+		for _, vdir := range vendorDirs {
+			if fi, err := os.Stat(filepath.Join(cwd, vdir, "src")); err == nil && fi.Mode().IsDir() {
+				foundGOPATHs = append(foundGOPATHs, vdir)
+				setAutoGOPATH = true
+				log.Printf("Adding %s to GOPATH (auto-detected Go vendored dependencies source dir %s). If you don't want this, make a Srcfile with a GOPATH property set to something other than the empty string.", vdir, filepath.Join(vdir, "src"))
+			}
+		}
+		config.GOPATH = strings.Join(foundGOPATHs, ":")
+	}
+
 	if err := config.apply(); err != nil {
 		return err
 	}
@@ -73,11 +91,57 @@ func (c *ScanCmd) Execute(args []string) error {
 		}
 	}
 
+	// Make vendored dep unit names (package import paths) relative to
+	// vendored src dir, not to top-level dir.
+	if config.GOPATH != "" {
+		dirs := strings.Split(config.GOPATH, ":")
+		for _, dir := range dirs {
+			relDir, err := filepath.Rel(cwd, dir)
+			if err != nil {
+				return err
+			}
+			srcDir := filepath.Join(relDir, "src")
+			for _, u := range units {
+				pkg := u.Data.(*build.Package)
+				if strings.HasPrefix(pkg.Dir, srcDir) {
+					relImport, err := filepath.Rel(srcDir, pkg.Dir)
+					if err != nil {
+						return err
+					}
+					pkg.ImportPath = relImport
+					u.Name = pkg.ImportPath
+				}
+			}
+		}
+	}
+
 	// make files relative to repository root
 	for _, u := range units {
 		pkgSubdir := filepath.Join(c.Subdir, u.Data.(*build.Package).Dir)
 		for i, f := range u.Files {
 			u.Files[i] = filepath.Join(pkgSubdir, f)
+		}
+	}
+
+	// If we automatically set the GOPATH based on the presence of
+	// vendor dirs, then we need to pass the GOPATH to the units
+	// because it is not persisted in the Srcfile. Otherwise the other
+	// tools would never see the auto-set GOPATH.
+	if setAutoGOPATH {
+		for _, u := range units {
+			if u.Config == nil {
+				u.Config = map[string]interface{}{}
+			}
+
+			dirs := strings.Split(config.GOPATH, ":")
+			for i, dir := range dirs {
+				relDir, err := filepath.Rel(cwd, dir)
+				if err != nil {
+					return err
+				}
+				dirs[i] = relDir
+			}
+			u.Config["GOPATH"] = strings.Join(dirs, ":")
 		}
 	}
 
