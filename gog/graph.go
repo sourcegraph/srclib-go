@@ -315,5 +315,15 @@ func (g *Grapher) makeDefInfo(obj types.Object) (*DefKey, *defInfo, error) {
 		return &DefKey{"builtin", []string{obj.Name()}}, &defInfo{pkgscope: false, exported: true}, nil
 	}
 
-	return &DefKey{obj.Pkg().Path(), g.path(obj)}, &defInfo{pkgscope: g.pkgscope[obj], exported: g.exported[obj]}, nil
+	path := g.path(obj)
+
+	// Handle the case where a dir has 2 main packages that are not
+	// intended to be compiled together and have overlapping def
+	// paths. Prefix the def path with the filename.
+	if obj.Pkg().Name() == "main" {
+		p := g.program.Fset.Position(obj.Pos())
+		path = append([]string{filepath.Base(p.Filename)}, path...)
+	}
+
+	return &DefKey{obj.Pkg().Path(), path}, &defInfo{pkgscope: g.pkgscope[obj], exported: g.exported[obj]}, nil
 }

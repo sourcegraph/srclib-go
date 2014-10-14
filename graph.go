@@ -271,7 +271,7 @@ func convertGoDef(gs *gog.Def, repoURI string) (*graph.Def, error) {
 		return nil, err
 	}
 	path := graph.DefPath(pathOrDot(strings.Join(gs.Path, "/")))
-	treePath := treePath(string(path))
+	treePath := treePath(strings.Replace(string(path), ".go", "", -1))
 	if !treePath.IsValid() {
 		return nil, fmt.Errorf("'%s' is not a valid tree-path", treePath)
 	}

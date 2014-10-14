@@ -76,6 +76,7 @@ func (c *DepResolveCmd) Execute(args []string) error {
 	if _, err := os.Stdout.Write(b); err != nil {
 		return err
 	}
+	fmt.Println()
 	return nil
 }
 
