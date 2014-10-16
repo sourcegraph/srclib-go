@@ -150,6 +150,17 @@ func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, 
 		}, nil
 	}
 
+	// Special-case google.golang.org/... (e.g., /appengine) import
+	// paths for performance and to avoid hitting GitHub rate limit.
+	if strings.HasPrefix(importPath, "google.golang.org/") {
+		importPath = strings.Replace(importPath, "google.golang.org/", "github.com/golang/", 1)
+		return &dep.ResolvedTarget{
+			ToRepoCloneURL: "https://" + importPath + ".git",
+			ToUnit:         importPath,
+			ToUnitType:     "GoPackage",
+		}, nil
+	}
+
 	// Special-case code.google.com/p/... import paths for performance.
 	if strings.HasPrefix(importPath, "code.google.com/p/") {
 		parts := strings.SplitN(importPath, "/", 4)
