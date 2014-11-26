@@ -150,7 +150,7 @@ func (g *Grapher) assignPaths(s *types.Scope, prefix []string, exported, pkgscop
 		}
 		path := append(append([]string{}, prefix...), name)
 		g.paths[e] = path
-		thisExported := exported && ast.IsExported(name)
+		thisExported := ast.IsExported(name)
 		g.exported[e] = thisExported
 		g.pkgscope[e] = pkgscope
 
@@ -206,7 +206,7 @@ func (g *Grapher) assignMethodPaths(named *types.Named, prefix []string, exporte
 		path := append(append([]string{}, prefix...), m.Name())
 		g.paths[m] = path
 
-		thisExported := exported && ast.IsExported(m.Name())
+		thisExported := ast.IsExported(m.Name())
 		g.exported[m] = thisExported
 		g.pkgscope[m] = pkgscope
 
@@ -221,7 +221,7 @@ func (g *Grapher) assignMethodPaths(named *types.Named, prefix []string, exporte
 			path := append(append([]string{}, prefix...), m.Name())
 			g.paths[m] = path
 
-			thisExported := exported && ast.IsExported(m.Name())
+			thisExported := ast.IsExported(m.Name())
 			g.exported[m] = thisExported
 			g.pkgscope[m] = pkgscope
 
@@ -238,7 +238,7 @@ func (g *Grapher) assignStructFieldPaths(styp *types.Struct, prefix []string, ex
 		path := append(append([]string{}, prefix...), f.Name())
 		g.paths[f] = path
 
-		thisExported := exported && ast.IsExported(f.Name())
+		thisExported := ast.IsExported(f.Name())
 		g.exported[f] = thisExported
 		g.pkgscope[f] = pkgscope
 
