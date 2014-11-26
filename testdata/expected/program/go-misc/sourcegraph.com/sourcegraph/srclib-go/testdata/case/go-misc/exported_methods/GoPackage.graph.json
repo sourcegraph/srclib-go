@@ -49,8 +49,9 @@
       "File": "exported_methods/exported_methods.go",
       "DefStart": 194,
       "DefEnd": 234,
-      "Exported": false,
+      "Exported": true,
       "Data": {
+        "Exported": true,
         "PkgScope": true,
         "PkgName": "exported_methods",
         "Receiver": "unexported",
