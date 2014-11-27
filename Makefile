@@ -5,5 +5,5 @@ makefileDir := $(dir $(firstword $(CURRENT_MAKEFILE_LIST)))
 
 install:
 	@mkdir -p .bin
-	go get github.com/kr/godep
+	go get github.com/tools/godep
 	godep go build -o .bin/srclib-go
