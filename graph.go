@@ -14,7 +14,7 @@ import (
 
 	"github.com/golang/gddo/gosrc"
 
-	"code.google.com/p/go.tools/go/loader"
+	"golang.org/x/tools/go/loader"
 
 	"sourcegraph.com/sourcegraph/srclib-go/gog"
 	"sourcegraph.com/sourcegraph/srclib-go/gog/definfo"

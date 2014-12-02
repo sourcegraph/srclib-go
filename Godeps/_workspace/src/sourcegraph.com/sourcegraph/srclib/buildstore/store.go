@@ -11,8 +11,8 @@ import (
 	"sourcegraph.com/sourcegraph/srclib/repo"
 
 	"github.com/kr/fs"
-	"github.com/sourcegraph/rwvfs"
-	"github.com/sourcegraph/s3vfs"
+	"sourcegraph.com/sourcegraph/rwvfs"
+	"sourcegraph.com/sourcegraph/s3vfs"
 )
 
 var BuildDataDirName = ".srclib-cache"
@@ -43,15 +43,11 @@ func (s *MultiStore) RepositoryStore(repoURI repo.URI) (*RepositoryStore, error)
 		}
 	}
 
-	return newRepositoryStore(walkableRWVFS{rwvfs.Sub(s.walkableRWVFS, path)}), nil
+	return &RepositoryStore{walkableRWVFS{rwvfs.Sub(s.walkableRWVFS, path)}}, nil
 }
 
 type RepositoryStore struct {
-	walkableRWVFS
-}
-
-func newRepositoryStore(fs rwvfs.FileSystem) *RepositoryStore {
-	return &RepositoryStore{walkableRWVFS{fs}}
+	rwvfs.WalkableFileSystem
 }
 
 func NewRepositoryStore(repoDir string) (*RepositoryStore, error) {
@@ -65,7 +61,7 @@ func NewRepositoryStore(repoDir string) (*RepositoryStore, error) {
 		return nil, err
 	}
 
-	s := newRepositoryStore(walkableRWVFS{rwvfs.OS(storeDir)})
+	s := &RepositoryStore{walkableRWVFS{rwvfs.OS(storeDir)}}
 
 	localDirs[s] = storeDir
 
@@ -132,7 +128,7 @@ func (s *RepositoryStore) ListCommits() ([]string, error) {
 
 func (s *RepositoryStore) DataFiles(path string) ([]*BuildDataFileInfo, error) {
 	files := []*BuildDataFileInfo{}
-	walker := fs.WalkFS(path, s.walkableRWVFS)
+	walker := fs.WalkFS(path, s)
 	for walker.Step() {
 		fi := walker.Stat()
 		if fi == nil {

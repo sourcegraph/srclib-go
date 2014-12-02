@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"code.google.com/p/go.tools/go/loader"
+	"golang.org/x/tools/go/loader"
 )
 
 var identFile = flag.String("test.idents", "", "print out all idents in files whose name contains this substring")

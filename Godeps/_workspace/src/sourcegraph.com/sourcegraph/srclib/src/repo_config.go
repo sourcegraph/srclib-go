@@ -18,7 +18,12 @@ type Repo struct {
 	CloneURL string // CloneURL of repo.
 }
 
-func (c *Repo) URI() repo.URI { return repo.MakeURI(c.CloneURL) }
+func (c *Repo) URI() repo.URI {
+	if strings.Contains(c.CloneURL, "github.com/sourcegraph/sourcegraph") {
+		return "sourcegraph.com/sourcegraph/sourcegraph"
+	}
+	return repo.MakeURI(c.CloneURL)
+}
 
 func OpenRepo(dir string) (*Repo, error) {
 	if fi, err := os.Stat(dir); err != nil || !fi.Mode().IsDir() {
@@ -61,7 +66,7 @@ func resolveWorkingTreeRevision(vcsType string, dir string) (string, error) {
 	case "git":
 		cmd = exec.Command("git", "rev-parse", "HEAD")
 	case "hg":
-		cmd = exec.Command("hg", "--config", "trusted.users=root", "identify", "--debug", "-i", "--rev=tip")
+		cmd = exec.Command("hg", "--config", "trusted.users=root", "identify", "--debug", "-i")
 	default:
 		return "", fmt.Errorf("unknown vcs type: %q", vcsType)
 	}
@@ -71,7 +76,8 @@ func resolveWorkingTreeRevision(vcsType string, dir string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("exec %v failed: %s. Output was:\n\n%s", cmd.Args, err, out)
 	}
-	return string(bytes.TrimSpace(out)), nil
+	// hg adds a "+" if the wd is dirty
+	return strings.TrimSuffix(string(bytes.TrimSpace(out)), "+"), nil
 }
 
 func getRootDir(vcsType string, dir string) (string, error) {

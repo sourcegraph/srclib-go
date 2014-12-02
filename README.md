@@ -143,4 +143,4 @@ Patches are welcomed via GitHub pull request! See
 [CONTRIBUTING.md](./CONTRIBUTING.md) for more information.
 
 srclib-go's type analysis is based on
-[go/types](https://godoc.org/code.google.com/p/go.tools/go/types).
+[go/types](https://godoc.org/golang.org/x/tools/go/types).

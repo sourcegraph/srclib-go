@@ -25,7 +25,7 @@ install:
   - sudo chmod +x /usr/local/bin/src
   - src toolchain add sourcegraph.com/sourcegraph/srclib-go
   # for tests
-  - go get -d -v code.google.com/p/go.net/ipv6 code.google.com/p/go.tools/go/types
+  - go get -d -v golang.org/x/net/ipv6 golang.org/x/tools/go/types
   - make
 
 # TODO(sqs): add `go test`

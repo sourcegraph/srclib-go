@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"code.google.com/p/go.tools/go/loader"
+	"golang.org/x/tools/go/loader"
 )
 
 // Main is like calling the 'gog' program.
