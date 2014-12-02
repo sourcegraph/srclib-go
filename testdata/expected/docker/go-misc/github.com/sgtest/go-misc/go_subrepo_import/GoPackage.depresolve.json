@@ -1,19 +1,19 @@
 [
   {
-    "Raw": "code.google.com/p/go.net/ipv6",
+    "Raw": "golang.org/x/net/ipv6",
     "Target": {
-      "ToRepoCloneURL": "https://code.google.com/p/go.net",
-      "ToUnit": "code.google.com/p/go.net/ipv6",
+      "ToRepoCloneURL": "https://golang.org/x/net",
+      "ToUnit": "golang.org/x/net/ipv6",
       "ToUnitType": "GoPackage",
       "ToVersionString": "",
       "ToRevSpec": ""
     }
   },
   {
-    "Raw": "code.google.com/p/go.tools/go/types",
+    "Raw": "golang.org/x/tools/go/types",
     "Target": {
-      "ToRepoCloneURL": "https://code.google.com/p/go.tools",
-      "ToUnit": "code.google.com/p/go.tools/go/types",
+      "ToRepoCloneURL": "https://golang.org/x/tools",
+      "ToUnit": "golang.org/x/tools/go/types",
       "ToUnitType": "GoPackage",
       "ToVersionString": "",
       "ToRevSpec": ""

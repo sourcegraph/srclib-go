@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"code.google.com/p/go.tools/go/loader"
+	"golang.org/x/tools/go/loader"
 )
 
 var stdlibPath = flag.String("test.stdlib-pkg", "", "in TestStdlib, only graph this package (import path)")

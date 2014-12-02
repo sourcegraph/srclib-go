@@ -5,16 +5,35 @@ import (
 	"sourcegraph.com/sourcegraph/srclib/unit"
 )
 
-// TODO(sqs): override github.com/emicklei/go-restful to exclude the ./examples
-// dir since it has conflicting main packages
-
 var overrides = map[repo.URI]*Repository{
+	"sourcegraph.com/sourcegraph/sourcegraph": {
+		URI: "sourcegraph.com/sourcegraph/sourcegraph",
+		Tree: Tree{
+			SkipDirs: []string{"app/node_modules", "app/bower_components"},
+			SkipUnits: []struct{ Name, Type string }{
+				{Name: ".", Type: "ruby"},
+				{Name: "app", Type: "CommonJSPackage"},
+			},
+		},
+	},
+	"code.google.com/p/rsc": {
+		URI: "code.google.com/p/rsc",
+		Tree: Tree{
+			SkipDirs: []string{"cmd/numbers", "cc"},
+		},
+	},
+	"github.com/emicklei/go-restful": {
+		URI: "github.com/emicklei/go-restful",
+		Tree: Tree{
+			SkipDirs: []string{"examples"},
+		},
+	},
 	"code.google.com/p/go": {
 		URI: "code.google.com/p/go",
 		Tree: Tree{
 			Config:            map[string]interface{}{"GOROOT": "."},
 			SkipDirs:          []string{"test", "misc", "doc", "lib", "include"},
-			PreConfigCommands: []string{"cd src && ./make.bash"},
+			PreConfigCommands: []string{"echo devel > VERSION && cd src && ./make.bash"},
 		},
 	},
 	"github.com/joyent/node": {

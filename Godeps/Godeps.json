@@ -1,40 +1,10 @@
 {
 	"ImportPath": "sourcegraph.com/sourcegraph/srclib-go",
-	"GoVersion": "go1.3.1",
+	"GoVersion": "go1.4rc2",
 	"Packages": [
 		"./..."
 	],
 	"Deps": [
-		{
-			"ImportPath": "code.google.com/p/go.tools/astutil",
-			"Comment": "null-1094",
-			"Rev": "9240750667f89af6ae4808971a40507cb65c0f05"
-		},
-		{
-			"ImportPath": "code.google.com/p/go.tools/go/exact",
-			"Comment": "null-1094",
-			"Rev": "9240750667f89af6ae4808971a40507cb65c0f05"
-		},
-		{
-			"ImportPath": "code.google.com/p/go.tools/go/gcimporter",
-			"Comment": "null-1094",
-			"Rev": "9240750667f89af6ae4808971a40507cb65c0f05"
-		},
-		{
-			"ImportPath": "code.google.com/p/go.tools/go/loader",
-			"Comment": "null-1094",
-			"Rev": "9240750667f89af6ae4808971a40507cb65c0f05"
-		},
-		{
-			"ImportPath": "code.google.com/p/go.tools/go/types",
-			"Comment": "null-1094",
-			"Rev": "9240750667f89af6ae4808971a40507cb65c0f05"
-		},
-		{
-			"ImportPath": "code.google.com/p/go.tools/godoc/vfs",
-			"Comment": "null-1094",
-			"Rev": "9240750667f89af6ae4808971a40507cb65c0f05"
-		},
 		{
 			"ImportPath": "code.google.com/p/rog-go/parallel",
 			"Comment": "null-250",
@@ -69,19 +39,7 @@
 		},
 		{
 			"ImportPath": "github.com/sourcegraph/go-nnz/nnz",
-			"Rev": "26f0ad84b1a80a37199395deb528fc55cf0f34ed"
-		},
-		{
-			"ImportPath": "github.com/sourcegraph/makex",
-			"Rev": "2dc5c2a50eaea46dca085265eddcc250d391adfd"
-		},
-		{
-			"ImportPath": "github.com/sourcegraph/rwvfs",
-			"Rev": "4f1b1ef9458f50e057e94dcc5a444eeec7069649"
-		},
-		{
-			"ImportPath": "github.com/sourcegraph/s3vfs",
-			"Rev": "c455bfaac41205eec9b687e810918afc522bb68a"
+			"Rev": "d9b9d9ed86fe920d7575fe6664ce2909bc2f8b3a"
 		},
 		{
 			"ImportPath": "github.com/sqs/fileset",
@@ -97,9 +55,51 @@
 			"Rev": "21938fb7faacf4815c20d2736e9e2002e1e718ec"
 		},
 		{
+			"ImportPath": "golang.org/x/tools/astutil",
+			"Comment": "null-1248",
+			"Rev": "c3d959302c8afd80f012c12f181c2e8d65aedcb1"
+		},
+		{
+			"ImportPath": "golang.org/x/tools/go/exact",
+			"Comment": "null-1248",
+			"Rev": "c3d959302c8afd80f012c12f181c2e8d65aedcb1"
+		},
+		{
+			"ImportPath": "golang.org/x/tools/go/gcimporter",
+			"Comment": "null-1248",
+			"Rev": "c3d959302c8afd80f012c12f181c2e8d65aedcb1"
+		},
+		{
+			"ImportPath": "golang.org/x/tools/go/loader",
+			"Comment": "null-1248",
+			"Rev": "c3d959302c8afd80f012c12f181c2e8d65aedcb1"
+		},
+		{
+			"ImportPath": "golang.org/x/tools/go/types",
+			"Comment": "null-1248",
+			"Rev": "c3d959302c8afd80f012c12f181c2e8d65aedcb1"
+		},
+		{
+			"ImportPath": "golang.org/x/tools/godoc/vfs",
+			"Comment": "null-1248",
+			"Rev": "c3d959302c8afd80f012c12f181c2e8d65aedcb1"
+		},
+		{
+			"ImportPath": "sourcegraph.com/sourcegraph/makex",
+			"Rev": "c8cc99912b772f144ad2902ba210478fd9ac4169"
+		},
+		{
+			"ImportPath": "sourcegraph.com/sourcegraph/rwvfs",
+			"Rev": "2e560fdf29cb3100ff0e7253f3c1a9f9f1d3e221"
+		},
+		{
+			"ImportPath": "sourcegraph.com/sourcegraph/s3vfs",
+			"Rev": "370cdbcc584e8c166c93bcae15841185bc3f8816"
+		},
+		{
 			"ImportPath": "sourcegraph.com/sourcegraph/srclib",
-			"Comment": "v0.0.23-19-g931115b",
-			"Rev": "931115b25b84a475b2b33fb1b56bd7f1633f57ed"
+			"Comment": "v0.0.25-59-gaeff168",
+			"Rev": "aeff1688969a50d311b9c5fd39a3f4e94d2ca91b"
 		}
 	]
 }

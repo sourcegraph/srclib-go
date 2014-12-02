@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"code.google.com/p/go.tools/go/loader"
+	"golang.org/x/tools/go/loader"
 )
 
 func graphPkgFromFiles(t *testing.T, path string, filenames []string) (*Grapher, *loader.Program) {

@@ -15,14 +15,14 @@ After downloading the file, unzip it and place the `src` program in your
 `$PATH`. Run `src --help` to verify that it's installed.
 
 To install the standard set of language analysis toolchains
-([Go](toolchains/go.md), [Ruby](toolchains/ruby.md), and
-[JavaScript](toolchains/javascript.md)), run:
+([Go](toolchains/go.md), [Ruby](toolchains/ruby.md),
+[JavaScript](toolchains/javascript.md), and [Python](toolchains/python.md)), run:
 
 ```
 src toolchain install-std
 ```
 
-By default this installs the toolchains for Ruby, Go, and JavaScript. To skip installing toolchains you don't care about, use `--skip`, as in `src toolchain install-std --skip javascript --skip go`.
+By default this installs the toolchains for Ruby, Go, JavaScript, and Python. To skip installing toolchains you don't care about, use `--skip`, as in `src toolchain install-std --skip javascript --skip go`.
 
 If this command fails, please
 [file an issue](https://github.com/sourcegraph/srclib/issues).
@@ -39,7 +39,7 @@ Then download and install `src`:
 go get -u -v sourcegraph.com/sourcegraph/srclib/cmd/src
 ```
 
-Next, you must install the language toolchains: `src toolchain install-std`. By default this installs the toolchains for Ruby, Go, and JavaScript. To skip installing toolchains you don't care about, use `--skip`, as in `src toolchain install-std --skip javascript --skip go`.
+Next, you must install the language toolchains: `src toolchain install-std`. By default this installs the toolchains for Ruby, Go, JavaScript, and Python. To skip installing toolchains you don't care about, use `--skip`, as in `src toolchain install-std --skip javascript --skip go`.
 
 Now, `src toolchain list` should show the toolchains you just installed.
 
@@ -49,8 +49,8 @@ Now, `src toolchain list` should show the toolchains you just installed.
 
 If you are interested in using the editor plugins that we have available, check
 out the Editor Plugins section of the documentation. Currently,
-[Emacs](plugins/emacs.md) and [Sublime Text](plugins/sublimetext.md) are
-supported, and support for more editors is coming soon.
+[Emacs](plugins/emacs.md) [Sublime Text](plugins/sublimetext.md) and
+[Atom](plugins/atom.md) are supported, and support for more editors is coming soon.
 
 ### Build on srclib
 

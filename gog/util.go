@@ -7,7 +7,7 @@ import (
 	"go/token"
 	"sort"
 
-	"code.google.com/p/go.tools/go/types"
+	"golang.org/x/tools/go/types"
 )
 
 func prettyPrint(n ast.Node) string {
