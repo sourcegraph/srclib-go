@@ -2,6 +2,7 @@ package src
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -10,14 +11,14 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"strings"
 
 	"github.com/aybabtme/color/brush"
-	"github.com/kr/fs"
-	"sourcegraph.com/sourcegraph/srclib/authorship"
 	"sourcegraph.com/sourcegraph/srclib/buildstore"
+	"sourcegraph.com/sourcegraph/srclib/graph"
+	"sourcegraph.com/sourcegraph/srclib/grapher"
 	"sourcegraph.com/sourcegraph/srclib/util"
-	"sourcegraph.com/sourcegraph/srclib/vcsutil"
 )
 
 func init() {
@@ -55,12 +56,15 @@ And the actual test output is written to:
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	_, err = CLI.AddCommand("diff",
+		"display semantic diff of two output files",
+		"Displays easier-to-read diff of two srclib output files. Intended for debugging use when developing srclib toolchains",
+		&diffCmd)
 }
 
 type TestCmd struct {
 	GenerateExpected bool `long:"gen" description:"(re)generate expected output for all test cases and exit"`
-
-	CheckInternalTargets bool `long:"check-internal-targets" description:"also produce and check internal command outputs (ex: blame, authorship)"`
 
 	ToolchainExecOpt
 
@@ -110,7 +114,7 @@ func (c *TestCmd) Execute(args []string) error {
 			}
 			expectedDir := filepath.Join(tree, "../../expected", exeMethod, filepath.Base(tree))
 			actualDir := filepath.Join(tree, "../../actual", exeMethod, filepath.Base(tree))
-			if err := testTree(tree, expectedDir, actualDir, exeMethod, c.GenerateExpected, c.CheckInternalTargets); err != nil {
+			if err := testTree(tree, expectedDir, actualDir, exeMethod, c.GenerateExpected); err != nil {
 				return fmt.Errorf("testing tree %q: %s", tree, err)
 			}
 		}
@@ -123,7 +127,7 @@ func (c *TestCmd) Execute(args []string) error {
 	return nil
 }
 
-func testTree(treeDir, expectedDir, actualDir string, exeMethod string, generateExpected, checkInternalTargets bool) error {
+func testTree(treeDir, expectedDir, actualDir string, exeMethod string, generateExpected bool) error {
 	treeName := filepath.Base(treeDir)
 	if treeName == "." {
 		absTreeDir, err := filepath.Abs(treeDir)
@@ -188,25 +192,6 @@ func testTree(treeDir, expectedDir, actualDir string, exeMethod string, generate
 		return fmt.Errorf("Command %v in %s failed: %s.\n\nOutput was:\n%s", cmd.Args, treeName, err, buf.String())
 	}
 
-	if !checkInternalTargets {
-		// remove all internal target output files
-		internalOutputs := []interface{}{&authorship.SourceUnitOutput{}, &vcsutil.BlameOutput{}}
-		w := fs.Walk(outputDir)
-		for w.Step() {
-			if w.Err() != nil {
-				return w.Err()
-			}
-			for _, o := range internalOutputs {
-				if strings.HasSuffix(w.Path(), buildstore.DataTypeSuffix(o)) {
-					if err := os.Remove(w.Path()); err != nil {
-						return err
-					}
-					break
-				}
-			}
-		}
-	}
-
 	if generateExpected {
 		log.Printf("Successfully generated expected output for %s in %s.", treeName, expectedDir)
 		return nil
@@ -230,4 +215,87 @@ func checkResults(output bytes.Buffer, treeDir, actualDir, expectedDir string) e
 		fmt.Println(brush.Green(treeName + " PASS").String())
 	}
 	return nil
+}
+
+// TODO(beyang): should have TestCmd use this in checkResults to give more helpful output
+type DiffCmd struct {
+	Args struct {
+		ExpFile string `name:"expfile" description:"expected file"`
+		ActFile string `name:"actfile" description:"actual file"`
+	} `positional-args:"yes"`
+}
+
+var diffCmd DiffCmd
+
+func (c *DiffCmd) Execute(args []string) error {
+	if len(args) > 0 {
+		return fmt.Errorf("too many arguments")
+	}
+
+	expFile, actFile := c.Args.ExpFile, c.Args.ActFile
+	if !(strings.HasSuffix(expFile, ".graph.json") && strings.HasSuffix(actFile, ".graph.json")) {
+		return fmt.Errorf("unsupported file formats; currently this tool only supports .graph.json files; for other files, fallback to the regular diff")
+	}
+
+	expFile_, err := os.Open(expFile)
+	if err != nil {
+		return err
+	}
+	defer expFile_.Close()
+	actFile_, err := os.Open(actFile)
+	if err != nil {
+		return err
+	}
+	defer actFile_.Close()
+
+	var expOutput, actOutput grapher.Output
+	err = json.NewDecoder(expFile_).Decode(&expOutput)
+	if err != nil {
+		return err
+	}
+	err = json.NewDecoder(actFile_).Decode(&actOutput)
+	if err != nil {
+		return err
+	}
+
+	if reflect.DeepEqual(expOutput, actOutput) {
+		return nil
+	}
+
+	expDefs, actDefs := make(map[graph.DefKey]*graph.Def), make(map[graph.DefKey]*graph.Def)
+	for _, def := range expOutput.Defs {
+		expDefs[def.DefKey] = def
+	}
+	for _, def := range actOutput.Defs {
+		actDefs[def.DefKey] = def
+	}
+
+	var expOnlyDefs, actOnlyDefs, differingDefs []graph.DefKey
+	for defKey, expDef := range expDefs {
+		if actDef, exists := actDefs[defKey]; !exists {
+			expOnlyDefs = append(expOnlyDefs, defKey)
+		} else if !reflect.DeepEqual(expDef, actDef) {
+			differingDefs = append(differingDefs, defKey)
+		}
+	}
+	for defKey, _ := range actDefs {
+		if _, exists := expDefs[defKey]; !exists {
+			actOnlyDefs = append(actOnlyDefs, defKey)
+		}
+	}
+
+	fmt.Println("The following defs were missing:")
+	for _, defKey := range expOnlyDefs {
+		fmt.Printf("  %v\n", defKey)
+	}
+	fmt.Println("\nThe following defs were unexpected:")
+	for _, defKey := range actOnlyDefs {
+		fmt.Printf("  %v\n", defKey)
+	}
+	fmt.Println("\nThe following defs differed:")
+	for _, defKey := range differingDefs {
+		fmt.Println("  %v\n", defKey)
+	}
+
+	return fmt.Errorf("expected and actual output differ")
 }

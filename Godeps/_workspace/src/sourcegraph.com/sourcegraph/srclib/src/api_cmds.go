@@ -2,7 +2,9 @@ package src
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -13,6 +15,7 @@ import (
 	"sourcegraph.com/sourcegraph/go-sourcegraph/sourcegraph"
 	"sourcegraph.com/sourcegraph/srclib/buildstore"
 	"sourcegraph.com/sourcegraph/srclib/config"
+	"sourcegraph.com/sourcegraph/srclib/dep"
 	"sourcegraph.com/sourcegraph/srclib/graph"
 	"sourcegraph.com/sourcegraph/srclib/grapher"
 	"sourcegraph.com/sourcegraph/srclib/plan"
@@ -46,6 +49,24 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	_, err = c.AddCommand("deps",
+		"list all resolved and unresolved dependencies",
+		"Return a list of all resolved and unresolved dependencies that are in the current repository.",
+		&apiDepsCmd,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = c.AddCommand("units",
+		"list all source unit information",
+		"Return a list of all source units that are in the current repository.",
+		&apiUnitsCmd,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 type APICmd struct{}
@@ -65,8 +86,22 @@ type APIListCmd struct {
 	File string `long:"file" required:"yes" value-name:"FILE"`
 }
 
+type APIDepsCmd struct {
+	Args struct {
+		Dir Directory `name:"DIR" default:"." description:"root directory of target project"`
+	} `positional-args:"yes"`
+}
+
+type APIUnitsCmd struct {
+	Args struct {
+		Dir Directory `name:"DIR" default:"." description:"root directory of target project"`
+	} `positional-args:"yes"`
+}
+
 var apiDescribeCmd APIDescribeCmd
 var apiListCmd APIListCmd
+var apiDepsCmd APIDepsCmd
+var apiUnitsCmd APIUnitsCmd
 
 // Invokes the build process on the given repository
 func ensureBuild(buildStore *buildstore.RepositoryStore, repo *Repo) error {
@@ -100,6 +135,14 @@ func ensureBuild(buildStore *buildstore.RepositoryStore, repo *Repo) error {
 	}
 
 	return nil
+}
+
+func ensurePullAndBuild(buildStore *buildstore.RepositoryStore, repo *Repo) error {
+	if err := pullCmd.Execute(nil); err != nil {
+		return err
+	}
+
+	return ensureBuild(buildStore, repo)
 }
 
 // Get a list of all source units that contain the given file
@@ -270,6 +313,7 @@ func (c *APIDescribeCmd) Execute(args []string) error {
 
 	// Find the ref(s) at the character position.
 	var ref *graph.Ref
+	var nearbyRefs []*graph.Ref // Find nearby refs to help with debugging.
 OuterLoop:
 	for _, u := range units {
 		var g grapher.Output
@@ -283,15 +327,19 @@ OuterLoop:
 			return fmt.Errorf("%s: %s", graphFile, err)
 		}
 		for _, ref2 := range g.Refs {
-			if c.File == ref2.File && c.StartByte >= ref2.Start && c.StartByte <= ref2.End {
-				ref = ref2
-				if ref.DefUnit == "" {
-					ref.DefUnit = u.Name
+			if c.File == ref2.File {
+				if c.StartByte >= ref2.Start && c.StartByte <= ref2.End {
+					ref = ref2
+					if ref.DefUnit == "" {
+						ref.DefUnit = u.Name
+					}
+					if ref.DefUnitType == "" {
+						ref.DefUnitType = u.Type
+					}
+					break OuterLoop
+				} else if GlobalOpt.Verbose && abs(ref2.Start-c.StartByte) < 25 {
+					nearbyRefs = append(nearbyRefs, ref2)
 				}
-				if ref.DefUnitType == "" {
-					ref.DefUnitType = u.Type
-				}
-				break OuterLoop
 			}
 		}
 	}
@@ -299,6 +347,33 @@ OuterLoop:
 	if ref == nil {
 		if GlobalOpt.Verbose {
 			log.Printf("No ref found at %s:%d.", c.File, c.StartByte)
+
+			if len(nearbyRefs) > 0 {
+				log.Printf("However, nearby refs were found in the same file:")
+				for _, nref := range nearbyRefs {
+					log.Printf("Ref at bytes %d-%d to %v", nref.Start, nref.End, nref.DefKey())
+				}
+			}
+
+			f, err := os.Open(c.File)
+			if err == nil {
+				defer f.Close()
+				b, err := ioutil.ReadAll(f)
+				if err != nil {
+					log.Fatalf("Error reading source file: %s.", err)
+				}
+				start := c.StartByte
+				if start < 0 || start > len(b)-1 {
+					log.Fatalf("Start byte %d is out of file bounds.", c.StartByte)
+				}
+				end := c.StartByte + 50
+				if end > len(b)-1 {
+					end = len(b) - 1
+				}
+				log.Printf("Surrounding source is:\n\n%s", b[start:end])
+			} else {
+				log.Printf("Error opening source file to show surrounding source: %s.", err)
+			}
 		}
 		fmt.Println(`{}`)
 		return nil
@@ -392,4 +467,117 @@ OuterLoop:
 		return err
 	}
 	return nil
+}
+
+func abs(n int) int {
+	if n < 0 {
+		return -1 * n
+	}
+	return n
+}
+
+func (c *APIDepsCmd) Execute(args []string) error {
+	var err error
+
+	repo, err := OpenRepo(filepath.Dir(string(c.Args.Dir)))
+	if err != nil {
+		return err
+	}
+
+	if err := os.Chdir(repo.RootDir); err != nil {
+		return err
+	}
+
+	buildStore, err := buildstore.NewRepositoryStore(repo.RootDir)
+	if err != nil {
+		return err
+	}
+
+	if _, err := buildStore.Lstat(buildStore.CommitPath(repo.CommitID)); os.IsNotExist(err) {
+		return errors.New("No build data found. Try running `src config` first.")
+	}
+
+	var depSlice []*dep.Resolution
+	// TODO: Make DataTypeSuffix work with type of depSlice
+	depSuffix := buildstore.DataTypeSuffix([]*dep.ResolvedDep{})
+	depCache := make(map[string]struct{})
+	foundDepresolve := false
+	w := fs.WalkFS(buildStore.CommitPath(repo.CommitID), buildStore)
+	for w.Step() {
+		depfile := w.Path()
+		if strings.HasSuffix(depfile, depSuffix) {
+			foundDepresolve = true
+			var deps []*dep.Resolution
+			f, err := buildStore.Open(depfile)
+			if err != nil {
+				return err
+			}
+			defer f.Close()
+			if err := json.NewDecoder(f).Decode(&deps); err != nil {
+				return fmt.Errorf("%s: %s", depfile, err)
+			}
+			for _, d := range deps {
+				key := d.KeyId()
+				if _, ok := depCache[key]; !ok {
+					depCache[key] = struct{}{}
+					depSlice = append(depSlice, d)
+				}
+			}
+		}
+	}
+
+	if foundDepresolve == false {
+		return errors.New("No dependency information found. Try running `src config` first.")
+	}
+
+	return json.NewEncoder(os.Stdout).Encode(depSlice)
+}
+
+func (c *APIUnitsCmd) Execute(args []string) error {
+	var err error
+
+	repo, err := OpenRepo(filepath.Dir(string(c.Args.Dir)))
+	if err != nil {
+		return err
+	}
+
+	if err := os.Chdir(repo.RootDir); err != nil {
+		return err
+	}
+
+	buildStore, err := buildstore.NewRepositoryStore(repo.RootDir)
+	if err != nil {
+		return err
+	}
+
+	if _, err := buildStore.Lstat(buildStore.CommitPath(repo.CommitID)); os.IsNotExist(err) {
+		return errors.New("No build data found. Try running `src config` first.")
+	}
+
+	var unitSlice []unit.SourceUnit
+	unitSuffix := buildstore.DataTypeSuffix(unit.SourceUnit{})
+	foundUnit := false
+	w := fs.WalkFS(buildStore.CommitPath(repo.CommitID), buildStore)
+	for w.Step() {
+		unitFile := w.Path()
+		if strings.HasSuffix(unitFile, unitSuffix) {
+			var unit unit.SourceUnit
+			foundUnit = true
+			f, err := buildStore.Open(unitFile)
+			if err != nil {
+				return err
+			}
+			defer f.Close()
+			if err := json.NewDecoder(f).Decode(&unit); err != nil {
+				return fmt.Errorf("%s: %s", unitFile, err)
+			}
+			unitSlice = append(unitSlice, unit)
+		}
+	}
+
+	if foundUnit == false {
+		return errors.New("No source units found. Try running `src config` first.")
+	}
+
+	return json.NewEncoder(os.Stdout).Encode(unitSlice)
 }
