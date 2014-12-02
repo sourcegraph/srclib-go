@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/sourcegraph/makex"
+	"sourcegraph.com/sourcegraph/makex"
 	"sourcegraph.com/sourcegraph/srclib/buildstore"
 	"sourcegraph.com/sourcegraph/srclib/config"
 	"sourcegraph.com/sourcegraph/srclib/plan"
@@ -56,7 +56,7 @@ func (r *GraphUnitRule) Prereqs() []string {
 
 func (r *GraphUnitRule) Recipes() []string {
 	return []string{
-		fmt.Sprintf("src tool %s %q %q < $^ | src internal normalize-graph-data 1> $@", r.opt.ToolchainExecOpt, r.Tool.Toolchain, r.Tool.Subcmd),
+		fmt.Sprintf("src tool %s %q %q < $< | src internal normalize-graph-data --unit-type %q --dir . 1> $@", r.opt.ToolchainExecOpt, r.Tool.Toolchain, r.Tool.Subcmd, r.Unit.Type),
 	}
 }
 

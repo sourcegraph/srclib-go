@@ -17,6 +17,14 @@ type jsonAndSQLSerializable interface {
 	deref() interface{}
 }
 
+func boolPtr(b Bool) *Bool {
+	return &b
+}
+
+func (b *Bool) deref() interface{} {
+	return *b
+}
+
 func intPtr(i Int) *Int {
 	return &i
 }
@@ -54,6 +62,8 @@ func TestNNZTypes(t *testing.T) {
 		{int64Ptr(0), new(Int64), "null", nil},
 		{stringPtr("abc"), new(String), `"abc"`, "abc"},
 		{stringPtr(""), new(String), "null", nil},
+		{boolPtr(true), new(Bool), "true", true},
+		{boolPtr(false), new(Bool), "null", nil},
 	}
 
 	for _, test := range tests {

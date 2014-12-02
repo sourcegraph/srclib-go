@@ -8,6 +8,52 @@ import (
 	"fmt"
 )
 
+type Bool bool
+
+func (b *Bool) Scan(v interface{}) error {
+	if v == nil {
+		*b = false
+		return nil
+	}
+	switch v := v.(type) {
+	case bool:
+		*b = Bool(v)
+	default:
+		return fmt.Errorf("nnz: scanning %T, got %T", b, v)
+	}
+	return nil
+}
+
+func (b Bool) Value() (driver.Value, error) {
+	if b == false {
+		return nil, nil
+	}
+	return bool(b), nil
+}
+
+func (b Bool) MarshalJSON() ([]byte, error) {
+	if b == false {
+		return json.Marshal(nil)
+	}
+	return json.Marshal(bool(b))
+}
+
+func (b *Bool) UnmarshalJSON(data []byte) error {
+	var v interface{}
+	err := json.Unmarshal(data, &v)
+	if err != nil {
+		return err
+	}
+	if v == nil {
+		*b = false
+	} else if v, ok := v.(bool); ok {
+		*b = Bool(v)
+	} else {
+		return fmt.Errorf("nnz: unmarshaling %T, got %T", b, v)
+	}
+	return nil
+}
+
 // Int is a wrapper around int where Go int(0) serializes to SQL/JSON null, and
 // SQL/JSON null deserializes to Go int(0).
 type Int int

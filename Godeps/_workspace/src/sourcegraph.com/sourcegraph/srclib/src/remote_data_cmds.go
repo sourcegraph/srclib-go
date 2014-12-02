@@ -2,13 +2,15 @@ package src
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"path/filepath"
 
 	"code.google.com/p/rog-go/parallel"
-	"github.com/sourcegraph/rwvfs"
+	"sourcegraph.com/sourcegraph/go-sourcegraph/router"
 	client "sourcegraph.com/sourcegraph/go-sourcegraph/sourcegraph"
+	"sourcegraph.com/sourcegraph/rwvfs"
 	"sourcegraph.com/sourcegraph/srclib/buildstore"
 )
 
@@ -34,6 +36,7 @@ func init() {
 
 type PullCmd struct {
 	List bool `short:"l" long:"list" description:"only list files that exist on remote; don't fetch"`
+	URLs bool `long:"urls" description:"show URLs to build data files"`
 }
 
 var pullCmd PullCmd
@@ -48,14 +51,12 @@ func (c *PullCmd) Execute(args []string) error {
 		log.Printf("Listing remote build files for repository %q commit %q...", repo.URI(), repo.CommitID)
 	}
 
-	remoteFiles, resp, err := apiclient.BuildData.List(
-		client.RepoRevSpec{
-			RepoSpec: client.RepoSpec{URI: string(repo.URI())},
-			Rev:      repo.CommitID,
-			CommitID: repo.CommitID,
-		},
-		nil,
-	)
+	rr := client.RepoRevSpec{
+		RepoSpec: client.RepoSpec{URI: string(repo.URI())},
+		Rev:      repo.CommitID,
+		CommitID: repo.CommitID,
+	}
+	remoteFiles, resp, err := apiclient.BuildData.List(rr, nil)
 	if err != nil {
 		if hresp, ok := resp.(*client.HTTPResponse); hresp != nil && ok && hresp.StatusCode == http.StatusNotFound {
 			log.Println("No remote build files found.")
@@ -68,7 +69,14 @@ func (c *PullCmd) Execute(args []string) error {
 	if c.List {
 		log.Printf("# Remote build files for repository %q commit %s:", repo.URI(), repo.CommitID)
 		for _, file := range remoteFiles {
-			fmt.Println(file.Path)
+			fmt.Printf("%7s   %s   %s\n", bytesString(uint64(file.Size)), file.ModTime, file.Path)
+			if c.URLs {
+				bdspec := client.BuildDataFileSpec{RepoRev: rr, Path: file.Path}
+				u := router.URITo(router.RepositoryBuildDataEntry, router.MapToArray(bdspec.RouteVars())...)
+				u.Host = apiclient.BaseURL.Host
+				u.Scheme = apiclient.BaseURL.Scheme
+				fmt.Println(" @", u)
+			}
 		}
 		return nil
 	}
@@ -105,10 +113,15 @@ func fetchFile(repoStore *buildstore.RepositoryStore, repoURI string, fi *builds
 		log.Printf("Fetching %s (%.1fkb)", path, kb)
 	}
 
-	data, _, err := apiclient.BuildData.Get(fileSpec)
+	// Use uncached API client because the .srclib-cache already
+	// caches it, and we want to be able to stream large files.
+	apiclientUncached := client.NewClient(nil)
+	apiclientUncached.BaseURL = apiclient.BaseURL
+	remoteFile, _, err := apiclientUncached.BuildData.Get(fileSpec)
 	if err != nil {
 		return err
 	}
+	defer remoteFile.Close()
 
 	if GlobalOpt.Verbose {
 		log.Printf("Fetched %s (%.1fkb)", path, kb)
@@ -125,8 +138,7 @@ func fetchFile(repoStore *buildstore.RepositoryStore, repoURI string, fi *builds
 	}
 	defer f.Close()
 
-	_, err = f.Write(data)
-	if err != nil {
+	if _, err := io.Copy(f, remoteFile); err != nil {
 		return err
 	}
 
