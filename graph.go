@@ -21,7 +21,6 @@ import (
 	defpkg "sourcegraph.com/sourcegraph/srclib-go/golang_def"
 	"sourcegraph.com/sourcegraph/srclib/graph"
 	"sourcegraph.com/sourcegraph/srclib/grapher"
-	"sourcegraph.com/sourcegraph/srclib/repo"
 	"sourcegraph.com/sourcegraph/srclib/unit"
 )
 
@@ -352,11 +351,11 @@ func convertGoDoc(gd *gog.Doc, repoURI string) (*graph.Doc, error) {
 	}, nil
 }
 
-func uriOrEmpty(cloneURL string) repo.URI {
+func uriOrEmpty(cloneURL string) string {
 	if cloneURL == "" {
 		return ""
 	}
-	return repo.MakeURI(cloneURL)
+	return graph.MakeURI(cloneURL)
 }
 
 func pathOrDot(path string) string {
