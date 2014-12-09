@@ -291,6 +291,7 @@ func convertGoDef(gs *gog.Def, repoURI string) (*graph.Def, error) {
 		DefEnd:   gs.DeclSpan[1],
 
 		Exported: gs.DefInfo.Exported,
+		Local:    !gs.DefInfo.Exported && !gs.DefInfo.PkgScope,
 		Test:     strings.HasSuffix(gs.File, "_test.go"),
 	}
 

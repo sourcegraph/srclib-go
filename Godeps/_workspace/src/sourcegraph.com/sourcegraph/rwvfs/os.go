@@ -1,11 +1,13 @@
 package rwvfs
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
 	pathpkg "path"
 	"path/filepath"
+	"strings"
 
 	"golang.org/x/tools/godoc/vfs"
 )
@@ -13,11 +15,22 @@ import (
 // OS returns an implementation of FileSystem reading from the tree rooted at
 // root.
 func OS(root string) FileSystem {
-	return osFS{root, vfs.OS(root)}
+	return OSPerm(root, 0666, 0755)
+}
+
+func OSPerm(root string, filePerm, dirPerm os.FileMode) FileSystem {
+	return osFS{
+		root:       root,
+		filePerm:   filePerm,
+		dirPerm:    dirPerm,
+		FileSystem: vfs.OS(root),
+	}
 }
 
 type osFS struct {
-	root string
+	root     string
+	filePerm os.FileMode
+	dirPerm  os.FileMode
 	vfs.FileSystem
 }
 
@@ -32,10 +45,27 @@ func (fs osFS) resolve(path string) string {
 	return filepath.Join(string(fs.root), path)
 }
 
+func (fs osFS) ReadLink(name string) (string, error) {
+	dst, err := os.Readlink(fs.resolve(name))
+	if err != nil {
+		return "", err
+	}
+	if !filepath.IsAbs(dst) {
+		dst = filepath.Join(fs.resolve(name), dst)
+	}
+	if !strings.HasPrefix(dst, fs.root+string(os.PathSeparator)) && dst != fs.root {
+		return dst, ErrOutsideRoot
+	}
+	return filepath.Rel(fs.root, dst)
+}
+
+// ErrOutsideRoot occurs when a symlink refers to a path that is not in the current VFS.
+var ErrOutsideRoot = errors.New("link destination is outside of filesystem")
+
 // Create opens the file at path for writing, creating the file if it doesn't
 // exist and truncating it otherwise.
 func (fs osFS) Create(path string) (io.WriteCloser, error) {
-	f, err := os.Create(fs.resolve(path))
+	f, err := os.OpenFile(fs.resolve(path), os.O_RDWR|os.O_CREATE|os.O_TRUNC, fs.filePerm)
 	if err != nil {
 		return nil, err
 	}
@@ -52,8 +82,7 @@ func (fs osFS) Create(path string) (io.WriteCloser, error) {
 }
 
 func (fs osFS) Mkdir(name string) error {
-	err := os.Mkdir(fs.resolve(name), 0700)
-	return err
+	return os.Mkdir(fs.resolve(name), fs.dirPerm)
 }
 
 func (fs osFS) Remove(name string) error {
