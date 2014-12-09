@@ -173,6 +173,18 @@ func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, 
 			ToUnitType:     "GoPackage",
 		}, nil
 	}
+	// Special-case golang.org/x/... import paths for performance.
+	if strings.HasPrefix(importPath, "golang.org/x/") {
+		parts := strings.SplitN(importPath, "/", 4)
+		if len(parts) < 3 {
+			return nil, fmt.Errorf("import path starts with 'golang.org/x/' but is not valid: %q", importPath)
+		}
+		return &dep.ResolvedTarget{
+			ToRepoCloneURL: "https://" + strings.Join(parts[:3], "/"),
+			ToUnit:         importPath,
+			ToUnitType:     "GoPackage",
+		}, nil
+	}
 
 	log.Printf("Resolving Go dep: %s", importPath)
 
