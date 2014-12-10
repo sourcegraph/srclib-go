@@ -187,7 +187,7 @@ func scan(pkgPatterns []string) ([]*unit.SourceUnit, error) {
 		var files []string
 		for i := 0; i < pt.NumField(); i++ {
 			f := pt.Field(i)
-			if strings.HasSuffix(f.Name, "Files") {
+			if strings.HasSuffix(f.Name, "Files") && !strings.HasPrefix(f.Name, "Ignored") {
 				fv := pv.Field(i).Interface()
 				files = append(files, fv.([]string)...)
 			}
