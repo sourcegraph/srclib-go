@@ -35,6 +35,7 @@ func init() {
 var (
 	gitHubRawHeader     = http.Header{"Accept": {"application/vnd.github-blob.raw"}}
 	gitHubPreviewHeader = http.Header{"Accept": {"application/vnd.github.preview"}}
+	ownerRepoPat        = regexp.MustCompile(`^https://api.github.com/repos/([^/]+)/([^/]+)/`)
 )
 
 func gitHubError(resp *http.Response) error {
@@ -51,7 +52,7 @@ func getGitHubDir(client *http.Client, match map[string]string, savedEtag string
 
 	c := &httpClient{client: client, errFn: gitHubError}
 
-	var refs []*struct {
+	type refJSON struct {
 		Object struct {
 			Type string
 			Sha  string
@@ -60,9 +61,24 @@ func getGitHubDir(client *http.Client, match map[string]string, savedEtag string
 		Ref string
 		URL string
 	}
+	var refs []*refJSON
 
-	if err := c.getJSON(expand("https://api.github.com/repos/{owner}/{repo}/git/refs", match), &refs); err != nil {
+	resp, err := c.getJSON(expand("https://api.github.com/repos/{owner}/{repo}/git/refs", match), &refs)
+	if err != nil {
 		return nil, err
+	}
+
+	// If the response contains a Link header, then fallback to requesting "master" and "go1" by name.
+	if resp.Header.Get("Link") != "" {
+		var masterRef refJSON
+		if _, err := c.getJSON(expand("https://api.github.com/repos/{owner}/{repo}/git/refs/heads/master", match), &masterRef); err == nil {
+			refs = append(refs, &masterRef)
+		}
+
+		var go1Ref refJSON
+		if _, err := c.getJSON(expand("https://api.github.com/repos/{owner}/{repo}/git/refs/tags/go1", match), &go1Ref); err == nil {
+			refs = append(refs, &go1Ref)
+		}
 	}
 
 	tags := make(map[string]string)
@@ -76,7 +92,6 @@ func getGitHubDir(client *http.Client, match map[string]string, savedEtag string
 	}
 
 	var commit string
-	var err error
 	match["tag"], commit, err = bestTag(tags, "master")
 	if err != nil {
 		return nil, err
@@ -93,18 +108,23 @@ func getGitHubDir(client *http.Client, match map[string]string, savedEtag string
 		HTMLURL string `json:"html_url"`
 	}
 
-	if err := c.getJSON(expand("https://api.github.com/repos/{owner}/{repo}/contents{dir}?ref={tag}", match), &contents); err != nil {
+	if _, err := c.getJSON(expand("https://api.github.com/repos/{owner}/{repo}/contents{dir}?ref={tag}", match), &contents); err != nil {
 		return nil, err
 	}
 
 	if len(contents) == 0 {
-		return nil, NotFoundError{"No files in directory."}
+		return nil, NotFoundError{Message: "No files in directory."}
 	}
 
-	// Because Github API URLs are case-insensitive, we check that the owner
-	// and repo returned from Github matches the one that we are requesting.
-	if !strings.HasPrefix(contents[0].GitURL, expand("https://api.github.com/repos/{owner}/{repo}/", match)) {
-		return nil, NotFoundError{"Github import path has incorrect case."}
+	// GitHub owner and repo names are case-insensitive. Redirect if requested
+	// names do not match the canonical names in API response.
+	if m := ownerRepoPat.FindStringSubmatch(contents[0].GitURL); m != nil && (m[1] != match["owner"] || m[2] != match["repo"]) {
+		match["owner"] = m[1]
+		match["repo"] = m[2]
+		return nil, NotFoundError{
+			Message:  "Github import path has incorrect case.",
+			Redirect: expand("github.com/{owner}/{repo}{dir}", match),
+		}
 	}
 
 	var files []*File
@@ -133,6 +153,18 @@ func getGitHubDir(client *http.Client, match map[string]string, savedEtag string
 		browseURL = expand("https://github.com/{owner}/{repo}/tree/{tag}{dir}", match)
 	}
 
+	var repo = struct {
+		Fork      bool      `json:"fork"`
+		CreatedAt time.Time `json:"created_at"`
+		PushedAt  time.Time `json:"pushed_at"`
+	}{}
+
+	if _, err := c.getJSON(expand("https://api.github.com/repos/{owner}/{repo}", match), &repo); err != nil {
+		return nil, err
+	}
+
+	isDeadEndFork := repo.Fork && repo.PushedAt.Before(repo.CreatedAt)
+
 	return &Directory{
 		BrowseURL:      browseURL,
 		Etag:           commit,
@@ -143,6 +175,7 @@ func getGitHubDir(client *http.Client, match map[string]string, savedEtag string
 		ProjectURL:     expand("https://github.com/{owner}/{repo}", match),
 		Subdirectories: subdirs,
 		VCS:            "git",
+		DeadEndFork:    isDeadEndFork,
 	}, nil
 }
 
@@ -213,7 +246,7 @@ func GetGitHubUpdates(client *http.Client, pushedAfter string) (maxPushedAt stri
 			PushedAt string `json:"pushed_at"`
 		}
 	}
-	err = c.getJSON(u, &updates)
+	_, err = c.getJSON(u, &updates)
 	if err != nil {
 		return pushedAfter, nil, err
 	}
@@ -235,7 +268,7 @@ func getGitHubProject(client *http.Client, match map[string]string) (*Project, e
 		Description string
 	}
 
-	if err := c.getJSON(expand("https://api.github.com/repos/{owner}/{repo}", match), &repo); err != nil {
+	if _, err := c.getJSON(expand("https://api.github.com/repos/{owner}/{repo}", match), &repo); err != nil {
 		return nil, err
 	}
 
@@ -257,12 +290,12 @@ func getGistDir(client *http.Client, match map[string]string, savedEtag string) 
 		}
 	}
 
-	if err := c.getJSON(expand("https://api.github.com/gists/{gist}", match), &gist); err != nil {
+	if _, err := c.getJSON(expand("https://api.github.com/gists/{gist}", match), &gist); err != nil {
 		return nil, err
 	}
 
 	if len(gist.History) == 0 {
-		return nil, NotFoundError{"History not found."}
+		return nil, NotFoundError{Message: "History not found."}
 	}
 	commit := gist.History[0].Version
 

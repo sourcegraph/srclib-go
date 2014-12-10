@@ -127,7 +127,7 @@ func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, 
 		return nil, nil
 	}
 
-	if gosrc.IsGoRepoPath(importPath) || importPath == "debug/goobj" || importPath == "debug/plan9obj" {
+	if gosrc.IsGoRepoPath(importPath) || strings.HasPrefix(importPath, "debug/") || strings.HasPrefix(importPath, "cmd/") {
 		return &dep.ResolvedTarget{
 			ToRepoCloneURL:  "https://github.com/golang/go",
 			ToVersionString: runtime.Version(),
