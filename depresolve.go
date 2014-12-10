@@ -129,7 +129,7 @@ func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, 
 
 	if gosrc.IsGoRepoPath(importPath) || importPath == "debug/goobj" || importPath == "debug/plan9obj" {
 		return &dep.ResolvedTarget{
-			ToRepoCloneURL:  "https://code.google.com/p/go",
+			ToRepoCloneURL:  "https://github.com/golang/go",
 			ToVersionString: runtime.Version(),
 			ToRevSpec:       "", // TODO(sqs): fill in when graphing stdlib repo
 			ToUnit:          importPath,
