@@ -8,7 +8,7 @@
       "ToRepoCloneURL": "https://github.com/golang/go",
       "ToUnit": "fmt",
       "ToUnitType": "GoPackage",
-      "ToVersionString": "devel +e54b1a srclib",
+      "ToVersionString": "devel +495e02 sqs",
       "ToRevSpec": ""
     }
   }
