@@ -57,7 +57,7 @@ var vcsServices = []*urlTemplates{
 		regexp.MustCompile(`^(?P<r1>[^.]+)\.googlesource.com/(?P<r2>[^./]+)$`),
 		"https://{r1}.googlesource.com/{r2}/+/{tag}/{dir}{0}",
 		"https://{r1}.googlesource.com/{r2}/+/{tag}",
-		"",
+		"%s#%d",
 	},
 	{
 		regexp.MustCompile(`^gitcafe.com/(?P<repo>[^/]+/.[^/]+)$`),
@@ -119,7 +119,7 @@ func downloadGit(schemes []string, repo, savedEtag string) (string, string, erro
 	}
 
 	if scheme == "" {
-		return "", "", NotFoundError{"VCS not found"}
+		return "", "", NotFoundError{Message: "VCS not found"}
 	}
 
 	tags := make(map[string]string)
@@ -173,7 +173,7 @@ func downloadGit(schemes []string, repo, savedEtag string) (string, string, erro
 func getVCSDir(client *http.Client, match map[string]string, etagSaved string) (*Directory, error) {
 	cmd := vcsCmds[match["vcs"]]
 	if cmd == nil {
-		return nil, NotFoundError{expand("VCS not supported: {vcs}", match)}
+		return nil, NotFoundError{Message: expand("VCS not supported: {vcs}", match)}
 	}
 
 	scheme := match["scheme"]
@@ -211,7 +211,7 @@ func getVCSDir(client *http.Client, match map[string]string, etagSaved string) (
 	f, err := os.Open(d)
 	if err != nil {
 		if os.IsNotExist(err) {
-			err = NotFoundError{err.Error()}
+			err = NotFoundError{Message: err.Error()}
 		}
 		return nil, err
 	}

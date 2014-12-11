@@ -105,7 +105,7 @@
       "End": 18
     },
     {
-      "DefRepo": "code.google.com/p/go",
+      "DefRepo": "github.com/golang/go",
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": ".",
@@ -116,7 +116,7 @@
       "End": 43
     },
     {
-      "DefRepo": "code.google.com/p/go",
+      "DefRepo": "github.com/golang/go",
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": ".",
@@ -171,7 +171,7 @@
       "End": 53
     },
     {
-      "DefRepo": "code.google.com/p/go",
+      "DefRepo": "github.com/golang/go",
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": "Println",

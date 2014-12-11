@@ -53,7 +53,7 @@ editor plugins) will support Go.
 Here's what srclib-go's analysis looks like in these applications.
 
 The first screenshot shows the
-[http.NewRequest function](https://sourcegraph.com/code.google.com/p/go/.GoPackage/net/http/.def/NewRequest)
+[http.NewRequest function](https://sourcegraph.com/github.com/golang/go/.GoPackage/net/http/.def/NewRequest)
 on [Sourcegraph.com](https://sourcegraph.com). Here, srclib-go enables
 clickable links for every identifier (that take you to their definitions),
 automatic cross-repository usage examples, type inference, and documentation

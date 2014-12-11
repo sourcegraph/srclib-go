@@ -5,10 +5,10 @@
   {
     "Raw": "fmt",
     "Target": {
-      "ToRepoCloneURL": "https://code.google.com/p/go",
+      "ToRepoCloneURL": "https://github.com/golang/go",
       "ToUnit": "fmt",
       "ToUnitType": "GoPackage",
-      "ToVersionString": "devel +e54b1a srclib",
+      "ToVersionString": "devel +495e02 srclib",
       "ToRevSpec": ""
     }
   }
