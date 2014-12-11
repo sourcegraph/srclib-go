@@ -180,7 +180,7 @@ func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, 
 			return nil, fmt.Errorf("import path starts with 'golang.org/x/' but is not valid: %q", importPath)
 		}
 		return &dep.ResolvedTarget{
-			ToRepoCloneURL: "https://" + strings.Join(parts[:3], "/"),
+			ToRepoCloneURL: "https://" + strings.Replace(strings.Join(parts[:3], "/"), "golang.org/x/", "github.com/golang/", 1),
 			ToUnit:         importPath,
 			ToUnitType:     "GoPackage",
 		}, nil

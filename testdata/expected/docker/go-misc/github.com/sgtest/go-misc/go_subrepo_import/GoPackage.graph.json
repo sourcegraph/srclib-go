@@ -92,7 +92,7 @@
       "End": 144
     },
     {
-      "DefRepo": "golang.org/x/net",
+      "DefRepo": "github.com/golang/net",
       "DefUnitType": "GoPackage",
       "DefUnit": "golang.org/x/net/ipv6",
       "DefPath": ".",
@@ -103,7 +103,7 @@
       "End": 179
     },
     {
-      "DefRepo": "golang.org/x/net",
+      "DefRepo": "github.com/golang/net",
       "DefUnitType": "GoPackage",
       "DefUnit": "golang.org/x/net/ipv6",
       "DefPath": ".",
@@ -114,7 +114,7 @@
       "End": 237
     },
     {
-      "DefRepo": "golang.org/x/tools",
+      "DefRepo": "github.com/golang/tools",
       "DefUnitType": "GoPackage",
       "DefUnit": "golang.org/x/tools/go/types",
       "DefPath": ".",
@@ -125,7 +125,7 @@
       "End": 210
     },
     {
-      "DefRepo": "golang.org/x/tools",
+      "DefRepo": "github.com/golang/tools",
       "DefUnitType": "GoPackage",
       "DefUnit": "golang.org/x/tools/go/types",
       "DefPath": ".",
@@ -136,7 +136,7 @@
       "End": 264
     },
     {
-      "DefRepo": "golang.org/x/tools",
+      "DefRepo": "github.com/golang/tools",
       "DefUnitType": "GoPackage",
       "DefUnit": "golang.org/x/tools/go/types",
       "DefPath": "Config",
@@ -147,7 +147,7 @@
       "End": 271
     },
     {
-      "DefRepo": "golang.org/x/net",
+      "DefRepo": "github.com/golang/net",
       "DefUnitType": "GoPackage",
       "DefUnit": "golang.org/x/net/ipv6",
       "DefPath": "Conn",
