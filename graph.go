@@ -405,7 +405,6 @@ func doGraph(pkg *build.Package) (*gog.Output, error) {
 			cmd := exec.Command("go", "install", "-v", imp)
 			cmd.Env = config.env()
 			cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
-			log.Printf("Install %q: %v (env vars: %v)", importPath, cmd.Args, cmd.Env)
 			if err := cmd.Run(); err != nil {
 				if allowErrorsInGraph {
 					log.Printf("Warning: failed to install package %q (command %v, env vars %v): %s. Continuing...", imp, cmd.Args, cmd.Env)
