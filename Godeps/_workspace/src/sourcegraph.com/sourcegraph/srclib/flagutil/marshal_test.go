@@ -1,4 +1,4 @@
-package toolchain
+package flagutil
 
 import (
 	"reflect"
@@ -10,6 +10,13 @@ func TestMarshalArgs(t *testing.T) {
 		group    interface{}
 		wantArgs []string
 	}{
+		{
+			group: &struct {
+				Foo bool `short:"f"`
+				Bar bool `short:"b"`
+			}{Foo: true},
+			wantArgs: []string{"-f"},
+		},
 		{
 			group: &struct {
 				Foo string `short:"f"`

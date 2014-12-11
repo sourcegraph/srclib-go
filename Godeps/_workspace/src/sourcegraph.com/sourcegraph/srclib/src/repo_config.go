@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"sourcegraph.com/sourcegraph/go-sourcegraph/sourcegraph"
 	"sourcegraph.com/sourcegraph/srclib/graph"
 )
 
@@ -19,10 +20,20 @@ type Repo struct {
 }
 
 func (c *Repo) URI() string {
-	if strings.Contains(c.CloneURL, "github.com/sourcegraph/sourcegraph") {
+	uri := graph.MakeURI(c.CloneURL)
+	// TODO(sqs): temp workaround for sourcegraph private repo
+	if uri == "github.com/sourcegraph/sourcegraph" {
 		return "sourcegraph.com/sourcegraph/sourcegraph"
 	}
-	return graph.MakeURI(c.CloneURL)
+	return uri
+}
+
+func (r *Repo) RepoRevSpec() sourcegraph.RepoRevSpec {
+	return sourcegraph.RepoRevSpec{
+		RepoSpec: sourcegraph.RepoSpec{URI: r.URI()},
+		Rev:      r.CommitID,
+		CommitID: r.CommitID,
+	}
 }
 
 func OpenRepo(dir string) (*Repo, error) {
@@ -100,25 +111,31 @@ func getRootDir(vcsType string, dir string) (string, error) {
 }
 
 func getVCSCloneURL(vcsType string, repoDir string) (string, error) {
-	var cmd *exec.Cmd
+	run := func(args ...string) (string, error) {
+		cmd := exec.Command(args[0], args[1:]...)
+		cmd.Dir = repoDir
+		out, err := cmd.Output()
+		if err != nil {
+			return "", fmt.Errorf("could not get VCS URL: %s", err)
+		}
+		cloneURL := strings.TrimSpace(string(out))
+		if vcsType == "git" {
+			cloneURL = strings.Replace(cloneURL, "git@github.com:", "git://github.com/", 1)
+		}
+		return cloneURL, nil
+	}
 	switch vcsType {
 	case "git":
-		cmd = exec.Command("git", "config", "remote.origin.url")
+		// Try to get the "srclib" remote first.
+		url, err := run("git", "config", "remote.srclib.url")
+		if err == nil {
+			return url, nil
+		}
+
+		return run("git", "config", "remote.origin.url")
 	case "hg":
-		cmd = exec.Command("hg", "--config", "trusted.users=root", "paths", "default")
-	}
-	if cmd == nil {
+		return run("hg", "--config", "trusted.users=root", "paths", "default")
+	default:
 		return "", fmt.Errorf("unrecognized VCS %v", vcsType)
 	}
-	cmd.Dir = repoDir
-	out, err := cmd.Output()
-	if err != nil {
-		return "", fmt.Errorf("could not get VCS URL: %s", err)
-	}
-
-	cloneURL := strings.TrimSpace(string(out))
-	if vcsType == "git" {
-		cloneURL = strings.Replace(cloneURL, "git@github.com:", "git://github.com/", 1)
-	}
-	return cloneURL, nil
 }

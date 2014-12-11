@@ -11,6 +11,7 @@
       "DefStart": 0,
       "DefEnd": 0,
       "Exported": true,
+      "Local": false,
       "Data": {
         "Exported": true,
         "PkgName": "fmt",
@@ -30,6 +31,7 @@
       "DefStart": 181,
       "DefEnd": 209,
       "Exported": true,
+      "Local": false,
       "Data": {
         "Exported": true,
         "PkgScope": true,
@@ -51,6 +53,7 @@
       "DefStart": 197,
       "DefEnd": 205,
       "Exported": false,
+      "Local": true,
       "Data": {
         "PkgName": "fmt",
         "TypeString": "string",
