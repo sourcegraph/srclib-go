@@ -157,7 +157,7 @@
       "End": 98
     },
     {
-      "DefRepo": "code.google.com/p/go",
+      "DefRepo": "github.com/golang/go",
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "string",
@@ -168,7 +168,7 @@
       "End": 105
     },
     {
-      "DefRepo": "code.google.com/p/go",
+      "DefRepo": "github.com/golang/go",
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "string",

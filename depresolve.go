@@ -127,9 +127,9 @@ func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, 
 		return nil, nil
 	}
 
-	if gosrc.IsGoRepoPath(importPath) || importPath == "debug/goobj" || importPath == "debug/plan9obj" {
+	if gosrc.IsGoRepoPath(importPath) || strings.HasPrefix(importPath, "debug/") || strings.HasPrefix(importPath, "cmd/") {
 		return &dep.ResolvedTarget{
-			ToRepoCloneURL:  "https://code.google.com/p/go",
+			ToRepoCloneURL:  "https://github.com/golang/go",
 			ToVersionString: runtime.Version(),
 			ToRevSpec:       "", // TODO(sqs): fill in when graphing stdlib repo
 			ToUnit:          importPath,
@@ -180,7 +180,7 @@ func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, 
 			return nil, fmt.Errorf("import path starts with 'golang.org/x/' but is not valid: %q", importPath)
 		}
 		return &dep.ResolvedTarget{
-			ToRepoCloneURL: "https://" + strings.Join(parts[:3], "/"),
+			ToRepoCloneURL: "https://" + strings.Replace(strings.Join(parts[:3], "/"), "golang.org/x/", "github.com/golang/", 1),
 			ToUnit:         importPath,
 			ToUnitType:     "GoPackage",
 		}, nil

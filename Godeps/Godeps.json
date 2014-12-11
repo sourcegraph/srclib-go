@@ -21,7 +21,7 @@
 		},
 		{
 			"ImportPath": "github.com/golang/gddo/gosrc",
-			"Rev": "625df2a39320c2ca472463fdcdcb7320345521fe"
+			"Rev": "eae68f08320b6c17b22282eda8a57920811f041b"
 		},
 		{
 			"ImportPath": "github.com/jessevdk/go-flags",
