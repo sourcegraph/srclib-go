@@ -11,6 +11,7 @@
       "DefStart": 0,
       "DefEnd": 0,
       "Exported": true,
+      "Local": null,
       "Data": {
         "Exported": true,
         "PkgName": "gopathtest",
@@ -30,6 +31,7 @@
       "DefStart": 162,
       "DefEnd": 191,
       "Exported": false,
+      "Local": null,
       "Data": {
         "PkgName": "gopathtest",
         "TypeString": "func()",
