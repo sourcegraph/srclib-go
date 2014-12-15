@@ -11,7 +11,7 @@
       "DefStart": 0,
       "DefEnd": 0,
       "Exported": true,
-      "Local": null,
+      "Local": false,
       "Data": {
         "Exported": true,
         "PkgName": "exported_methods",
@@ -31,7 +31,7 @@
       "DefStart": 173,
       "DefEnd": 192,
       "Exported": false,
-      "Local": null,
+      "Local": false,
       "Data": {
         "PkgScope": true,
         "PkgName": "exported_methods",
@@ -52,7 +52,7 @@
       "DefStart": 194,
       "DefEnd": 234,
       "Exported": true,
-      "Local": null,
+      "Local": false,
       "Data": {
         "Exported": true,
         "PkgScope": true,
@@ -75,7 +75,7 @@
       "DefStart": 200,
       "DefEnd": 212,
       "Exported": false,
-      "Local": null,
+      "Local": true,
       "Data": {
         "PkgName": "exported_methods",
         "TypeString": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/exported_methods.unexported",
