@@ -53,7 +53,7 @@ editor plugins) will support Go.
 Here's what srclib-go's analysis looks like in these applications.
 
 The first screenshot shows the
-[http.NewRequest function](https://sourcegraph.com/code.google.com/p/go/.GoPackage/net/http/.def/NewRequest)
+[http.NewRequest function](https://sourcegraph.com/github.com/golang/go/.GoPackage/net/http/.def/NewRequest)
 on [Sourcegraph.com](https://sourcegraph.com). Here, srclib-go enables
 clickable links for every identifier (that take you to their definitions),
 automatic cross-repository usage examples, type inference, and documentation
@@ -96,6 +96,15 @@ properties in their Srcfile's `Config` property:
   repository `code.google.com/p/go` without having the system Go stdlib packages
   interfere with analysis.
 
+* **GOPATH**: a colon-separated list of directories that are appended
+  to the build GOPATH. If relative, the dirs are made absolute by prefixing
+  the directory containing the Srcfile.
+
+  Set GOPATH when you have vendored dependencies within your repository that you
+  import using import paths relative to the vendored dir (as with godep and
+  third_party.go).
+
+
 ## Known issues
 
 srclib-go is alpha-quality software. It powers code analysis on
@@ -134,4 +143,4 @@ Patches are welcomed via GitHub pull request! See
 [CONTRIBUTING.md](./CONTRIBUTING.md) for more information.
 
 srclib-go's type analysis is based on
-[go/types](https://godoc.org/code.google.com/p/go.tools/go/types).
+[go/types](https://godoc.org/golang.org/x/tools/go/types).

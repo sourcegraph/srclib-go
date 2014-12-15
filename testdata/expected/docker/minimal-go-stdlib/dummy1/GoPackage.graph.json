@@ -7,10 +7,11 @@
       "TreePath": ".",
       "Name": "dummy1",
       "Kind": "package",
-      "File": "src/pkg/dummy1",
+      "File": "src/dummy1",
       "DefStart": 0,
       "DefEnd": 0,
       "Exported": true,
+      "Local": null,
       "Data": {
         "Exported": true,
         "PkgName": "dummy1",
@@ -26,10 +27,11 @@
       "TreePath": "./MyType",
       "Name": "MyType",
       "Kind": "type",
-      "File": "src/pkg/dummy1/dummy1.go",
+      "File": "src/dummy1/dummy1.go",
       "DefStart": 21,
       "DefEnd": 31,
       "Exported": true,
+      "Local": null,
       "Data": {
         "Exported": true,
         "PkgScope": true,
@@ -49,7 +51,7 @@
       "DefPath": ".",
       "Def": false,
       "Repo": "",
-      "File": "src/pkg/dummy1/dummy1.go",
+      "File": "src/dummy1/dummy1.go",
       "Start": 8,
       "End": 14
     },
@@ -60,18 +62,18 @@
       "DefPath": "MyType",
       "Def": true,
       "Repo": "",
-      "File": "src/pkg/dummy1/dummy1.go",
+      "File": "src/dummy1/dummy1.go",
       "Start": 21,
       "End": 27
     },
     {
-      "DefRepo": "code.google.com/p/go",
+      "DefRepo": "github.com/golang/go",
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "int",
       "Def": false,
       "Repo": "",
-      "File": "src/pkg/dummy1/dummy1.go",
+      "File": "src/dummy1/dummy1.go",
       "Start": 28,
       "End": 31
     }

@@ -11,6 +11,7 @@
       "DefStart": 0,
       "DefEnd": 0,
       "Exported": true,
+      "Local": null,
       "Data": {
         "Exported": true,
         "PkgName": "cgo_sample",
@@ -30,6 +31,7 @@
       "DefStart": 255,
       "DefEnd": 268,
       "Exported": true,
+      "Local": null,
       "Data": {
         "Exported": true,
         "PkgScope": true,
@@ -51,6 +53,7 @@
       "DefStart": 45,
       "DefEnd": 110,
       "Exported": true,
+      "Local": null,
       "Data": {
         "Exported": true,
         "PkgScope": true,
@@ -72,6 +75,7 @@
       "DefStart": 59,
       "DefEnd": 92,
       "Exported": false,
+      "Local": null,
       "Data": {
         "PkgName": "cgo_sample",
         "TypeString": "invalid type",
@@ -105,7 +109,7 @@
       "End": 18
     },
     {
-      "DefRepo": "code.google.com/p/go",
+      "DefRepo": "github.com/golang/go",
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": ".",
@@ -116,7 +120,7 @@
       "End": 43
     },
     {
-      "DefRepo": "code.google.com/p/go",
+      "DefRepo": "github.com/golang/go",
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": ".",
@@ -171,7 +175,7 @@
       "End": 53
     },
     {
-      "DefRepo": "code.google.com/p/go",
+      "DefRepo": "github.com/golang/go",
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": "Println",

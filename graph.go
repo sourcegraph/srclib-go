@@ -4,17 +4,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"go/build"
-	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 
+	"github.com/golang/gddo/gosrc"
+
 	"golang.org/x/tools/go/loader"
-	"golang.org/x/tools/godoc/vfs"
 
 	"sourcegraph.com/sourcegraph/srclib-go/gog"
 	"sourcegraph.com/sourcegraph/srclib-go/gog/definfo"
@@ -54,6 +54,10 @@ type GraphCmd struct{}
 
 var graphCmd GraphCmd
 
+// allowErrorsInGoGet is whether the grapher should continue after
+// if `go get` fails.
+var allowErrorsInGoGet = true
+
 func (c *GraphCmd) Execute(args []string) error {
 	var unit *unit.SourceUnit
 	if err := json.NewDecoder(os.Stdin).Decode(&unit); err != nil {
@@ -76,18 +80,47 @@ func (c *GraphCmd) Execute(args []string) error {
 			return err
 		}
 
-		// Make a new GOPATH.
-		buildContext.GOPATH = "/tmp/gopath"
+		// Make a new primary GOPATH.
+		mainGOPATHDir := "/tmp/gopath"
+		if buildContext.GOPATH == "" {
+			buildContext.GOPATH = mainGOPATHDir
+		} else {
+			buildContext.GOPATH = mainGOPATHDir + ":" + buildContext.GOPATH
+		}
 
 		// Set up GOPATH so it has this repo.
-		log.Printf("Setting up a new GOPATH at %s", buildContext.GOPATH)
-		dir := filepath.Join(buildContext.GOPATH, "src", string(unit.Repo))
+		log.Printf("Setting up a new GOPATH at %s", mainGOPATHDir)
+		dir := filepath.Join(mainGOPATHDir, "src", string(unit.Repo))
 		if err := os.MkdirAll(filepath.Dir(dir), 0700); err != nil {
 			return err
 		}
 		log.Printf("Creating symlink to oldname %q at newname %q.", cwd, dir)
 		if err := os.Symlink(cwd, dir); err != nil {
 			return err
+		}
+
+		// For every GOPATH that was in the Srcfile (or autodetected),
+		// move it to a writable dir. (/src is not writable.)
+		if config.GOPATH != "" {
+			dirs := strings.Split(buildContext.GOPATH, ":")
+			for i, dir := range dirs {
+				if dir == mainGOPATHDir || dir == os.Getenv("GOPATH") {
+					continue
+				}
+
+				oldSrcDir := filepath.Join(dir, "src")
+				newGOPATH := filepath.Join("/tmp/gopath-" + strconv.Itoa(i) + "-" + filepath.Base(dir))
+				newSrcDir := filepath.Join(newGOPATH, "src")
+				log.Printf("Creating symlink for non-primary GOPATH to oldname %q at newname %q.", oldSrcDir, newSrcDir)
+				if err := os.MkdirAll(filepath.Dir(newSrcDir), 0700); err != nil {
+					return err
+				}
+				if err := os.Symlink(oldSrcDir, newSrcDir); err != nil {
+					return err
+				}
+				dirs[i] = newGOPATH
+			}
+			buildContext.GOPATH = strings.Join(dirs, ":")
 		}
 
 		log.Printf("Changing directory to %q.", dir)
@@ -100,24 +133,34 @@ func (c *GraphCmd) Execute(args []string) error {
 			cwd = dir
 		}
 
-		// Get and install deps. (Only deps not in this repo; if we call `go
-		// get` on this repo, we will either try to check out a different
-		// version or fail with 'stale checkout?' because the .dockerignore
-		// doesn't copy the .git dir.)
+		// Get and install deps. But don't get deps that:
+		//
+		// * are in this repo; if we call `go get` on this repo, we will either try to check out a different
+		//   version or fail with 'stale checkout?' because the .dockerignore doesn't copy the .git dir.
+		// * are "C" as in `import "C"` for cgo
+		// * have no slashes in their import path (which occurs when graphing the Go stdlib, for pkgs like "fmt");
+		//   we'll just assume that these packages are never remote and do not need `go get`ting.
 		var externalDeps []string
 		for _, dep := range unit.Dependencies {
 			importPath := dep.(string)
-			if !strings.HasPrefix(importPath, string(unit.Repo)) && importPath != "C" {
+			if !strings.HasPrefix(importPath, string(unit.Repo)) && importPath != "C" && strings.Count(filepath.Clean(importPath), "/") > 0 {
 				externalDeps = append(externalDeps, importPath)
 			}
 		}
-		cmd := exec.Command("go", "get", "-d", "-t", "-v", "./"+buildPkg.Dir)
-		cmd.Args = append(cmd.Args, externalDeps...)
-		cmd.Env = config.env()
-		cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
-		log.Printf("Downloading import dependencies: %v (env vars: %v).", cmd.Args, cmd.Env)
-		if err := cmd.Run(); err != nil {
-			return err
+		deps := append([]string{"./" + buildPkg.Dir}, externalDeps...)
+		for _, dep := range deps {
+			cmd := exec.Command("go", "get", "-d", "-t", "-v", dep)
+			cmd.Args = append(cmd.Args)
+			cmd.Env = config.env()
+			cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
+			log.Printf("%v (env vars: %v).", cmd.Args, cmd.Env)
+			if err := cmd.Run(); err != nil {
+				if allowErrorsInGoGet {
+					log.Printf("%v failed: %s (continuing)", cmd.Args, err)
+				} else {
+					return err
+				}
+			}
 		}
 		log.Printf("Finished downloading dependencies.")
 	}
@@ -165,6 +208,11 @@ func relPath(base, path string) string {
 		if err != nil {
 			log.Fatalf("Failed to make path %q relative to %q: %s", path, cwd, err)
 		}
+	}
+
+	// TODO(sqs): hack
+	if prefix := "../tmp/gopath-"; strings.HasPrefix(rp, prefix) {
+		rp = rp[len(prefix)+2:]
 	}
 
 	return rp
@@ -222,7 +270,7 @@ func convertGoDef(gs *gog.Def, repoURI string) (*graph.Def, error) {
 		return nil, err
 	}
 	path := graph.DefPath(pathOrDot(strings.Join(gs.Path, "/")))
-	treePath := treePath(string(path))
+	treePath := treePath(strings.Replace(string(path), ".go", "", -1))
 	if !treePath.IsValid() {
 		return nil, fmt.Errorf("'%s' is not a valid tree-path", treePath)
 	}
@@ -324,55 +372,46 @@ func treePath(path string) graph.TreePath {
 	return graph.TreePath(fmt.Sprintf("./%s", path))
 }
 
+// allowErrorsInGraph is whether the grapher should continue after
+// encountering "reasonably common" errors (such as compile errors).
+var allowErrorsInGraph = true
+
 func doGraph(pkg *build.Package) (*gog.Output, error) {
 	importPath := pkg.ImportPath
 
-	// If we've overridden GOROOT and we're building a package not in
-	// $GOROOT/src/pkg (such as "cmd/go"), then we need to virtualize GOROOT
-	// because we can't set GOPATH=GOROOT (go/build ignores GOPATH in that
-	// case).
-	if config.GOROOT != "" && strings.HasPrefix(importPath, "cmd/") {
-		// Unset our custom GOROOT (since we're routing FS ops to it using
-		// vfs) and set it as our GOPATH.
-		buildContext.GOROOT = build.Default.GOROOT
-		buildContext.GOPATH = config.GOROOT
-
-		virtualCWD = build.Default.GOROOT
-
-		ns := vfs.NameSpace{}
-		ns.Bind(filepath.Join(buildContext.GOROOT, "src/pkg"), vfs.OS(filepath.Join(config.GOROOT, "src/pkg")), "/", vfs.BindBefore)
-		ns.Bind("/", vfs.OS("/"), "/", vfs.BindAfter)
-		buildContext.IsDir = func(path string) bool {
-			fi, err := ns.Stat(path)
-			return err == nil && fi.Mode().IsDir()
-		}
-		buildContext.HasSubdir = func(root, dir string) (rel string, ok bool) { panic("unexpected") }
-		buildContext.OpenFile = func(path string) (io.ReadCloser, error) {
-			f, err := ns.Open(path)
-			return f, err
-		}
-		buildContext.ReadDir = ns.ReadDir
-	}
-
 	if !loaderConfig.SourceImports {
-		tmpfile, err := ioutil.TempFile("", filepath.Base(importPath))
-		if err != nil {
-			return nil, err
+		imports := map[string]struct{}{}
+		for _, imp := range pkg.Imports {
+			imports[imp] = struct{}{}
+		}
+		for _, imp := range pkg.TestImports {
+			imports[imp] = struct{}{}
+		}
+		for _, imp := range pkg.XTestImports {
+			imports[imp] = struct{}{}
 		}
 
-		// Install pkg.
-		cmd := exec.Command("go", "build", "-o", tmpfile.Name(), "-i", "-v", importPath)
-		cmd.Env = config.env()
-		cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
-		log.Printf("Install %q: %v (env vars: %v)", importPath, cmd.Args, cmd.Env)
-		if err := cmd.Run(); err != nil {
-			return nil, err
-		}
-		if err := tmpfile.Close(); err != nil {
-			return nil, err
-		}
-		if err := os.Remove(tmpfile.Name()); err != nil {
-			return nil, err
+		for imp, _ := range imports {
+			if imp == "C" {
+				continue
+			}
+			if gosrc.IsGoRepoPath(imp) {
+				// Optimization: don't bother installing builtin
+				// packages because they're already installed. (But if
+				// we accidentally install one, it's OK and not going
+				// to cause any problems.)
+				continue
+			}
+			cmd := exec.Command("go", "install", "-v", imp)
+			cmd.Env = config.env()
+			cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
+			if err := cmd.Run(); err != nil {
+				if allowErrorsInGraph {
+					log.Printf("Warning: failed to install package %q (command %v, env vars %v): %s. Continuing...", imp, cmd.Args, cmd.Env)
+				} else {
+					return nil, err
+				}
+			}
 		}
 	}
 

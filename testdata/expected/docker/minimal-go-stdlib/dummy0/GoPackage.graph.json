@@ -7,10 +7,11 @@
       "TreePath": ".",
       "Name": "dummy0",
       "Kind": "package",
-      "File": "src/pkg/dummy0",
+      "File": "src/dummy0",
       "DefStart": 0,
       "DefEnd": 0,
       "Exported": true,
+      "Local": null,
       "Data": {
         "Exported": true,
         "PkgName": "dummy0",
@@ -26,10 +27,11 @@
       "TreePath": "./MyFunc",
       "Name": "MyFunc",
       "Kind": "func",
-      "File": "src/pkg/dummy0/dummy0.go",
+      "File": "src/dummy0/dummy0.go",
       "DefStart": 356,
       "DefEnd": 517,
       "Exported": true,
+      "Local": null,
       "Data": {
         "Exported": true,
         "PkgScope": true,
@@ -47,10 +49,11 @@
       "TreePath": "./v",
       "Name": "v",
       "Kind": "var",
-      "File": "src/pkg/dummy0/dummy0_test.go",
+      "File": "src/dummy0/dummy0_test.go",
       "DefStart": 37,
       "DefEnd": 52,
       "Exported": false,
+      "Local": null,
       "Test": true,
       "Data": {
         "PkgScope": true,
@@ -70,7 +73,7 @@
       "DefPath": ".",
       "Def": false,
       "Repo": "",
-      "File": "src/pkg/dummy0/dummy0.go",
+      "File": "src/dummy0/dummy0.go",
       "Start": 8,
       "End": 14
     },
@@ -81,7 +84,7 @@
       "DefPath": ".",
       "Def": false,
       "Repo": "",
-      "File": "src/pkg/dummy0/dummy0_test.go",
+      "File": "src/dummy0/dummy0_test.go",
       "Start": 8,
       "End": 14
     },
@@ -92,7 +95,7 @@
       "DefPath": ".",
       "Def": false,
       "Repo": "",
-      "File": "src/pkg/dummy0/dummy0.go",
+      "File": "src/dummy0/dummy0.go",
       "Start": 26,
       "End": 34
     },
@@ -103,7 +106,7 @@
       "DefPath": ".",
       "Def": false,
       "Repo": "",
-      "File": "src/pkg/dummy0/dummy0.go",
+      "File": "src/dummy0/dummy0.go",
       "Start": 370,
       "End": 376
     },
@@ -114,7 +117,7 @@
       "DefPath": ".",
       "Def": false,
       "Repo": "",
-      "File": "src/pkg/dummy0/dummy0.go",
+      "File": "src/dummy0/dummy0.go",
       "Start": 497,
       "End": 503
     },
@@ -125,7 +128,7 @@
       "DefPath": ".",
       "Def": false,
       "Repo": "",
-      "File": "src/pkg/dummy0/dummy0_test.go",
+      "File": "src/dummy0/dummy0_test.go",
       "Start": 23,
       "End": 31
     },
@@ -136,7 +139,7 @@
       "DefPath": ".",
       "Def": false,
       "Repo": "",
-      "File": "src/pkg/dummy0/dummy0_test.go",
+      "File": "src/dummy0/dummy0_test.go",
       "Start": 39,
       "End": 45
     },
@@ -147,7 +150,7 @@
       "DefPath": ".",
       "Def": false,
       "Repo": "",
-      "File": "src/pkg/dummy0/dummy0.go",
+      "File": "src/dummy0/dummy0.go",
       "Start": 36,
       "End": 41
     },
@@ -158,7 +161,7 @@
       "DefPath": ".",
       "Def": false,
       "Repo": "",
-      "File": "src/pkg/dummy0/dummy0.go",
+      "File": "src/dummy0/dummy0.go",
       "Start": 464,
       "End": 467
     },
@@ -169,7 +172,7 @@
       "DefPath": "FakePrintf",
       "Def": false,
       "Repo": "",
-      "File": "src/pkg/dummy0/dummy0.go",
+      "File": "src/dummy0/dummy0.go",
       "Start": 468,
       "End": 478
     },
@@ -180,7 +183,7 @@
       "DefPath": "MyFunc",
       "Def": true,
       "Repo": "",
-      "File": "src/pkg/dummy0/dummy0.go",
+      "File": "src/dummy0/dummy0.go",
       "Start": 361,
       "End": 367
     },
@@ -191,7 +194,7 @@
       "DefPath": "MyType",
       "Def": false,
       "Repo": "",
-      "File": "src/pkg/dummy0/dummy0.go",
+      "File": "src/dummy0/dummy0.go",
       "Start": 377,
       "End": 383
     },
@@ -202,7 +205,7 @@
       "DefPath": "MyType",
       "Def": false,
       "Repo": "",
-      "File": "src/pkg/dummy0/dummy0.go",
+      "File": "src/dummy0/dummy0.go",
       "Start": 504,
       "End": 510
     },
@@ -213,7 +216,7 @@
       "DefPath": "MyType",
       "Def": false,
       "Repo": "",
-      "File": "src/pkg/dummy0/dummy0_test.go",
+      "File": "src/dummy0/dummy0_test.go",
       "Start": 46,
       "End": 52
     },
@@ -224,7 +227,7 @@
       "DefPath": "v",
       "Def": true,
       "Repo": "",
-      "File": "src/pkg/dummy0/dummy0_test.go",
+      "File": "src/dummy0/dummy0_test.go",
       "Start": 37,
       "End": 38
     }

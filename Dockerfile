@@ -4,16 +4,21 @@ RUN apt-get update -qq && echo 2014-08-12
 RUN apt-get install -qq curl git mercurial bzr subversion build-essential
 
 # Install Go
-RUN curl -Lo /tmp/golang.tgz https://storage.googleapis.com/golang/go1.3.linux-amd64.tar.gz
-RUN tar -xzf /tmp/golang.tgz -C /usr/local
+
+# Go 1.4 devel because:
+# - need to support new syntaxes (chiefly `range`)
+# - the build tag file suffixes for powerpc changed to ppc64 and ppc64le
+RUN curl -Lo /tmp/golang.tgz https://go.googlesource.com/go/+archive/495e02db8c6e080504f03525daffa4c8f19a7b03.tar.gz
+RUN mkdir -p /usr/local/go && tar -xzf /tmp/golang.tgz -C /usr/local/go
+RUN echo 'devel +495e02 srclib' > /usr/local/go/VERSION
+RUN cd /usr/local/go/src && ./make.bash
+
 ENV GOROOT /usr/local/go
 ENV GOBIN /usr/local/bin
 ENV PATH /usr/local/go/bin:$PATH
 ENV GOPATH /srclib
 
-# TMP: this are slow; pre-fetch for faster builds
-RUN go get code.google.com/p/go.tools/go/loader code.google.com/p/go.tools/go/types code.google.com/p/go.tools/godoc/vfs
-RUN go get github.com/golang/gddo/gosrc github.com/jessevdk/go-flags sourcegraph.com/sourcegraph/srclib/graph sourcegraph.com/sourcegraph/srclib/src
+RUN go get github.com/kr/godep
 
 # Allow determining whether we're running in Docker
 ENV IN_DOCKER_CONTAINER true
@@ -21,9 +26,7 @@ ENV IN_DOCKER_CONTAINER true
 # Add this toolchain
 ADD . /srclib/src/sourcegraph.com/sourcegraph/srclib-go/
 WORKDIR /srclib/src/sourcegraph.com/sourcegraph/srclib-go
-RUN go get -u sourcegraph.com/sourcegraph/srclib/...
-RUN go get -v -d
-RUN go install
+RUN godep go install
 
 RUN useradd -ms /bin/bash srclib
 RUN mkdir /src

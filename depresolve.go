@@ -69,9 +69,14 @@ func (c *DepResolveCmd) Execute(args []string) error {
 		res[i].Target = rt
 	}
 
-	if err := json.NewEncoder(os.Stdout).Encode(res); err != nil {
+	b, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
 		return err
 	}
+	if _, err := os.Stdout.Write(b); err != nil {
+		return err
+	}
+	fmt.Println()
 	return nil
 }
 
@@ -98,6 +103,7 @@ func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, 
 
 	// Check if this import path is in this tree.
 	if pkg, err := buildContext.Import(importPath, "", build.FindOnly); err == nil && (pathHasPrefix(pkg.Dir, cwd) || (virtualCWD != "" && pathHasPrefix(pkg.Dir, virtualCWD)) || (dockerCWD != "" && pathHasPrefix(pkg.Dir, dockerCWD))) {
+		// TODO(sqs): do we want to link refs to vendored deps to their external repo? that's what it's doing now.
 		return &dep.ResolvedTarget{
 			// empty ToRepoCloneURL to indicate it's from this repository
 			ToRepoCloneURL: "",
@@ -121,9 +127,9 @@ func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, 
 		return nil, nil
 	}
 
-	if gosrc.IsGoRepoPath(importPath) || importPath == "debug/goobj" || importPath == "debug/plan9obj" {
+	if gosrc.IsGoRepoPath(importPath) || strings.HasPrefix(importPath, "debug/") || strings.HasPrefix(importPath, "cmd/") {
 		return &dep.ResolvedTarget{
-			ToRepoCloneURL:  "https://code.google.com/p/go",
+			ToRepoCloneURL:  "https://github.com/golang/go",
 			ToVersionString: runtime.Version(),
 			ToRevSpec:       "", // TODO(sqs): fill in when graphing stdlib repo
 			ToUnit:          importPath,
@@ -144,6 +150,17 @@ func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, 
 		}, nil
 	}
 
+	// Special-case google.golang.org/... (e.g., /appengine) import
+	// paths for performance and to avoid hitting GitHub rate limit.
+	if strings.HasPrefix(importPath, "google.golang.org/") {
+		importPath = strings.Replace(importPath, "google.golang.org/", "github.com/golang/", 1)
+		return &dep.ResolvedTarget{
+			ToRepoCloneURL: "https://" + importPath + ".git",
+			ToUnit:         importPath,
+			ToUnitType:     "GoPackage",
+		}, nil
+	}
+
 	// Special-case code.google.com/p/... import paths for performance.
 	if strings.HasPrefix(importPath, "code.google.com/p/") {
 		parts := strings.SplitN(importPath, "/", 4)
@@ -152,6 +169,18 @@ func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, 
 		}
 		return &dep.ResolvedTarget{
 			ToRepoCloneURL: "https://" + strings.Join(parts[:3], "/"),
+			ToUnit:         importPath,
+			ToUnitType:     "GoPackage",
+		}, nil
+	}
+	// Special-case golang.org/x/... import paths for performance.
+	if strings.HasPrefix(importPath, "golang.org/x/") {
+		parts := strings.SplitN(importPath, "/", 4)
+		if len(parts) < 3 {
+			return nil, fmt.Errorf("import path starts with 'golang.org/x/' but is not valid: %q", importPath)
+		}
+		return &dep.ResolvedTarget{
+			ToRepoCloneURL: "https://" + strings.Replace(strings.Join(parts[:3], "/"), "golang.org/x/", "github.com/golang/", 1),
 			ToUnit:         importPath,
 			ToUnitType:     "GoPackage",
 		}, nil

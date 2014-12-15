@@ -41,7 +41,19 @@ func init() {
 }
 
 type srcfileConfig struct {
-	GOROOT        string
+	// GOROOT, if specified, is made absolute (prefixed with the
+	// directory that the repository being built is checked out to)
+	// and is set as the GOROOT environment variable.
+	GOROOT string
+
+	// GOPATH's colon-separated dirs, if specified, are made absolute
+	// (prefixed with the directory that the repository being built is
+	// checked out to) and the resulting value is appended to the
+	// GOPATH environment variable during the build.
+	GOPATH string
+
+	PkgPatterns []string // pattern passed to `go list` (defaults to {"./..."})
+
 	SourceImports bool
 }
 
@@ -80,6 +92,22 @@ func (c *srcfileConfig) apply() error {
 		loaderConfig.Build = &buildContext
 	}
 
+	if config.GOPATH != "" {
+		// clean/absolutize all paths
+		dirs := uniq(strings.Split(config.GOPATH, ":"))
+		for i, dir := range dirs {
+			dir = filepath.Clean(dir)
+			if !filepath.IsAbs(dir) {
+				dir = filepath.Join(cwd, dir)
+			}
+			dirs[i] = dir
+		}
+		config.GOPATH = strings.Join(dirs, ":")
+
+		buildContext.GOPATH += ":" + config.GOPATH
+		loaderConfig.Build = &buildContext
+	}
+
 	loaderConfig.SourceImports = config.SourceImports
 
 	return nil
@@ -97,4 +125,18 @@ func (c *srcfileConfig) env() []string {
 
 func pathHasPrefix(path, prefix string) bool {
 	return prefix == "." || path == prefix || strings.HasPrefix(path, prefix+"/")
+}
+
+// uniq maintains the order of s.
+func uniq(s []string) []string {
+	seen := make(map[string]struct{}, len(s))
+	var uniq []string
+	for _, s := range s {
+		if _, seen := seen[s]; seen {
+			continue
+		}
+		seen[s] = struct{}{}
+		uniq = append(uniq, s)
+	}
+	return uniq
 }

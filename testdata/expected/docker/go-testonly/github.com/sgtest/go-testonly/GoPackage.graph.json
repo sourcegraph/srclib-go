@@ -1,0 +1,37 @@
+{
+  "Defs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-testonly",
+      "Path": ".",
+      "TreePath": ".",
+      "Name": "foo",
+      "Kind": "package",
+      "File": ".",
+      "DefStart": 0,
+      "DefEnd": 0,
+      "Exported": true,
+      "Local": null,
+      "Data": {
+        "Exported": true,
+        "PkgName": "foo",
+        "TypeString": "",
+        "Kind": "package",
+        "PackageImportPath": "github.com/sgtest/go-testonly"
+      }
+    }
+  ],
+  "Refs": [
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-testonly",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "foo_test.go",
+      "Start": 8,
+      "End": 11
+    }
+  ]
+}

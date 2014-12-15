@@ -1,0 +1,123 @@
+{
+  "Defs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/alice/mypkg2",
+      "Path": ".",
+      "TreePath": ".",
+      "Name": "mypkg2",
+      "Kind": "package",
+      "File": "vendor/src/github.com/alice/mypkg2",
+      "DefStart": 0,
+      "DefEnd": 0,
+      "Exported": true,
+      "Local": null,
+      "Data": {
+        "Exported": true,
+        "PkgName": "mypkg2",
+        "TypeString": "",
+        "Kind": "package",
+        "PackageImportPath": "github.com/alice/mypkg2"
+      }
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/alice/mypkg2",
+      "Path": "init$mypkg2113",
+      "TreePath": "./init$mypkg2113",
+      "Name": "init",
+      "Kind": "func",
+      "File": "vendor/src/github.com/alice/mypkg2/mypkg2.go",
+      "DefStart": 108,
+      "DefEnd": 137,
+      "Exported": false,
+      "Local": null,
+      "Data": {
+        "PkgName": "mypkg2",
+        "TypeString": "func()",
+        "UnderlyingTypeString": "func()",
+        "Kind": "func",
+        "PackageImportPath": "github.com/alice/mypkg2"
+      }
+    }
+  ],
+  "Refs": [
+    {
+      "DefRepo": "github.com/alice/mypkg2",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/alice/mypkg2",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "vendor/src/github.com/alice/mypkg2/mypkg2.go",
+      "Start": 67,
+      "End": 73
+    },
+    {
+      "DefRepo": "github.com/alice/mypkg",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/alice/mypkg",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "vendor/src/github.com/alice/mypkg2/mypkg2.go",
+      "Start": 124,
+      "End": 129
+    },
+    {
+      "DefRepo": "github.com/alice/mypkg",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/alice/mypkg",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "vendor/src/github.com/alice/mypkg2/mypkg2.go",
+      "Start": 82,
+      "End": 106
+    },
+    {
+      "DefRepo": "github.com/alice/mypkg",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/alice/mypkg",
+      "DefPath": "Foo",
+      "Def": false,
+      "Repo": "",
+      "File": "vendor/src/github.com/alice/mypkg2/mypkg2.go",
+      "Start": 130,
+      "End": 133
+    },
+    {
+      "DefRepo": "github.com/alice/mypkg2",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/alice/mypkg2",
+      "DefPath": "init$mypkg2113",
+      "Def": true,
+      "Repo": "",
+      "File": "vendor/src/github.com/alice/mypkg2/mypkg2.go",
+      "Start": 113,
+      "End": 117
+    }
+  ],
+  "Docs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/alice/mypkg2",
+      "Path": ".",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\nPackage mypkg2 tests that it can import a vendored dep.\n\u003c/p\u003e\n",
+      "File": "",
+      "Start": 0,
+      "End": 0
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/alice/mypkg2",
+      "Path": ".",
+      "Format": "text/plain",
+      "Data": "Package mypkg2 tests that it can import a vendored dep.\n",
+      "File": "",
+      "Start": 0,
+      "End": 0
+    }
+  ]
+}

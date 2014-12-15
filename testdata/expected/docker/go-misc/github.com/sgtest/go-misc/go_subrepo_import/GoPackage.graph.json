@@ -11,6 +11,7 @@
       "DefStart": 0,
       "DefEnd": 0,
       "Exported": true,
+      "Local": null,
       "Data": {
         "Exported": true,
         "PkgName": "go_subrepo_import",
@@ -27,9 +28,10 @@
       "Name": "Foo",
       "Kind": "func",
       "File": "go_subrepo_import/go_subrepo_import.go",
-      "DefStart": 238,
-      "DefEnd": 306,
+      "DefStart": 214,
+      "DefEnd": 282,
       "Exported": true,
+      "Local": null,
       "Data": {
         "Exported": true,
         "PkgScope": true,
@@ -48,13 +50,14 @@
       "Name": "c",
       "Kind": "var",
       "File": "go_subrepo_import/go_subrepo_import.go",
-      "DefStart": 252,
-      "DefEnd": 268,
+      "DefStart": 228,
+      "DefEnd": 244,
       "Exported": false,
+      "Local": null,
       "Data": {
         "PkgName": "go_subrepo_import",
-        "TypeString": "invalid type",
-        "UnderlyingTypeString": "invalid type",
+        "TypeString": "golang.org/x/net/ipv6.Conn",
+        "UnderlyingTypeString": "struct{golang.org/x/net/ipv6.genericOpt}",
         "Kind": "var",
         "PackageImportPath": "github.com/sgtest/go-misc/go_subrepo_import"
       }
@@ -67,13 +70,14 @@
       "Name": "t",
       "Kind": "var",
       "File": "go_subrepo_import/go_subrepo_import.go",
-      "DefStart": 278,
-      "DefEnd": 297,
+      "DefStart": 254,
+      "DefEnd": 273,
       "Exported": false,
+      "Local": null,
       "Data": {
         "PkgName": "go_subrepo_import",
-        "TypeString": "invalid type",
-        "UnderlyingTypeString": "invalid type",
+        "TypeString": "golang.org/x/tools/go/types.Config",
+        "UnderlyingTypeString": "struct{IgnoreFuncBodies bool; FakeImportC bool; Packages map[string]*golang.org/x/tools/go/types.Package; Error func(err error); Import golang.org/x/tools/go/types.Importer; Sizes golang.org/x/tools/go/types.Sizes}",
         "Kind": "var",
         "PackageImportPath": "github.com/sgtest/go-misc/go_subrepo_import"
       }
@@ -88,8 +92,74 @@
       "Def": false,
       "Repo": "",
       "File": "go_subrepo_import/go_subrepo_import.go",
-      "Start": 135,
-      "End": 152
+      "Start": 127,
+      "End": 144
+    },
+    {
+      "DefRepo": "github.com/golang/net",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "golang.org/x/net/ipv6",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 156,
+      "End": 179
+    },
+    {
+      "DefRepo": "github.com/golang/net",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "golang.org/x/net/ipv6",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 233,
+      "End": 237
+    },
+    {
+      "DefRepo": "github.com/golang/tools",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "golang.org/x/tools/go/types",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 181,
+      "End": 210
+    },
+    {
+      "DefRepo": "github.com/golang/tools",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "golang.org/x/tools/go/types",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 259,
+      "End": 264
+    },
+    {
+      "DefRepo": "github.com/golang/tools",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "golang.org/x/tools/go/types",
+      "DefPath": "Config",
+      "Def": false,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 265,
+      "End": 271
+    },
+    {
+      "DefRepo": "github.com/golang/net",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "golang.org/x/net/ipv6",
+      "DefPath": "Conn",
+      "Def": false,
+      "Repo": "",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 238,
+      "End": 242
     },
     {
       "DefRepo": "",
@@ -99,8 +169,8 @@
       "Def": true,
       "Repo": "",
       "File": "go_subrepo_import/go_subrepo_import.go",
-      "Start": 252,
-      "End": 253
+      "Start": 228,
+      "End": 229
     },
     {
       "DefRepo": "",
@@ -110,8 +180,8 @@
       "Def": false,
       "Repo": "",
       "File": "go_subrepo_import/go_subrepo_import.go",
-      "Start": 274,
-      "End": 275
+      "Start": 250,
+      "End": 251
     },
     {
       "DefRepo": "",
@@ -121,8 +191,8 @@
       "Def": true,
       "Repo": "",
       "File": "go_subrepo_import/go_subrepo_import.go",
-      "Start": 278,
-      "End": 279
+      "Start": 254,
+      "End": 255
     },
     {
       "DefRepo": "",
@@ -132,8 +202,8 @@
       "Def": false,
       "Repo": "",
       "File": "go_subrepo_import/go_subrepo_import.go",
-      "Start": 303,
-      "End": 304
+      "Start": 279,
+      "End": 280
     },
     {
       "DefRepo": "",
@@ -143,8 +213,8 @@
       "Def": true,
       "Repo": "",
       "File": "go_subrepo_import/go_subrepo_import.go",
-      "Start": 243,
-      "End": 246
+      "Start": 219,
+      "End": 222
     }
   ],
   "Docs": [
@@ -153,7 +223,7 @@
       "Unit": "github.com/sgtest/go-misc/go_subrepo_import",
       "Path": ".",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\nPackage go_subrepo_import tests that srclib-go properly resolves imports of\nGo subrepositories (code.google.com/p/go.*).\n\u003c/p\u003e\n",
+      "Data": "\u003cp\u003e\nPackage go_subrepo_import tests that srclib-go properly resolves imports of\nGo subrepositories (golang.org/x/*).\n\u003c/p\u003e\n",
       "File": "",
       "Start": 0,
       "End": 0
@@ -163,7 +233,7 @@
       "Unit": "github.com/sgtest/go-misc/go_subrepo_import",
       "Path": ".",
       "Format": "text/plain",
-      "Data": "Package go_subrepo_import tests that srclib-go properly resolves imports of\nGo subrepositories (code.google.com/p/go.*).\n",
+      "Data": "Package go_subrepo_import tests that srclib-go properly resolves imports of\nGo subrepositories (golang.org/x/*).\n",
       "File": "",
       "Start": 0,
       "End": 0
