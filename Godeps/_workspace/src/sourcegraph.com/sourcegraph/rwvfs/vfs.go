@@ -90,6 +90,31 @@ type WalkableFileSystem interface {
 	Join(elem ...string) string
 }
 
-type walkableFileSystem struct{ FileSystem }
+// Walkable creates a walkable VFS by wrapping fs.
+func Walkable(fs FileSystem) WalkableFileSystem {
+	wfs := walkableFS{fs}
+	switch fs.(type) {
+	case LinkReader:
+		return walkableFSLinkReader{wfs}
+	default:
+		return wfs
+	}
+}
 
-func (_ walkableFileSystem) Join(elem ...string) string { return filepath.Join(elem...) }
+type walkableFS struct{ FileSystem }
+
+func (_ walkableFS) Join(elem ...string) string { return filepath.Join(elem...) }
+
+type walkableFSLinkReader struct{ walkableFS }
+
+func (f walkableFSLinkReader) ReadLink(name string) (string, error) {
+	return f.FileSystem.(LinkReader).ReadLink(name)
+}
+
+var _ LinkReader = walkableFSLinkReader{}
+
+// A LinkReader is a filesystem that supports dereferencing symlinks.
+type LinkReader interface {
+	// ReadLink returns the destination of the named symbolic link.
+	ReadLink(name string) (string, error)
+}

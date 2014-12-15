@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/jmoiron/sqlx/types"
 	"sourcegraph.com/sourcegraph/srclib-go/gog/definfo"
 	"sourcegraph.com/sourcegraph/srclib/graph"
+	"sourcegraph.com/sourcegraph/srclib/util/sqltypes"
 )
 
-func defInfo(si DefData) types.JsonText {
+func defInfo(si DefData) sqltypes.JSON {
 	b, err := json.Marshal(si)
 	if err != nil {
 		panic(err)
@@ -27,7 +27,7 @@ func TestDefFormatter_Name(t *testing.T) {
 			// unqualified
 			def: &graph.Def{
 				Name: "name",
-				Data: types.JsonText(`{}`),
+				Data: sqltypes.JSON(`{}`),
 			},
 			qual: graph.Unqualified,
 			want: "name",

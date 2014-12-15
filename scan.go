@@ -13,7 +13,7 @@ import (
 	"sort"
 	"strings"
 
-	"sourcegraph.com/sourcegraph/srclib/toolchain"
+	"sourcegraph.com/sourcegraph/srclib"
 	"sourcegraph.com/sourcegraph/srclib/unit"
 )
 
@@ -245,7 +245,7 @@ func scan(pkgPatterns []string) ([]*unit.SourceUnit, error) {
 			Files:        files,
 			Data:         pkg,
 			Dependencies: deps,
-			Ops:          map[string]*toolchain.ToolRef{"depresolve": nil, "graph": nil},
+			Ops:          map[string]*srclib.ToolRef{"depresolve": nil, "graph": nil},
 		})
 	}
 	if err := cmd.Wait(); err != nil {

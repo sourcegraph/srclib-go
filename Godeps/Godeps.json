@@ -1,6 +1,6 @@
 {
 	"ImportPath": "sourcegraph.com/sourcegraph/srclib-go",
-	"GoVersion": "go1.4rc2",
+	"GoVersion": "go1.4",
 	"Packages": [
 		"./..."
 	],
@@ -11,8 +11,49 @@
 			"Rev": "e7ca3a2567b8ad482fef7b1aa1a258aa00c82772"
 		},
 		{
-			"ImportPath": "github.com/aybabtme/color",
-			"Rev": "0db0bdb3cc7ff8ddff622052366e17f0d506b0ef"
+			"ImportPath": "github.com/Sirupsen/logrus",
+			"Comment": "v0.6.2-2-g4266e0e",
+			"Rev": "4266e0eb6811bb6ac2087bfa61ea345e56db5777"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/archive",
+			"Comment": "v1.4.0-26-g8ca28a3",
+			"Rev": "8ca28a35c75b85404f2d2fc1ca2c35221ac33fc0"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/fileutils",
+			"Comment": "v1.4.0-26-g8ca28a3",
+			"Rev": "8ca28a35c75b85404f2d2fc1ca2c35221ac33fc0"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/ioutils",
+			"Comment": "v1.4.0-26-g8ca28a3",
+			"Rev": "8ca28a35c75b85404f2d2fc1ca2c35221ac33fc0"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/pools",
+			"Comment": "v1.4.0-26-g8ca28a3",
+			"Rev": "8ca28a35c75b85404f2d2fc1ca2c35221ac33fc0"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/promise",
+			"Comment": "v1.4.0-26-g8ca28a3",
+			"Rev": "8ca28a35c75b85404f2d2fc1ca2c35221ac33fc0"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/system",
+			"Comment": "v1.4.0-26-g8ca28a3",
+			"Rev": "8ca28a35c75b85404f2d2fc1ca2c35221ac33fc0"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/units",
+			"Comment": "v1.4.0-26-g8ca28a3",
+			"Rev": "8ca28a35c75b85404f2d2fc1ca2c35221ac33fc0"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/vendor/src/code.google.com/p/go/src/pkg/archive/tar",
+			"Comment": "v1.4.0-26-g8ca28a3",
+			"Rev": "8ca28a35c75b85404f2d2fc1ca2c35221ac33fc0"
 		},
 		{
 			"ImportPath": "github.com/fsouza/go-dockerclient",
@@ -29,30 +70,12 @@
 			"Rev": "ea0aed9cfac386a30364a32af2f5ad564c66c7dd"
 		},
 		{
-			"ImportPath": "github.com/jmoiron/sqlx/types",
-			"Comment": "sqlx-v1.0-38-g44ed2f4",
-			"Rev": "44ed2f4ee47dcddfb171b808b312ccb0e31fa3ba"
-		},
-		{
 			"ImportPath": "github.com/kr/fs",
 			"Rev": "2788f0dbd16903de03cb8186e5c7d97b69ad387b"
 		},
 		{
-			"ImportPath": "github.com/sourcegraph/go-nnz/nnz",
-			"Rev": "d9b9d9ed86fe920d7575fe6664ce2909bc2f8b3a"
-		},
-		{
 			"ImportPath": "github.com/sqs/fileset",
 			"Rev": "4317e899aa9438ba7603a6e322389571cb3ffdff"
-		},
-		{
-			"ImportPath": "github.com/sqs/go-flags",
-			"Comment": "v1-201-gcddcf3a",
-			"Rev": "cddcf3a4beb2c61a5ba60f16bf72c630ba29e329"
-		},
-		{
-			"ImportPath": "github.com/sqs/s3",
-			"Rev": "21938fb7faacf4815c20d2736e9e2002e1e718ec"
 		},
 		{
 			"ImportPath": "golang.org/x/tools/astutil",
@@ -85,21 +108,21 @@
 			"Rev": "c3d959302c8afd80f012c12f181c2e8d65aedcb1"
 		},
 		{
+			"ImportPath": "sourcegraph.com/sourcegraph/go-nnz/nnz",
+			"Rev": "d9b9d9ed86fe920d7575fe6664ce2909bc2f8b3a"
+		},
+		{
 			"ImportPath": "sourcegraph.com/sourcegraph/makex",
 			"Rev": "c8cc99912b772f144ad2902ba210478fd9ac4169"
 		},
 		{
 			"ImportPath": "sourcegraph.com/sourcegraph/rwvfs",
-			"Rev": "2e560fdf29cb3100ff0e7253f3c1a9f9f1d3e221"
-		},
-		{
-			"ImportPath": "sourcegraph.com/sourcegraph/s3vfs",
-			"Rev": "370cdbcc584e8c166c93bcae15841185bc3f8816"
+			"Rev": "dd1aee48616e9f49c277a7adaa43247bae516d37"
 		},
 		{
 			"ImportPath": "sourcegraph.com/sourcegraph/srclib",
-			"Comment": "v0.0.25-62-g84d5dd4",
-			"Rev": "84d5dd43faf467b70ab76eaf8090aef8301cb672"
+			"Comment": "v0.0.28-29-g09d9382",
+			"Rev": "09d9382de3ed3fafd8e9bc85a8a29aa864000e17"
 		}
 	]
 }

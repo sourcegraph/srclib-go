@@ -6,6 +6,8 @@ import (
 	"net/url"
 	"os"
 
+	"strconv"
+
 	"github.com/gregjones/httpcache"
 	"github.com/gregjones/httpcache/diskcache"
 	"github.com/sqs/go-flags"
@@ -25,31 +27,79 @@ func init() {
 	CLI.AddGroup("Global options", "", &GlobalOpt)
 }
 
-var (
-	httpClient http.Client
-	apiclient  *sourcegraph.Client
-)
-
-func init() {
-	// Initialize API client, setting auth data from SRC_USER_ID and SRC_USER_KEY if those env vars are set.
-	unauthedTransport := httpcache.NewTransport(diskcache.New("/tmp/srclib-cache"))
-	uid, uKey := os.Getenv("SRC_USER_ID"), os.Getenv("SRC_USER_KEY")
-	if uid == "" {
-		httpClient = http.Client{Transport: unauthedTransport}
-	} else {
-		authedTransport := &auth.BasicAuthTransport{Username: uid, Password: uKey, Transport: unauthedTransport}
-		httpClient = http.Client{Transport: authedTransport}
-	}
-	apiclient = sourcegraph.NewClient(&httpClient)
-
-	// Set the API client's base URL from the SRC_ENDPOINT env var, if set.
+func getEndpointURL() *url.URL {
 	if urlStr := os.Getenv("SRC_ENDPOINT"); urlStr != "" {
 		u, err := url.Parse(urlStr)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("Parsing SRC_ENDPOINT URL string:", err)
 		}
-		apiclient.BaseURL = u
+		return u
 	}
+	return &url.URL{Scheme: "https", Host: "sourcegraph.com", Path: "/api/"}
+}
+
+// getPermGrantTickets gets signed perm grant ticket strings from the
+// SRCLIB_TICKET env var. Currently only 1 ticket can be provided. The
+// signed ticket string should not contain the "Sourcegraph-Ticket "
+// prefix.
+func getPermGrantTickets() []string {
+	tkstr := os.Getenv("SRCLIB_TICKET")
+	if tkstr == "" {
+		return nil
+	}
+	return []string{tkstr}
+}
+
+// newAPIClient creates a new Sourcegraph API client for the endpoint
+// given by endpointURL (a global) and that is authenticated using the
+// credentials in ua (if non-nil) and perm grant ticket (if one is
+// provided in SRCLIB_TICKET).
+func newAPIClient(ua *userEndpointAuth) *sourcegraph.Client {
+	endpointURL := getEndpointURL()
+
+	transport := http.RoundTripper(httpcache.NewTransport(diskcache.New("/tmp/srclib-cache")))
+
+	if tickets := getPermGrantTickets(); len(tickets) > 0 {
+		log.Println("# Using perm grant ticket from SRCLIB_TICKET.")
+		transport = &auth.TicketAuthedTransport{SignedTicketStrings: tickets, Transport: transport}
+	}
+
+	if ua == nil {
+		// Unauthenticated API client.
+		if GlobalOpt.Verbose {
+			log.Printf("# Using unauthenticated API client for endpoint %s.", endpointURL)
+		}
+	} else {
+		// Authenticated API client.
+		if GlobalOpt.Verbose {
+			log.Printf("# Using authenticated API client for endpoint %s (UID %d).", endpointURL, ua.UID)
+		}
+		transport = &auth.BasicAuthTransport{Username: strconv.Itoa(ua.UID), Password: ua.Key, Transport: transport}
+	}
+	c := sourcegraph.NewClient(&http.Client{Transport: transport})
+	c.BaseURL = endpointURL
+	return c
+}
+
+// NewAPIClientWithAuthIfPresent calls newAPIClient with the user auth
+// credentials from the userAuthFile (if present), and otherwise
+// creates an unauthed API client.
+func NewAPIClientWithAuthIfPresent() *sourcegraph.Client {
+	var ua *userEndpointAuth
+	if uidStr, key := os.Getenv("SRC_UID"), os.Getenv("SRC_KEY"); uidStr != "" && key != "" {
+		uid, err := strconv.Atoi(uidStr)
+		if err != nil {
+			log.Fatal("Parsing SRC_UID:", err)
+		}
+		ua = &userEndpointAuth{UID: uid, Key: key}
+	} else {
+		a, err := readUserAuth()
+		if err != nil {
+			log.Fatal("Reading user auth:", err)
+		}
+		ua = a[getEndpointURL().String()]
+	}
+	return newAPIClient(ua)
 }
 
 var (
