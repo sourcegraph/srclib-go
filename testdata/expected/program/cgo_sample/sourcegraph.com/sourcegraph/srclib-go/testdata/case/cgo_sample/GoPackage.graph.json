@@ -11,7 +11,7 @@
       "DefStart": 0,
       "DefEnd": 0,
       "Exported": true,
-      "Local": null,
+      "Local": false,
       "Data": {
         "Exported": true,
         "PkgName": "cgo_sample",
@@ -31,7 +31,7 @@
       "DefStart": 255,
       "DefEnd": 268,
       "Exported": true,
-      "Local": null,
+      "Local": false,
       "Data": {
         "Exported": true,
         "PkgScope": true,
@@ -53,7 +53,7 @@
       "DefStart": 45,
       "DefEnd": 110,
       "Exported": true,
-      "Local": null,
+      "Local": false,
       "Data": {
         "Exported": true,
         "PkgScope": true,
@@ -75,7 +75,7 @@
       "DefStart": 59,
       "DefEnd": 92,
       "Exported": false,
-      "Local": null,
+      "Local": true,
       "Data": {
         "PkgName": "cgo_sample",
         "TypeString": "invalid type",
