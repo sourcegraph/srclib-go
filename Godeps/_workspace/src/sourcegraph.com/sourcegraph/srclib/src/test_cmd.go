@@ -18,7 +18,6 @@ import (
 	"sourcegraph.com/sourcegraph/srclib/buildstore"
 	"sourcegraph.com/sourcegraph/srclib/graph"
 	"sourcegraph.com/sourcegraph/srclib/grapher"
-	"sourcegraph.com/sourcegraph/srclib/util"
 )
 
 func init() {
@@ -187,6 +186,7 @@ func testTree(treeDir, expectedDir, actualDir string, exeMethod string, generate
 	cmd := exec.Command("src", "-v", "do-all", "-m", exeMethod)
 	cmd.Dir = treeDir
 	cmd.Stderr, cmd.Stdout = w, w
+	cmd.Env = append(os.Environ(), "SRCLIB_FOLLOW_CROSS_FS_SYMLINKS=true")
 
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("Command %v in %s failed: %s.\n\nOutput was:\n%s", cmd.Args, treeName, err, buf.String())
@@ -208,7 +208,7 @@ func checkResults(output bytes.Buffer, treeDir, actualDir, expectedDir string) e
 		if len(out) > 0 {
 			fmt.Println(brush.Red(treeName + " FAIL"))
 			fmt.Println(output.String())
-			fmt.Println(string(util.ColorizeDiff(out)))
+			fmt.Println(string(ColorizeDiff(out)))
 		}
 		return fmt.Errorf("Output for %s differed from expected.", treeName)
 	} else {
@@ -298,4 +298,20 @@ func (c *DiffCmd) Execute(args []string) error {
 	}
 
 	return fmt.Errorf("expected and actual output differ")
+}
+
+// ColorizeDiff takes a byte slice of lines and returns the same, but with diff
+// highlighting. That is, lines starting with '+' are green and lines starting
+// with '-' are red.
+func ColorizeDiff(diff []byte) []byte {
+	lines := bytes.Split(diff, []byte{'\n'})
+	for i, line := range lines {
+		if bytes.HasPrefix(line, []byte{'-'}) {
+			lines[i] = []byte(brush.Red(string(line)).String())
+		}
+		if bytes.HasPrefix(line, []byte{'+'}) {
+			lines[i] = []byte(brush.Green(string(line)).String())
+		}
+	}
+	return bytes.Join(lines, []byte{'\n'})
 }

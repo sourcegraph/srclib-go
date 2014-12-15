@@ -1,4 +1,4 @@
-package toolchain
+package flagutil
 
 import (
 	"fmt"
@@ -35,6 +35,10 @@ func MarshalArgs(v interface{}) ([]string, error) {
 		} else if ss, ok := v.([]string); ok {
 			for _, s := range ss {
 				args = append(args, flagStr, s)
+			}
+		} else if bv, ok := v.(bool); ok {
+			if bv {
+				args = append(args, flagStr)
 			}
 		} else {
 			args = append(args, flagStr, fmt.Sprintf("%v", opt.Value()))
