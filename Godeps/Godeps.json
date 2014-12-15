@@ -90,7 +90,7 @@
 		},
 		{
 			"ImportPath": "sourcegraph.com/sourcegraph/rwvfs",
-			"Rev": "2e560fdf29cb3100ff0e7253f3c1a9f9f1d3e221"
+			"Rev": "dd1aee48616e9f49c277a7adaa43247bae516d37"
 		},
 		{
 			"ImportPath": "sourcegraph.com/sourcegraph/s3vfs",
@@ -98,8 +98,8 @@
 		},
 		{
 			"ImportPath": "sourcegraph.com/sourcegraph/srclib",
-			"Comment": "v0.0.25-62-g84d5dd4",
-			"Rev": "84d5dd43faf467b70ab76eaf8090aef8301cb672"
+			"Comment": "v0.0.28-31-g0e2a74f",
+			"Rev": "0e2a74f7c22fb4c78b75dbbc73ff116beecffd2f"
 		}
 	]
 }

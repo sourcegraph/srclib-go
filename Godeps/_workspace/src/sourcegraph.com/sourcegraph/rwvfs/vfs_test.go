@@ -5,11 +5,17 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
 	"os"
 	"path/filepath"
 	"reflect"
 	"sort"
 	"testing"
+
+	"github.com/kr/fs"
+	"golang.org/x/tools/godoc/vfs/mapfs"
 )
 
 func TestSub(t *testing.T) {
@@ -56,6 +62,14 @@ func TestRWVFS(t *testing.T) {
 	}
 	defer os.RemoveAll(tmpdir)
 
+	h := http.Handler(HTTPHandler(Map(map[string]string{}), nil))
+	httpServer := httptest.NewServer(h)
+	defer httpServer.Close()
+	httpURL, err := url.Parse(httpServer.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	tests := []struct {
 		fs   FileSystem
 		path string
@@ -63,6 +77,7 @@ func TestRWVFS(t *testing.T) {
 		{OS(tmpdir), "/foo"},
 		{Map(map[string]string{}), "/foo"},
 		{Sub(Map(map[string]string{}), "/x"), "/foo"},
+		{HTTP(httpURL, nil), "/foo"},
 	}
 	for _, test := range tests {
 		testWrite(t, test.fs, test.path)
@@ -99,7 +114,7 @@ func testGlob(t *testing.T, fs FileSystem) {
 		{"", "x/*", []string{"x/y", "x/2.txt"}},
 	}
 	for _, test := range globTests {
-		matches, err := Glob(walkableFileSystem{fs}, test.prefix, test.pattern)
+		matches, err := Glob(Walkable(fs), test.prefix, test.pattern)
 		if err != nil {
 			t.Errorf("%s: Glob(prefix=%q, pattern=%q): %s", label, test.prefix, test.pattern, err)
 			continue
@@ -187,7 +202,7 @@ func testMkdir(t *testing.T, fs FileSystem) {
 
 	err = fs.Mkdir("/dir1")
 	if !os.IsExist(err) {
-		t.Errorf("%s: Mkdir(/dir1) again: got no error, want os.IsExist-satisfying error", label)
+		t.Errorf("%s: Mkdir(/dir1) again: got err %v, want os.IsExist-satisfying error", label, err)
 	}
 
 	err = fs.Mkdir("/parent-doesnt-exist/dir2")
@@ -251,5 +266,224 @@ func testPathDoesNotExist(t *testing.T, label string, fs FileSystem, path string
 		t.Errorf("%s: Stat(%q): want os.IsNotExist-satisfying error, got %q", label, path, err)
 	} else if err == nil {
 		t.Errorf("%s: Stat(%q): want file to not exist, got existing file with FileInfo %+v", label, path, fi)
+	}
+}
+
+func TestMap_MkdirAllWithRootNotExists(t *testing.T) {
+	m := map[string]string{}
+	fs := Sub(Map(m), "x")
+
+	paths := []string{"a/b", "/c/d"}
+	for _, path := range paths {
+		if err := MkdirAll(fs, path); err != nil {
+			t.Errorf("MkdirAll %q: %s", path, err)
+		}
+	}
+}
+
+func TestHTTP_BaseURL(t *testing.T) {
+	m := map[string]string{"b/c": "c"}
+	mapFS := Map(m)
+
+	prefix := "/foo/bar/baz"
+
+	h := http.Handler(http.StripPrefix(prefix, HTTPHandler(mapFS, nil)))
+	httpServer := httptest.NewServer(h)
+	defer httpServer.Close()
+	httpURL, err := url.Parse(httpServer.URL + prefix)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	fs := HTTP(httpURL, nil)
+
+	if err := MkdirAll(fs, "b"); err != nil {
+		t.Errorf("MkdirAll %q: %s", "b", err)
+	}
+
+	fis, err := fs.ReadDir("b")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(fis) != 1 {
+		t.Errorf("got len(fis) == %d, want 1", len(fis))
+	}
+	if wantName := "c"; fis[0].Name() != wantName {
+		t.Errorf("got name == %q, want %q", fis[0].Name(), wantName)
+	}
+}
+
+func TestMap_Walk(t *testing.T) {
+	m := map[string]string{"a": "a", "b/c": "c", "b/x/y/z": "z"}
+	mapFS := Map(m)
+
+	var names []string
+	w := fs.WalkFS(".", Walkable(mapFS))
+	for w.Step() {
+		if err := w.Err(); err != nil {
+			t.Fatalf("walk path %q: %s", w.Path(), err)
+		}
+		names = append(names, w.Path())
+	}
+
+	wantNames := []string{".", "a", "b", "b/c", "b/x", "b/x/y", "b/x/y/z"}
+	sort.Strings(names)
+	sort.Strings(wantNames)
+	if !reflect.DeepEqual(names, wantNames) {
+		t.Errorf("got entry names %v, want %v", names, wantNames)
+	}
+}
+
+func TestMap_Walk2(t *testing.T) {
+	m := map[string]string{"a/b/c/d": "a"}
+	mapFS := Map(m)
+
+	var names []string
+	w := fs.WalkFS(".", Walkable(Sub(mapFS, "a/b")))
+	for w.Step() {
+		if err := w.Err(); err != nil {
+			t.Fatalf("walk path %q: %s", w.Path(), err)
+		}
+		names = append(names, w.Path())
+	}
+
+	wantNames := []string{".", "c", "c/d"}
+	sort.Strings(names)
+	sort.Strings(wantNames)
+	if !reflect.DeepEqual(names, wantNames) {
+		t.Errorf("got entry names %v, want %v", names, wantNames)
+	}
+}
+
+func TestReadOnly(t *testing.T) {
+	m := map[string]string{"x": "y"}
+	rfs := mapfs.New(m)
+	wfs := ReadOnly(rfs)
+
+	if _, err := rfs.Stat("/x"); err != nil {
+		t.Error(err)
+	}
+
+	_, err := wfs.Create("/y")
+	if want := (&os.PathError{"create", "/y", ErrReadOnly}); !reflect.DeepEqual(err, want) {
+		t.Errorf("Create: got err %v, want %v", err, want)
+	}
+
+	err = wfs.Mkdir("/y")
+	if want := (&os.PathError{"mkdir", "/y", ErrReadOnly}); !reflect.DeepEqual(err, want) {
+		t.Errorf("Mkdir: got err %v, want %v", err, want)
+	}
+
+	err = wfs.Remove("/y")
+	if want := (&os.PathError{"remove", "/y", ErrReadOnly}); !reflect.DeepEqual(err, want) {
+		t.Errorf("Remove: got err %v, want %v", err, want)
+	}
+
+}
+
+func TestOS_ReadLink(t *testing.T) {
+	tmpdir, err := ioutil.TempDir("", "rwvfs-test-")
+	if err != nil {
+		t.Fatal("TempDir", err)
+	}
+	defer os.RemoveAll(tmpdir)
+
+	if err := ioutil.WriteFile(filepath.Join(tmpdir, "myfile"), []byte("hello"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(filepath.Join(tmpdir, "myfile"), filepath.Join(tmpdir, "mylink")); err != nil {
+		t.Fatal(err)
+	}
+
+	osfs := OS(tmpdir)
+	dst, err := osfs.(LinkReader).ReadLink("mylink")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "myfile"; dst != want {
+		t.Errorf("%s: ReadLink: got %q, want %q", osfs, dst, want)
+	}
+}
+
+func TestOS_ReadLink_walkable(t *testing.T) {
+	tmpdir, err := ioutil.TempDir("", "rwvfs-test-")
+	if err != nil {
+		t.Fatal("TempDir", err)
+	}
+	defer os.RemoveAll(tmpdir)
+
+	if err := ioutil.WriteFile(filepath.Join(tmpdir, "myfile"), []byte("hello"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(filepath.Join(tmpdir, "myfile"), filepath.Join(tmpdir, "mylink")); err != nil {
+		t.Fatal(err)
+	}
+
+	osfs := OS(tmpdir)
+	dst, err := Walkable(osfs).(LinkReader).ReadLink("mylink")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "myfile"; dst != want {
+		t.Errorf("%s: ReadLink: got %q, want %q", osfs, dst, want)
+	}
+}
+
+func TestSub_ReadLink(t *testing.T) {
+	tmpdir, err := ioutil.TempDir("", "rwvfs-test-")
+	if err != nil {
+		t.Fatal("TempDir", err)
+	}
+	defer os.RemoveAll(tmpdir)
+
+	if err := os.Mkdir(filepath.Join(tmpdir, "mydir"), 0700); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := ioutil.WriteFile(filepath.Join(tmpdir, "mydir", "myfile"), []byte("hello"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(filepath.Join(tmpdir, "mydir", "myfile"), filepath.Join(tmpdir, "mydir", "mylink")); err != nil {
+		t.Fatal(err)
+	}
+
+	osfs := OS(tmpdir)
+	sub := Sub(osfs, "mydir")
+	dst, err := sub.(LinkReader).ReadLink("mylink")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "myfile"; dst != want {
+		t.Errorf("%s: ReadLink: got %q, want %q", osfs, dst, want)
+	}
+}
+
+func TestOS_ReadLink_ErrOutsideRoot(t *testing.T) {
+	tmpdir1, err := ioutil.TempDir("", "rwvfs-test-")
+	if err != nil {
+		t.Fatal("TempDir", err)
+	}
+	defer os.RemoveAll(tmpdir1)
+
+	tmpdir2, err := ioutil.TempDir("", "rwvfs-test-")
+	if err != nil {
+		t.Fatal("TempDir", err)
+	}
+	defer os.RemoveAll(tmpdir2)
+
+	if err := ioutil.WriteFile(filepath.Join(tmpdir1, "myfile"), []byte("hello"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(filepath.Join(tmpdir1, "myfile"), filepath.Join(tmpdir2, "mylink")); err != nil {
+		t.Fatal(err)
+	}
+
+	osfs := OS(tmpdir2)
+	dst, err := osfs.(LinkReader).ReadLink("mylink")
+	if want := ErrOutsideRoot; err != want {
+		t.Fatalf("%s: ReadLink: got err %v, want %v", osfs, err, want)
+	}
+	if want := filepath.Join(tmpdir1, "myfile"); dst != want {
+		t.Errorf("%s: ReadLink: got %q, want %q", osfs, dst, want)
 	}
 }

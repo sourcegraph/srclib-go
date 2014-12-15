@@ -67,7 +67,11 @@ func getInitialConfig(opt config.Options, dir Directory) (*config.Repository, er
 	}
 
 	if cfg.Scanners == nil {
-		cfg.Scanners = config.SrclibPathConfig.Scanners
+		x, err := config.SrclibPathConfig()
+		if err != nil {
+			return nil, err
+		}
+		cfg.Scanners = x.Scanners
 	}
 
 	return cfg, nil
@@ -120,10 +124,11 @@ func (c *ConfigCmd) Execute(args []string) error {
 	if err != nil {
 		return fmt.Errorf("failed to open repo: %s", err)
 	}
-	buildStore, err := buildstore.NewRepositoryStore(currentRepo.RootDir)
+	buildStore, err := buildstore.LocalRepo(currentRepo.RootDir)
 	if err != nil {
 		return err
 	}
+	commitFS := buildStore.Commit(currentRepo.CommitID)
 
 	// Write source units to build cache.
 	//
@@ -138,18 +143,19 @@ func (c *ConfigCmd) Execute(args []string) error {
 	// all the files (maybe just use setup.py as a prereq? but then how will we
 	// update SourceUnit.Files list? SourceUnit.Globs could help here...)
 	if !c.NoCacheWrite {
-		if err := rwvfs.MkdirAll(buildStore, buildStore.CommitPath(currentRepo.CommitID)); err != nil {
+		if err := rwvfs.MkdirAll(commitFS, "."); err != nil {
 			return err
 		}
 		for _, u := range cfg.SourceUnits {
-			filename := buildStore.FilePath(currentRepo.CommitID, plan.SourceUnitDataFilename(unit.SourceUnit{}, u))
-			if err := rwvfs.MkdirAll(buildStore, filepath.Dir(filename)); err != nil {
+			unitFile := plan.SourceUnitDataFilename(unit.SourceUnit{}, u)
+			if err := rwvfs.MkdirAll(commitFS, filepath.Dir(unitFile)); err != nil {
 				return err
 			}
-			f, err := buildStore.Create(filename)
+			f, err := commitFS.Create(unitFile)
 			if err != nil {
 				return err
 			}
+			defer f.Close()
 			if err := json.NewEncoder(f).Encode(u); err != nil {
 				return err
 			}
