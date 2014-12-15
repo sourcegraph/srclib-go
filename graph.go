@@ -16,6 +16,7 @@ import (
 
 	"golang.org/x/tools/go/loader"
 
+	"sourcegraph.com/sourcegraph/go-nnz/sdf"
 	"sourcegraph.com/sourcegraph/srclib-go/gog"
 	"sourcegraph.com/sourcegraph/srclib-go/gog/definfo"
 	defpkg "sourcegraph.com/sourcegraph/srclib-go/golang_def"
@@ -291,6 +292,7 @@ func convertGoDef(gs *gog.Def, repoURI string) (*graph.Def, error) {
 		DefEnd:   gs.DeclSpan[1],
 
 		Exported: gs.DefInfo.Exported,
+		Local:    sdf.Bool(!gs.DefInfo.Exported && !gs.DefInfo.PkgScope),
 		Test:     strings.HasSuffix(gs.File, "_test.go"),
 	}
 
