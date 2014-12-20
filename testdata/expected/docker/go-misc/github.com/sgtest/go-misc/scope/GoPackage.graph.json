@@ -2,7 +2,7 @@
   "Defs": [
     {
       "UnitType": "GoPackage",
-      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Path": ".",
       "TreePath": ".",
       "Name": "scope",
@@ -17,12 +17,12 @@
         "PkgName": "scope",
         "TypeString": "",
         "Kind": "package",
-        "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
+        "PackageImportPath": "github.com/sgtest/go-misc/scope"
       }
     },
     {
       "UnitType": "GoPackage",
-      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Path": "A",
       "TreePath": "./A",
       "Name": "A",
@@ -39,12 +39,12 @@
         "TypeString": "bool",
         "UnderlyingTypeString": "bool",
         "Kind": "var",
-        "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
+        "PackageImportPath": "github.com/sgtest/go-misc/scope"
       }
     },
     {
       "UnitType": "GoPackage",
-      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Path": "a",
       "TreePath": "./a",
       "Name": "a",
@@ -60,12 +60,12 @@
         "TypeString": "bool",
         "UnderlyingTypeString": "bool",
         "Kind": "var",
-        "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
+        "PackageImportPath": "github.com/sgtest/go-misc/scope"
       }
     },
     {
       "UnitType": "GoPackage",
-      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Path": "fn",
       "TreePath": "./fn",
       "Name": "fn",
@@ -81,12 +81,12 @@
         "TypeString": "func()",
         "UnderlyingTypeString": "func()",
         "Kind": "func",
-        "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
+        "PackageImportPath": "github.com/sgtest/go-misc/scope"
       }
     },
     {
       "UnitType": "GoPackage",
-      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Path": "fn/b",
       "TreePath": "./fn/b",
       "Name": "b",
@@ -101,7 +101,7 @@
         "TypeString": "bool",
         "UnderlyingTypeString": "bool",
         "Kind": "var",
-        "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
+        "PackageImportPath": "github.com/sgtest/go-misc/scope"
       }
     }
   ],
@@ -109,7 +109,7 @@
     {
       "DefRepo": "",
       "DefUnitType": "GoPackage",
-      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": ".",
       "Def": false,
       "Repo": "",
@@ -120,7 +120,7 @@
     {
       "DefRepo": "",
       "DefUnitType": "GoPackage",
-      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "A",
       "Def": true,
       "Repo": "",
@@ -131,7 +131,7 @@
     {
       "DefRepo": "",
       "DefUnitType": "GoPackage",
-      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "a",
       "Def": true,
       "Repo": "",
@@ -175,7 +175,7 @@
     {
       "DefRepo": "",
       "DefUnitType": "GoPackage",
-      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "fn/b",
       "Def": true,
       "Repo": "",
@@ -186,7 +186,7 @@
     {
       "DefRepo": "",
       "DefUnitType": "GoPackage",
-      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "fn/b",
       "Def": false,
       "Repo": "",
@@ -197,7 +197,7 @@
     {
       "DefRepo": "",
       "DefUnitType": "GoPackage",
-      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "fn",
       "Def": true,
       "Repo": "",
@@ -209,7 +209,7 @@
   "Docs": [
     {
       "UnitType": "GoPackage",
-      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Path": ".",
       "Format": "text/html",
       "Data": "\u003cp\u003e\nThis package tests Exported and Local.\n\u003c/p\u003e\n",
@@ -219,7 +219,7 @@
     },
     {
       "UnitType": "GoPackage",
-      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Path": ".",
       "Format": "text/plain",
       "Data": "This package tests Exported and Local.\n",
@@ -229,7 +229,7 @@
     },
     {
       "UnitType": "GoPackage",
-      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Path": "A",
       "Format": "text/html",
       "Data": "\u003cp\u003e\nA - Exported: true, Local: false\n\u003c/p\u003e\n",
@@ -239,7 +239,7 @@
     },
     {
       "UnitType": "GoPackage",
-      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Path": "A",
       "Format": "text/plain",
       "Data": "A - Exported: true, Local: false\n",
@@ -249,7 +249,7 @@
     },
     {
       "UnitType": "GoPackage",
-      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Path": "a",
       "Format": "text/html",
       "Data": "\u003cp\u003e\na - Exported: false, Local: false\n\u003c/p\u003e\n",
@@ -259,7 +259,7 @@
     },
     {
       "UnitType": "GoPackage",
-      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Path": "a",
       "Format": "text/plain",
       "Data": "a - Exported: false, Local: false\n",
@@ -269,7 +269,7 @@
     },
     {
       "UnitType": "GoPackage",
-      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Path": "fn",
       "Format": "text/html",
       "Data": "\u003cp\u003e\nfn - Exported: false, Local: false\n\u003c/p\u003e\n",
@@ -279,7 +279,7 @@
     },
     {
       "UnitType": "GoPackage",
-      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Path": "fn",
       "Format": "text/plain",
       "Data": "fn - Exported: false, Local: false\n",

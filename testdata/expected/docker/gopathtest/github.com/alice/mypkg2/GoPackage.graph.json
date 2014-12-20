@@ -11,7 +11,7 @@
       "DefStart": 0,
       "DefEnd": 0,
       "Exported": true,
-      "Local": null,
+      "Local": false,
       "Data": {
         "Exported": true,
         "PkgName": "mypkg2",
@@ -31,7 +31,7 @@
       "DefStart": 108,
       "DefEnd": 137,
       "Exported": false,
-      "Local": null,
+      "Local": true,
       "Data": {
         "PkgName": "mypkg2",
         "TypeString": "func()",

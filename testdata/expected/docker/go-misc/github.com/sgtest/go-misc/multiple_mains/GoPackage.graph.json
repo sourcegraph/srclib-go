@@ -11,7 +11,7 @@
       "DefStart": 0,
       "DefEnd": 0,
       "Exported": true,
-      "Local": null,
+      "Local": false,
       "Data": {
         "Exported": true,
         "PkgName": "main",
@@ -31,7 +31,7 @@
       "DefStart": 78,
       "DefEnd": 114,
       "Exported": false,
-      "Local": null,
+      "Local": false,
       "Data": {
         "PkgScope": true,
         "PkgName": "main",
@@ -52,7 +52,7 @@
       "DefStart": 97,
       "DefEnd": 105,
       "Exported": false,
-      "Local": null,
+      "Local": true,
       "Data": {
         "PkgName": "main",
         "TypeString": "string",
@@ -72,7 +72,7 @@
       "DefStart": 97,
       "DefEnd": 105,
       "Exported": false,
-      "Local": null,
+      "Local": true,
       "Data": {
         "PkgName": "main",
         "TypeString": "string",
