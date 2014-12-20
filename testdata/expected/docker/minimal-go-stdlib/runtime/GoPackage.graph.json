@@ -11,7 +11,7 @@
       "DefStart": 0,
       "DefEnd": 0,
       "Exported": true,
-      "Local": null,
+      "Local": false,
       "Data": {
         "Exported": true,
         "PkgName": "runtime",
