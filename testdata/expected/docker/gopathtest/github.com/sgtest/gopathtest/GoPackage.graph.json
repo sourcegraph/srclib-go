@@ -45,17 +45,6 @@
     {
       "DefRepo": "",
       "DefUnitType": "GoPackage",
-      "DefUnit": "github.com/sgtest/gopathtest",
-      "DefPath": ".",
-      "Def": false,
-      "Repo": "",
-      "File": "gopathtest.go",
-      "Start": 81,
-      "End": 91
-    },
-    {
-      "DefRepo": "github.com/alice/mypkg",
-      "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": ".",
       "Def": false,
@@ -65,7 +54,7 @@
       "End": 128
     },
     {
-      "DefRepo": "github.com/alice/mypkg",
+      "DefRepo": "",
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": ".",
@@ -76,7 +65,18 @@
       "End": 183
     },
     {
-      "DefRepo": "github.com/alice/mypkg",
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/gopathtest",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "gopathtest.go",
+      "Start": 81,
+      "End": 91
+    },
+    {
+      "DefRepo": "",
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": "Foo",

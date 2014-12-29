@@ -120,6 +120,7 @@ func (c *GraphCmd) Execute(args []string) error {
 					return err
 				}
 				dirs[i] = newGOPATH
+				effectiveConfigGOPATHs = append(effectiveConfigGOPATHs, newSrcDir)
 			}
 			buildContext.GOPATH = strings.Join(dirs, ":")
 		}
