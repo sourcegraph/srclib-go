@@ -32,12 +32,28 @@ var (
 	// running in Docker), it is used to determine whether a path is effectively
 	// underneath the cwd.
 	dockerCWD string
+
+	// effectiveConfigGOPATHs is a list of GOPATH dirs that were
+	// created as a result of the GOPATH config property. These are
+	// the dirs that are appended to the actual build context GOPATH.
+	effectiveConfigGOPATHs []string
 )
 
 func init() {
 	if buildContext.GOPATH == "" {
 		log.Fatal("GOPATH must be set.")
 	}
+}
+
+// isInEffectiveConfigGOPATH is true if dir is underneath any of the
+// dirs in effectiveConfigGOPATHs.
+func isInEffectiveConfigGOPATH(dir string) bool {
+	for _, gopath := range effectiveConfigGOPATHs {
+		if pathHasPrefix(dir, gopath) {
+			return true
+		}
+	}
+	return false
 }
 
 type srcfileConfig struct {

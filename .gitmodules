@@ -16,3 +16,6 @@
 [submodule "testdata/case/gopathtest"]
 	path = testdata/case/gopathtest
 	url = https://github.com/sgtest/gopathtest.git
+[submodule "testdata/case/gopath-in-repo"]
+	path = testdata/case/gopath-in-repo
+	url = https://github.com/sgtest/gopath-in-repo.git

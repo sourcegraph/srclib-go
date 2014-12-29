@@ -1,0 +1,70 @@
+{
+  "Defs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "othercompany.example.com/otherpkg",
+      "Path": ".",
+      "TreePath": ".",
+      "Name": "otherpkg",
+      "Kind": "package",
+      "File": "go/src/othercompany.example.com/otherpkg",
+      "DefStart": 0,
+      "DefEnd": 0,
+      "Exported": true,
+      "Local": false,
+      "Data": {
+        "Exported": true,
+        "PkgName": "otherpkg",
+        "TypeString": "",
+        "Kind": "package",
+        "PackageImportPath": "othercompany.example.com/otherpkg"
+      }
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "othercompany.example.com/otherpkg",
+      "Path": "Other",
+      "TreePath": "./Other",
+      "Name": "Other",
+      "Kind": "func",
+      "File": "go/src/othercompany.example.com/otherpkg/otherpkg.go",
+      "DefStart": 18,
+      "DefEnd": 33,
+      "Exported": true,
+      "Local": false,
+      "Data": {
+        "Exported": true,
+        "PkgScope": true,
+        "PkgName": "otherpkg",
+        "TypeString": "func()",
+        "UnderlyingTypeString": "func()",
+        "Kind": "func",
+        "PackageImportPath": "othercompany.example.com/otherpkg"
+      }
+    }
+  ],
+  "Refs": [
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "othercompany.example.com/otherpkg",
+      "DefPath": ".",
+      "Def": false,
+      "Repo": "",
+      "File": "go/src/othercompany.example.com/otherpkg/otherpkg.go",
+      "Start": 8,
+      "End": 16
+    },
+    {
+      "DefRepo": "",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "othercompany.example.com/otherpkg",
+      "DefPath": "Other",
+      "Def": true,
+      "Repo": "",
+      "File": "go/src/othercompany.example.com/otherpkg/otherpkg.go",
+      "Start": 23,
+      "End": 28
+    }
+  ]
+}
