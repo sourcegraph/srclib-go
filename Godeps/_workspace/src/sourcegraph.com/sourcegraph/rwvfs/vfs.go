@@ -94,8 +94,8 @@ type WalkableFileSystem interface {
 func Walkable(fs FileSystem) WalkableFileSystem {
 	wfs := walkableFS{fs}
 	switch fs.(type) {
-	case LinkReader:
-		return walkableFSLinkReader{wfs}
+	case LinkFS:
+		return walkableLinkFS{wfs}
 	default:
 		return wfs
 	}
@@ -105,16 +105,24 @@ type walkableFS struct{ FileSystem }
 
 func (_ walkableFS) Join(elem ...string) string { return filepath.Join(elem...) }
 
-type walkableFSLinkReader struct{ walkableFS }
+type walkableLinkFS struct{ walkableFS }
 
-func (f walkableFSLinkReader) ReadLink(name string) (string, error) {
-	return f.FileSystem.(LinkReader).ReadLink(name)
+func (f walkableLinkFS) ReadLink(name string) (string, error) {
+	return f.FileSystem.(LinkFS).ReadLink(name)
 }
 
-var _ LinkReader = walkableFSLinkReader{}
+func (f walkableLinkFS) Symlink(oldname, newname string) error {
+	return f.FileSystem.(LinkFS).Symlink(oldname, newname)
+}
 
-// A LinkReader is a filesystem that supports dereferencing symlinks.
-type LinkReader interface {
+var _ LinkFS = walkableLinkFS{}
+
+// A LinkFS is a filesystem that supports creating and dereferencing
+// symlinks.
+type LinkFS interface {
+	// Symlink creates newname as a symbolic link to oldname.
+	Symlink(oldname, newname string) error
+
 	// ReadLink returns the destination of the named symbolic link.
 	ReadLink(name string) (string, error)
 }

@@ -50,9 +50,9 @@
 			"Rev": "4317e899aa9438ba7603a6e322389571cb3ffdff"
 		},
 		{
-			"ImportPath": "github.com/sqs/go-flags",
-			"Comment": "v1-201-gcddcf3a",
-			"Rev": "cddcf3a4beb2c61a5ba60f16bf72c630ba29e329"
+			"ImportPath": "sourcegraph.com/sourcegraph/go-flags",
+			"Comment": "v1-202-ga65a662",
+			"Rev": "a65a662d7d36f0c2ace3ee3bccb59a69374c0206"
 		},
 		{
 			"ImportPath": "github.com/sqs/s3",
@@ -94,7 +94,7 @@
 		},
 		{
 			"ImportPath": "sourcegraph.com/sourcegraph/rwvfs",
-			"Rev": "dd1aee48616e9f49c277a7adaa43247bae516d37"
+			"Rev": "85275c1c0b5b015e84cd49d7b880edb84b3b2e70"
 		},
 		{
 			"ImportPath": "sourcegraph.com/sourcegraph/s3vfs",
@@ -102,8 +102,8 @@
 		},
 		{
 			"ImportPath": "sourcegraph.com/sourcegraph/srclib",
-			"Comment": "v0.0.28-31-g0e2a74f",
-			"Rev": "0e2a74f7c22fb4c78b75dbbc73ff116beecffd2f"
+			"Comment": "v0.0.29-13-g87a6e13",
+			"Rev": "87a6e1353b0a196e620f3a9dffb720705ce4db53"
 		}
 	]
 }
