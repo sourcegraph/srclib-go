@@ -59,6 +59,10 @@ func (fs osFS) ReadLink(name string) (string, error) {
 	return filepath.Rel(fs.root, dst)
 }
 
+func (fs osFS) Symlink(oldname, newname string) error {
+	return os.Symlink(fs.resolve(oldname), fs.resolve(newname))
+}
+
 // ErrOutsideRoot occurs when a symlink refers to a path that is not in the current VFS.
 var ErrOutsideRoot = errors.New("link destination is outside of filesystem")
 

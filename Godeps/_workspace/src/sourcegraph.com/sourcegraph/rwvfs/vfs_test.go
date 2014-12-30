@@ -381,6 +381,86 @@ func TestReadOnly(t *testing.T) {
 
 }
 
+func TestOS_Symlink(t *testing.T) {
+	tmpdir, err := ioutil.TempDir("", "rwvfs-test-")
+	if err != nil {
+		t.Fatal("TempDir", err)
+	}
+	defer os.RemoveAll(tmpdir)
+	want := "hello"
+
+	if err := ioutil.WriteFile(filepath.Join(tmpdir, "myfile"), []byte(want), 0600); err != nil {
+		t.Fatal(err)
+	}
+
+	osfs := OS(tmpdir)
+	if err := osfs.(LinkFS).Symlink("myfile", "mylink"); err != nil {
+		t.Fatal(err)
+	}
+	got, err := ioutil.ReadFile(filepath.Join(tmpdir, "mylink"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(got) != want {
+		t.Errorf("%s: ReadLink: got %q, want %q", osfs, string(got), want)
+	}
+}
+
+func TestOS_Symlink_walkable(t *testing.T) {
+	tmpdir, err := ioutil.TempDir("", "rwvfs-test-")
+	if err != nil {
+		t.Fatal("TempDir", err)
+	}
+	defer os.RemoveAll(tmpdir)
+	want := "hello"
+
+	if err := ioutil.WriteFile(filepath.Join(tmpdir, "myfile"), []byte(want), 0600); err != nil {
+		t.Fatal(err)
+	}
+
+	osfs := OS(tmpdir)
+	if err := Walkable(osfs).(LinkFS).Symlink("myfile", "mylink"); err != nil {
+		t.Fatal(err)
+	}
+	got, err := ioutil.ReadFile(filepath.Join(tmpdir, "mylink"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(got) != want {
+		t.Errorf("%s: ReadLink: got %q, want %q", osfs, string(got), want)
+	}
+}
+
+func TestSub_Symlink(t *testing.T) {
+	tmpdir, err := ioutil.TempDir("", "rwvfs-test-")
+	if err != nil {
+		t.Fatal("TempDir", err)
+	}
+	//defer os.RemoveAll(tmpdir)
+	want := "hello"
+
+	if err := os.Mkdir(filepath.Join(tmpdir, "mydir"), 0700); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := ioutil.WriteFile(filepath.Join(tmpdir, "mydir", "myfile"), []byte(want), 0600); err != nil {
+		t.Fatal(err)
+	}
+
+	osfs := OS(tmpdir)
+	sub := Sub(osfs, "mydir")
+	if err := sub.(LinkFS).Symlink("myfile", "mylink"); err != nil {
+		t.Fatal(err, osfs)
+	}
+	got, err := ioutil.ReadFile(filepath.Join(tmpdir, "mydir", "mylink"))
+	if err != nil {
+		t.Fatal(err, osfs, sub)
+	}
+	if string(got) != want {
+		t.Errorf("%s: ReadLink: got %q, want %q", osfs, string(got), want)
+	}
+}
+
 func TestOS_ReadLink(t *testing.T) {
 	tmpdir, err := ioutil.TempDir("", "rwvfs-test-")
 	if err != nil {
@@ -396,7 +476,7 @@ func TestOS_ReadLink(t *testing.T) {
 	}
 
 	osfs := OS(tmpdir)
-	dst, err := osfs.(LinkReader).ReadLink("mylink")
+	dst, err := osfs.(LinkFS).ReadLink("mylink")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -420,7 +500,7 @@ func TestOS_ReadLink_walkable(t *testing.T) {
 	}
 
 	osfs := OS(tmpdir)
-	dst, err := Walkable(osfs).(LinkReader).ReadLink("mylink")
+	dst, err := Walkable(osfs).(LinkFS).ReadLink("mylink")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -449,7 +529,7 @@ func TestSub_ReadLink(t *testing.T) {
 
 	osfs := OS(tmpdir)
 	sub := Sub(osfs, "mydir")
-	dst, err := sub.(LinkReader).ReadLink("mylink")
+	dst, err := sub.(LinkFS).ReadLink("mylink")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -479,7 +559,7 @@ func TestOS_ReadLink_ErrOutsideRoot(t *testing.T) {
 	}
 
 	osfs := OS(tmpdir2)
-	dst, err := osfs.(LinkReader).ReadLink("mylink")
+	dst, err := osfs.(LinkFS).ReadLink("mylink")
 	if want := ErrOutsideRoot; err != want {
 		t.Fatalf("%s: ReadLink: got err %v, want %v", osfs, err, want)
 	}

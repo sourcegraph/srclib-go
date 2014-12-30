@@ -15,8 +15,8 @@ import (
 func Sub(fs FileSystem, prefix string) FileSystem {
 	subfs := subFS{fs, prefix}
 	switch fs.(type) {
-	case LinkReader:
-		return subFSLinkReader{subfs}
+	case LinkFS:
+		return subLinkFS{subfs}
 	default:
 		return subfs
 	}
@@ -29,9 +29,9 @@ type subFS struct {
 
 var _ FileSystem = subFS{}
 
-type subFSLinkReader struct{ subFS }
+type subLinkFS struct{ subFS }
 
-var _ LinkReader = subFSLinkReader{}
+var _ LinkFS = subLinkFS{}
 
 func (s subFS) resolve(path string) string {
 	return filepath.Join(s.prefix, strings.TrimPrefix(path, "/"))
@@ -41,12 +41,16 @@ func (s subFS) Lstat(path string) (os.FileInfo, error) { return s.fs.Lstat(s.res
 
 func (s subFS) Stat(path string) (os.FileInfo, error) { return s.fs.Stat(s.resolve(path)) }
 
-func (s subFSLinkReader) ReadLink(name string) (string, error) {
-	dst, err := s.fs.(LinkReader).ReadLink(s.resolve(name))
+func (s subLinkFS) ReadLink(name string) (string, error) {
+	dst, err := s.fs.(LinkFS).ReadLink(s.resolve(name))
 	if err != nil {
 		return dst, err
 	}
 	return filepath.Rel(s.prefix, dst)
+}
+
+func (s subLinkFS) Symlink(oldname, newname string) error {
+	return s.fs.(LinkFS).Symlink(s.resolve(oldname), s.resolve(newname))
 }
 
 func (s subFS) ReadDir(path string) ([]os.FileInfo, error) { return s.fs.ReadDir(s.resolve(path)) }
