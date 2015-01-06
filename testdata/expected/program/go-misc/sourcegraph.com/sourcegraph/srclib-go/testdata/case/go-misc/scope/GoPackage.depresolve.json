@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "Raw": "fmt",
+    "Target": {
+      "ToRepoCloneURL": "https://github.com/golang/go",
+      "ToUnit": "fmt",
+      "ToUnitType": "GoPackage",
+      "ToVersionString": "go1.4",
+      "ToRevSpec": ""
+    }
+  },
+  {
+    "Raw": "strings",
+    "Target": {
+      "ToRepoCloneURL": "https://github.com/golang/go",
+      "ToUnit": "strings",
+      "ToUnitType": "GoPackage",
+      "ToVersionString": "go1.4",
+      "ToRevSpec": ""
+    }
+  }
+]
