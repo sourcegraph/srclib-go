@@ -150,7 +150,7 @@ func (g *Grapher) assignPaths(s *types.Scope, prefix []string, pkgscope bool) {
 		}
 		path := append(append([]string{}, prefix...), name)
 		g.paths[e] = path
-		g.exported[e] = ast.IsExported(name)
+		g.exported[e] = ast.IsExported(name) && pkgscope
 		g.pkgscope[e] = pkgscope
 
 		if tn, ok := e.(*types.TypeName); ok {
