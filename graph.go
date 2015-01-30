@@ -149,7 +149,7 @@ func (c *GraphCmd) Execute(args []string) error {
 		}
 		deps := append([]string{"./" + buildPkg.Dir}, externalDeps...)
 		for _, dep := range deps {
-			cmd := exec.Command("go", "get", "-d", "-t", "-v", dep)
+			cmd := exec.Command(goBinaryName, "get", "-d", "-t", "-v", dep)
 			cmd.Args = append(cmd.Args)
 			cmd.Env = config.env()
 			cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
@@ -403,7 +403,7 @@ func doGraph(pkg *build.Package) (*gog.Output, error) {
 				// to cause any problems.)
 				continue
 			}
-			cmd := exec.Command("go", "install", "-v", imp)
+			cmd := exec.Command(goBinaryName, "install", "-v", imp)
 			cmd.Env = config.env()
 			cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
 			if err := cmd.Run(); err != nil {

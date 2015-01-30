@@ -159,7 +159,7 @@ func scan(pkgPatterns []string) ([]*unit.SourceUnit, error) {
 	// TODO(sqs): include xtest, but we'll have to make them have a distinctly
 	// namespaced def path from the non-xtest pkg.
 
-	cmd := exec.Command("go", "list", "-e", "-json")
+	cmd := exec.Command(goBinaryName, "list", "-e", "-json")
 	cmd.Args = append(cmd.Args, pkgPatterns...)
 	cmd.Env = config.env()
 	cmd.Stderr = os.Stderr
