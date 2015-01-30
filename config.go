@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"go/build"
 	"log"
 	"os"
@@ -22,6 +23,10 @@ var (
 	}
 
 	config *srcfileConfig
+
+	goBinaryName string
+
+	validVersions = []string{"", "1.3", "1.2", "1.1", "1"}
 
 	// virtualCWD is the vfs cwd that corresponds to the non-vfs cwd, when using
 	// vfs. It is used to determine whether a vfs path is effectively underneath
@@ -68,6 +73,14 @@ type srcfileConfig struct {
 	// GOPATH environment variable during the build.
 	GOPATH string
 
+	// GOVERSION is the version of the go tool that srclib-go
+	// should shell out to. If GOVERSION is empty, the system's
+	// default go binary is used. The only valid values for
+	// GOVERSION are the empty string, "1.3", "1.2", "1.1", and
+	// "1", which are transformed into "go", "go1.3", ..., "go1",
+	// respectively, when the binary is called.
+	GOVERSION string
+
 	PkgPatterns []string // pattern passed to `go list` (defaults to {"./..."})
 
 	SourceImports bool
@@ -97,6 +110,18 @@ func unmarshalTypedConfig(cfg map[string]interface{}) error {
 
 // apply applies the configuration.
 func (c *srcfileConfig) apply() error {
+	var versionValid bool
+	for _, v := range validVersions {
+		if config.GOVERSION == v {
+			versionValid = true
+			break
+		}
+	}
+	if !versionValid {
+		return fmt.Errorf("The version %s is not valid. Use one of the following: %v", config.GOVERSION, validVersions)
+	}
+	goBinaryName = fmt.Sprintf("go%s", config.GOVERSION)
+
 	if config.GOROOT != "" {
 		// clean/absolutize all paths
 		config.GOROOT = filepath.Clean(config.GOROOT)
