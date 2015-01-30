@@ -114,13 +114,20 @@ func (c *srcfileConfig) apply() error {
 	for _, v := range validVersions {
 		if config.GOVERSION == v {
 			versionValid = true
+			goBinaryName = fmt.Sprintf("go%s", config.GOVERSION)
+			if config.GOVERSION != "" && config.GOROOT == "" {
+				// If GOROOT is empty, assign $GOROOT<version_num> to it.
+				newGOROOT := os.Getenv(fmt.Sprintf("GOROOT%s", strings.Replace(config.GOVERSION, ".", "", -1)))
+				if newGOROOT != "" {
+					config.GOROOT = newGOROOT
+				}
+			}
 			break
 		}
 	}
 	if !versionValid {
 		return fmt.Errorf("The version %s is not valid. Use one of the following: %v", config.GOVERSION, validVersions)
 	}
-	goBinaryName = fmt.Sprintf("go%s", config.GOVERSION)
 
 	if config.GOROOT != "" {
 		// clean/absolutize all paths
