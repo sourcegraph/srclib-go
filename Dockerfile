@@ -13,9 +13,15 @@ RUN mkdir -p /usr/local/go && tar -xzf /tmp/golang.tgz -C /usr/local/go
 RUN echo 'devel +495e02 srclib' > /usr/local/go/VERSION
 RUN cd /usr/local/go/src && ./make.bash
 
+# Grab Go 1.3 as well.
+RUN curl -Lo /tmp/golang1.3.tgz https://storage.googleapis.com/golang/go1.3.3.linux-amd64.tar.gz
+RUN mkdir -p /usr/local/go1.3 && tar -xzf /tmp/golang1.3.tgz -C /usr/local/go1.3 --strip-components=1
+RUN echo '1.3.3 srclib' > /usr/local/go1.3/VERSION
+
 ENV GOROOT /usr/local/go
+ENV GOROOT13 /usr/local/go1.3
 ENV GOBIN /usr/local/bin
-ENV PATH /usr/local/go/bin:$PATH
+ENV PATH /usr/local/go/bin:/usr/local/go1.3/bin:$PATH
 ENV GOPATH /srclib
 
 RUN go get github.com/kr/godep
