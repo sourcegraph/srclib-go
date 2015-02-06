@@ -40,7 +40,7 @@ func TestPaths(t *testing.T) {
 
 	for _, c := range cases {
 		src := `package foo; /*START*/ ` + c.defs + ` /*END*/`
-		start, end := strings.Index(src, "/*START*/"), strings.Index(src, "/*END*/")
+		start, end := uint32(strings.Index(src, "/*START*/")), uint32(strings.Index(src, "/*END*/"))
 		prog := createPkg(t, "foo", []string{src}, nil)
 
 		g := New(prog)

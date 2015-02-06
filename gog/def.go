@@ -27,8 +27,8 @@ type Def struct {
 	*DefKey
 
 	File      string
-	IdentSpan [2]int
-	DeclSpan  [2]int
+	IdentSpan [2]uint32
+	DeclSpan  [2]uint32
 
 	definfo.DefInfo
 }

@@ -37,6 +37,9 @@ func ReadCached(bdfs vfs.FileSystem) (*Tree, error) {
 	unitSuffix := buildstore.DataTypeSuffix(unit.SourceUnit{})
 	w := fs.WalkFS(".", rwvfs.Walkable(rwvfs.ReadOnly(bdfs)))
 	for w.Step() {
+		if err := w.Err(); err != nil {
+			return nil, err
+		}
 		if path := w.Path(); strings.HasSuffix(path, unitSuffix) {
 			unitFiles = append(unitFiles, path)
 		}
@@ -66,6 +69,5 @@ func ReadCached(bdfs vfs.FileSystem) (*Tree, error) {
 	if err := par.Wait(); err != nil {
 		return nil, err
 	}
-
 	return &Tree{SourceUnits: units}, nil
 }

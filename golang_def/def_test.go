@@ -6,10 +6,9 @@ import (
 
 	"sourcegraph.com/sourcegraph/srclib-go/gog/definfo"
 	"sourcegraph.com/sourcegraph/srclib/graph"
-	"sourcegraph.com/sourcegraph/srclib/util/sqltypes"
 )
 
-func defInfo(si DefData) sqltypes.JSON {
+func defInfo(si DefData) json.RawMessage {
 	b, err := json.Marshal(si)
 	if err != nil {
 		panic(err)
@@ -27,7 +26,7 @@ func TestDefFormatter_Name(t *testing.T) {
 			// unqualified
 			def: &graph.Def{
 				Name: "name",
-				Data: sqltypes.JSON(`{}`),
+				Data: json.RawMessage(`{}`),
 			},
 			qual: graph.Unqualified,
 			want: "name",

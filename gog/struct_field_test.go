@@ -73,7 +73,7 @@ func TestResolveStructFields(t *testing.T) {
 
 	for label, c := range cases {
 		src := `package foo; ` + c.pkgDefs + ` func _() { ` + c.localDefs + ` _ = /*START*/` + c.ref + `/*END*/; }`
-		start, end := strings.Index(src, "/*START*/"), strings.Index(src, "/*END*/")
+		start, end := uint32(strings.Index(src, "/*START*/")), uint32(strings.Index(src, "/*END*/"))
 		prog := createPkg(t, "foo", []string{src}, nil)
 
 		g := New(prog)

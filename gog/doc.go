@@ -25,7 +25,7 @@ type Doc struct {
 	Data   string
 
 	File string `json:",omitempty"`
-	Span [2]int `json:",omitempty"`
+	Span [2]uint32 `json:",omitempty"`
 }
 
 func parseFiles(fset *token.FileSet, filenames []string) (map[string]*ast.File, error) {
@@ -177,7 +177,7 @@ func (g *Grapher) emitDoc(obj types.Object, dc *ast.CommentGroup, docstring stri
 	doc.ToHTML(&htmlBuf, docstring, nil)
 
 	var filename string
-	var span [2]int
+	var span [2]uint32
 	if dc != nil {
 		filename = g.program.Fset.Position(dc.Pos()).Filename
 		span = makeSpan(g.program.Fset, dc)

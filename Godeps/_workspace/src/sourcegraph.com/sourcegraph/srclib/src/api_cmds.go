@@ -13,11 +13,11 @@ import (
 
 	"github.com/kr/fs"
 	"sourcegraph.com/sourcegraph/go-sourcegraph/sourcegraph"
+	"sourcegraph.com/sourcegraph/rwvfs"
 	"sourcegraph.com/sourcegraph/srclib/buildstore"
 	"sourcegraph.com/sourcegraph/srclib/config"
 	"sourcegraph.com/sourcegraph/srclib/dep"
 	"sourcegraph.com/sourcegraph/srclib/graph"
-	"sourcegraph.com/sourcegraph/srclib/grapher"
 	"sourcegraph.com/sourcegraph/srclib/plan"
 	"sourcegraph.com/sourcegraph/srclib/unit"
 )
@@ -77,7 +77,7 @@ func (c *APICmd) Execute(args []string) error { return nil }
 
 type APIDescribeCmd struct {
 	File      string `long:"file" required:"yes" value-name:"FILE"`
-	StartByte int    `long:"start-byte" required:"yes" value-name:"BYTE"`
+	StartByte uint32 `long:"start-byte" required:"yes" value-name:"BYTE"`
 
 	NoExamples bool `long:"no-examples" describe:"don't show examples from Sourcegraph.com"`
 }
@@ -141,17 +141,29 @@ func ensureBuild(buildStore buildstore.RepoBuildStore, repo *Repo) error {
 	return nil
 }
 
+func getSourceUnits(commitFS rwvfs.WalkableFileSystem, repo *Repo) []string {
+	var unitFiles []string
+	unitSuffix := buildstore.DataTypeSuffix(unit.SourceUnit{})
+	w := fs.WalkFS(".", commitFS)
+	for w.Step() {
+		if strings.HasSuffix(w.Path(), unitSuffix) {
+			unitFiles = append(unitFiles, w.Path())
+		}
+	}
+	return unitFiles
+}
+
 // Get a list of all source units that contain the given file
 func getSourceUnitsWithFile(buildStore buildstore.RepoBuildStore, repo *Repo, filename string) ([]*unit.SourceUnit, error) {
 	filename = filepath.Clean(filename)
 
 	// TODO(sqs): This whole lookup is totally inefficient. The storage format
 	// is not optimized for lookups.
+	commitFS := buildStore.Commit(repo.CommitID)
+	unitFiles := getSourceUnits(commitFS, repo)
 
 	// Find all source unit definition files.
-	var unitFiles []string
 	unitSuffix := buildstore.DataTypeSuffix(unit.SourceUnit{})
-	commitFS := buildStore.Commit(repo.CommitID)
 	w := fs.WalkFS(".", commitFS)
 	for w.Step() {
 		if strings.HasSuffix(w.Path(), unitSuffix) {
@@ -236,7 +248,7 @@ func (c *APIListCmd) Execute(args []string) error {
 	// Find the ref(s) at the character position.
 	var refs []*graph.Ref
 	for _, u := range units {
-		var g grapher.Output
+		var g graph.Output
 		graphFile := plan.SourceUnitDataFilename("graph", u)
 		f, err := commitFS.Open(graphFile)
 		if err != nil {
@@ -315,7 +327,7 @@ func (c *APIDescribeCmd) Execute(args []string) error {
 	var nearbyRefs []*graph.Ref // Find nearby refs to help with debugging.
 OuterLoop:
 	for _, u := range units {
-		var g grapher.Output
+		var g graph.Output
 		graphFile := plan.SourceUnitDataFilename("graph", u)
 		f, err := commitFS.Open(graphFile)
 		if err != nil {
@@ -336,7 +348,7 @@ OuterLoop:
 						ref.DefUnitType = u.Type
 					}
 					break OuterLoop
-				} else if GlobalOpt.Verbose && abs(ref2.Start-c.StartByte) < 25 {
+				} else if GlobalOpt.Verbose && abs(int(ref2.Start)-int(c.StartByte)) < 25 {
 					nearbyRefs = append(nearbyRefs, ref2)
 				}
 			}
@@ -362,12 +374,12 @@ OuterLoop:
 					log.Fatalf("Error reading source file: %s.", err)
 				}
 				start := c.StartByte
-				if start < 0 || start > len(b)-1 {
+				if start < 0 || int(start) > len(b)-1 {
 					log.Fatalf("Start byte %d is out of file bounds.", c.StartByte)
 				}
 				end := c.StartByte + 50
-				if end > len(b)-1 {
-					end = len(b) - 1
+				if int(end) > len(b)-1 {
+					end = uint32(len(b) - 1)
 				}
 				log.Printf("Surrounding source is:\n\n%s", b[start:end])
 			} else {
@@ -391,7 +403,7 @@ OuterLoop:
 	defInCurrentRepo := ref.DefRepo == repo.URI()
 	if defInCurrentRepo {
 		// Def is in the current repo.
-		var g grapher.Output
+		var g graph.Output
 		graphFile := plan.SourceUnitDataFilename("graph", &unit.SourceUnit{Name: ref.DefUnit, Type: ref.DefUnitType})
 		f, err := commitFS.Open(graphFile)
 		if err != nil {

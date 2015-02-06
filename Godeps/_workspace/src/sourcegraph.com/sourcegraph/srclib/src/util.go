@@ -8,10 +8,14 @@ import (
 	"io/ioutil"
 	"log"
 	"math"
+	"net/http"
+	"net/http/httputil"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"golang.org/x/tools/godoc/vfs"
 
 	"sourcegraph.com/sourcegraph/srclib/buildstore"
 	"sourcegraph.com/sourcegraph/srclib/unit"
@@ -135,6 +139,20 @@ func readJSONFile(file string, v interface{}) error {
 	return json.NewDecoder(f).Decode(v)
 }
 
+func readJSONFileFS(fs vfs.FileSystem, file string, v interface{}) (err error) {
+	f, err := fs.Open(file)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		err2 := f.Close()
+		if err == nil {
+			err = err2
+		}
+	}()
+	return json.NewDecoder(f).Decode(v)
+}
+
 func bytesString(s uint64) string {
 	sizes := []string{"B", "KB", "MB", "GB", "TB", "PB", "EB"}
 	if s < 10 {
@@ -151,4 +169,39 @@ func bytesString(s uint64) string {
 		f = "%.1f"
 	}
 	return fmt.Sprintf(f+"%s", val, suffix)
+}
+
+// A tracingTransport prints out the full HTTP request and response
+// for each roundtrip.
+type tracingTransport struct {
+	io.Writer                   // destination of trace output
+	Transport http.RoundTripper // underlying transport (or default if nil)
+}
+
+func (t *tracingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	var u http.RoundTripper
+	if t.Transport != nil {
+		u = t.Transport
+	} else {
+		u = http.DefaultTransport
+	}
+
+	reqBytes, err := httputil.DumpRequestOut(req, true)
+	if err != nil {
+		return nil, err
+	}
+	t.Writer.Write(reqBytes)
+
+	resp, err := u.RoundTrip(req)
+	if err != nil {
+		return nil, err
+	}
+
+	respBytes, err := httputil.DumpResponse(resp, true)
+	if err != nil {
+		return nil, err
+	}
+	t.Writer.Write(respBytes)
+
+	return resp, nil
 }

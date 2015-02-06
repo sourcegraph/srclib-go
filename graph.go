@@ -16,12 +16,10 @@ import (
 
 	"golang.org/x/tools/go/loader"
 
-	"sourcegraph.com/sourcegraph/go-nnz/sdf"
 	"sourcegraph.com/sourcegraph/srclib-go/gog"
 	"sourcegraph.com/sourcegraph/srclib-go/gog/definfo"
 	defpkg "sourcegraph.com/sourcegraph/srclib-go/golang_def"
 	"sourcegraph.com/sourcegraph/srclib/graph"
-	"sourcegraph.com/sourcegraph/srclib/grapher"
 	"sourcegraph.com/sourcegraph/srclib/unit"
 )
 
@@ -220,7 +218,7 @@ func relPath(base, path string) string {
 	return rp
 }
 
-func Graph(unit *unit.SourceUnit) (*grapher.Output, error) {
+func Graph(unit *unit.SourceUnit) (*graph.Output, error) {
 	pkg, err := UnitDataAsBuildPackage(unit)
 	if err != nil {
 		return nil, err
@@ -231,7 +229,7 @@ func Graph(unit *unit.SourceUnit) (*grapher.Output, error) {
 		return nil, err
 	}
 
-	o2 := grapher.Output{}
+	o2 := graph.Output{}
 
 	uri := string(unit.Repo)
 
@@ -271,9 +269,9 @@ func convertGoDef(gs *gog.Def, repoURI string) (*graph.Def, error) {
 	if err != nil {
 		return nil, err
 	}
-	path := graph.DefPath(pathOrDot(strings.Join(gs.Path, "/")))
+	path := string(pathOrDot(strings.Join(gs.Path, "/")))
 	treePath := treePath(strings.Replace(string(path), ".go", "", -1))
-	if !treePath.IsValid() {
+	if !graph.IsValidTreePath(treePath) {
 		return nil, fmt.Errorf("'%s' is not a valid tree-path", treePath)
 	}
 
@@ -293,7 +291,7 @@ func convertGoDef(gs *gog.Def, repoURI string) (*graph.Def, error) {
 		DefEnd:   gs.DeclSpan[1],
 
 		Exported: gs.DefInfo.Exported,
-		Local:    sdf.Bool(!gs.DefInfo.Exported && !gs.DefInfo.PkgScope),
+		Local:    !gs.DefInfo.Exported && !gs.DefInfo.PkgScope,
 		Test:     strings.HasSuffix(gs.File, "_test.go"),
 	}
 
@@ -325,7 +323,7 @@ func convertGoRef(gr *gog.Ref, repoURI string) (*graph.Ref, error) {
 
 	return &graph.Ref{
 		DefRepo:     uriOrEmpty(resolvedTarget.ToRepoCloneURL),
-		DefPath:     graph.DefPath(pathOrDot(strings.Join(gr.Def.Path, "/"))),
+		DefPath:     string(pathOrDot(strings.Join(gr.Def.Path, "/"))),
 		DefUnit:     resolvedTarget.ToUnit,
 		DefUnitType: resolvedTarget.ToUnitType,
 		Def:         gr.IsDef,
@@ -342,7 +340,7 @@ func convertGoDoc(gd *gog.Doc, repoURI string) (*graph.Doc, error) {
 	}
 	return &graph.Doc{
 		DefKey: graph.DefKey{
-			Path:     graph.DefPath(pathOrDot(strings.Join(gd.Path, "/"))),
+			Path:     string(pathOrDot(strings.Join(gd.Path, "/"))),
 			Unit:     resolvedTarget.ToUnit,
 			UnitType: resolvedTarget.ToUnitType,
 		},
@@ -368,11 +366,11 @@ func pathOrDot(path string) string {
 	return path
 }
 
-func treePath(path string) graph.TreePath {
+func treePath(path string) string {
 	if path == "" || path == "." {
-		return graph.TreePath(".")
+		return string(".")
 	}
-	return graph.TreePath(fmt.Sprintf("./%s", path))
+	return string(fmt.Sprintf("./%s", path))
 }
 
 // allowErrorsInGraph is whether the grapher should continue after
@@ -410,7 +408,7 @@ func doGraph(pkg *build.Package) (*gog.Output, error) {
 			cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
 			if err := cmd.Run(); err != nil {
 				if allowErrorsInGraph {
-					log.Printf("Warning: failed to install package %q (command %v, env vars %v): %s. Continuing...", imp, cmd.Args, cmd.Env)
+					log.Printf("Warning: failed to install package %q (command %v, env vars %v): %s. Continuing...", imp, cmd.Args, cmd.Env, err)
 				} else {
 					return nil, err
 				}
@@ -434,14 +432,10 @@ func doGraph(pkg *build.Package) (*gog.Output, error) {
 		for i, f := range allGoFiles {
 			allGoFiles[i] = filepath.Join(cwd, pkg.Dir, f)
 		}
-		if err := loaderConfig.CreateFromFilenames(pkg.ImportPath, allGoFiles...); err != nil {
-			return nil, err
-		}
+		loaderConfig.CreateFromFilenames(pkg.ImportPath, allGoFiles...)
 	} else {
 		// Normal import
-		if err := loaderConfig.ImportWithTests(importPath); err != nil {
-			return nil, err
-		}
+		loaderConfig.ImportWithTests(importPath)
 	}
 
 	if importUnsafe {
