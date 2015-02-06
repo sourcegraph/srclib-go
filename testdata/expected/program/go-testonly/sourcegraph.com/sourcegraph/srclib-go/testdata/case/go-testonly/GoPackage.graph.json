@@ -4,31 +4,29 @@
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-testonly",
       "Path": ".",
-      "TreePath": ".",
       "Name": "foo",
       "Kind": "package",
       "File": ".",
       "DefStart": 0,
       "DefEnd": 0,
       "Exported": true,
-      "Local": false,
       "Data": {
         "Exported": true,
         "PkgName": "foo",
         "TypeString": "",
         "Kind": "package",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-testonly"
-      }
+      },
+      "TreePath": "."
     }
   ],
   "Refs": [
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-testonly",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-testonly",
       "DefPath": ".",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-testonly",
       "File": "foo_test.go",
       "Start": 8,
       "End": 11
