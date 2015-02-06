@@ -16,11 +16,11 @@ func defInfo(si DefData) json.RawMessage {
 	return b
 }
 
-func TestDefFormatter_Name(t *testing.T) {
+func TestDefFormatter(t *testing.T) {
 	tests := []struct {
-		def  *graph.Def
-		qual graph.Qualification
-		want string
+		def       *graph.Def
+		wantNames map[graph.Qualification]string
+		wantTypes map[graph.Qualification]string
 	}{
 		{
 			// unqualified
@@ -28,8 +28,7 @@ func TestDefFormatter_Name(t *testing.T) {
 				Name: "name",
 				Data: json.RawMessage(`{}`),
 			},
-			qual: graph.Unqualified,
-			want: "name",
+			wantNames: map[graph.Qualification]string{graph.Unqualified: "name"},
 		},
 		{
 			// qualify methods with receiver
@@ -37,8 +36,7 @@ func TestDefFormatter_Name(t *testing.T) {
 				Name: "name",
 				Data: defInfo(DefData{DefInfo: definfo.DefInfo{Receiver: "*T", Kind: definfo.Method}}),
 			},
-			qual: graph.ScopeQualified,
-			want: "(*T).name",
+			wantNames: map[graph.Qualification]string{graph.ScopeQualified: "(*T).name"},
 		},
 		{
 			// all funcs are at pkg scope
@@ -46,8 +44,7 @@ func TestDefFormatter_Name(t *testing.T) {
 				Name: "name",
 				Data: defInfo(DefData{DefInfo: definfo.DefInfo{PkgName: "mypkg", Kind: definfo.Func}}),
 			},
-			qual: graph.ScopeQualified,
-			want: "name",
+			wantNames: map[graph.Qualification]string{graph.ScopeQualified: "name"},
 		},
 		{
 			// qualify funcs with pkg
@@ -55,8 +52,7 @@ func TestDefFormatter_Name(t *testing.T) {
 				Name: "Name",
 				Data: defInfo(DefData{DefInfo: definfo.DefInfo{PkgName: "mypkg", Kind: definfo.Func}}),
 			},
-			qual: graph.DepQualified,
-			want: "mypkg.Name",
+			wantNames: map[graph.Qualification]string{graph.DepQualified: "mypkg.Name"},
 		},
 		{
 			// qualify methods with receiver pkg
@@ -64,8 +60,7 @@ func TestDefFormatter_Name(t *testing.T) {
 				Name: "Name",
 				Data: defInfo(DefData{DefInfo: definfo.DefInfo{Receiver: "*T", PkgName: "mypkg", Kind: definfo.Method}}),
 			},
-			qual: graph.DepQualified,
-			want: "(*mypkg.T).Name",
+			wantNames: map[graph.Qualification]string{graph.DepQualified: "(*mypkg.T).Name"},
 		},
 		{
 			// qualify pkgs with import path relative to repo root
@@ -73,10 +68,18 @@ func TestDefFormatter_Name(t *testing.T) {
 				DefKey: graph.DefKey{Repo: "example.com/foo"},
 				Name:   "subpkg",
 				Kind:   "package",
-				Data:   defInfo(DefData{PackageImportPath: "example.com/foo/mypkg/subpkg", DefInfo: definfo.DefInfo{PkgName: "subpkg", Kind: definfo.Package}}),
+				Data: defInfo(DefData{
+					PackageImportPath: "example.com/foo/mypkg/subpkg",
+					DefInfo: definfo.DefInfo{
+						PkgName: "subpkg", Kind: definfo.Package,
+						TypeString: "struct {x example.com/foo/mypkg/subpkg.T1; w example.com/foo/mypkg.T2; y example.com/foo/mypkg/subpkg/subsubpkg.T2}",
+					},
+				}),
 			},
-			qual: graph.RepositoryWideQualified,
-			want: "foo/mypkg/subpkg",
+			wantNames: map[graph.Qualification]string{graph.RepositoryWideQualified: "mypkg/subpkg"},
+			wantTypes: map[graph.Qualification]string{
+				graph.RepositoryWideQualified: " struct {x mypkg/subpkg.T1; w mypkg.T2; y mypkg/subpkg/subsubpkg.T2}",
+			},
 		},
 		{
 			// qualify funcs with import path
@@ -84,8 +87,7 @@ func TestDefFormatter_Name(t *testing.T) {
 				Name: "Name",
 				Data: defInfo(DefData{PackageImportPath: "a/b", DefInfo: definfo.DefInfo{PkgName: "x", Kind: definfo.Func}}),
 			},
-			qual: graph.LanguageWideQualified,
-			want: "a/b.Name",
+			wantNames: map[graph.Qualification]string{graph.LanguageWideQualified: "a/b.Name"},
 		},
 		{
 			// qualify methods with receiver pkg
@@ -93,8 +95,7 @@ func TestDefFormatter_Name(t *testing.T) {
 				Name: "Name",
 				Data: defInfo(DefData{PackageImportPath: "a/b", DefInfo: definfo.DefInfo{Receiver: "*T", PkgName: "x", Kind: definfo.Method}}),
 			},
-			qual: graph.LanguageWideQualified,
-			want: "(*a/b.T).Name",
+			wantNames: map[graph.Qualification]string{graph.LanguageWideQualified: "(*a/b.T).Name"},
 		},
 		{
 			// qualify pkgs with full import path
@@ -102,15 +103,22 @@ func TestDefFormatter_Name(t *testing.T) {
 				Name: "x",
 				Data: defInfo(DefData{PackageImportPath: "a/b", DefInfo: definfo.DefInfo{PkgName: "x", Kind: definfo.Package}}),
 			},
-			qual: graph.LanguageWideQualified,
-			want: "a/b",
+			wantNames: map[graph.Qualification]string{graph.LanguageWideQualified: "a/b"},
 		},
 	}
 	for _, test := range tests {
 		sf := newDefFormatter(test.def)
-		name := sf.Name(test.qual)
-		if name != test.want {
-			t.Errorf("%v qual %q: got %q, want %q", test.def, test.qual, name, test.want)
+		for qual, want := range test.wantNames {
+			name := sf.Name(qual)
+			if name != want {
+				t.Errorf("%v qual %q: got name %q, want %q", test.def, qual, name, want)
+			}
+		}
+		for qual, want := range test.wantTypes {
+			typ := sf.Type(qual)
+			if typ != want {
+				t.Errorf("%v qual %q: got type %q, want %q", test.def, qual, typ, want)
+			}
 		}
 	}
 }
