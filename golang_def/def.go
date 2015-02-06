@@ -2,7 +2,7 @@ package golang_def
 
 import (
 	"encoding/json"
-	"path/filepath"
+	"path"
 
 	"strings"
 
@@ -65,7 +65,11 @@ func (f defFormatter) pkgPath(qual graph.Qualification) string {
 		return f.info.PkgName
 	case graph.RepositoryWideQualified:
 		// keep the last path component from the repo
-		return strings.TrimPrefix(strings.TrimPrefix(f.info.PackageImportPath, filepath.Join(string(f.def.Repo), "..")), "/")
+		relPkg := strings.TrimPrefix(strings.TrimPrefix(f.info.PackageImportPath, f.def.Repo), "/")
+		if relPkg == "" {
+			relPkg = f.info.PkgName
+		}
+		return relPkg
 	case graph.LanguageWideQualified:
 		return f.info.PackageImportPath
 	}
@@ -151,5 +155,9 @@ func (f defFormatter) Type(qual graph.Qualification) string {
 		newPkgPath += "."
 	}
 	ts = strings.Replace(ts, oldPkgPath, newPkgPath, -1)
+
+	ts = strings.Replace(ts, f.def.Repo+"/", "", -1)
+	ts = strings.Replace(ts, f.def.Repo+".", path.Base(f.def.Repo), -1)
+
 	return ts
 }
