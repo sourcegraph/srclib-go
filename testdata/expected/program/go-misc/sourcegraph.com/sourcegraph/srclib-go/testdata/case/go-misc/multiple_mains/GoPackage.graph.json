@@ -4,34 +4,30 @@
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/multiple_mains",
       "Path": ".",
-      "TreePath": ".",
       "Name": "main",
       "Kind": "package",
       "File": "multiple_mains",
       "DefStart": 0,
       "DefEnd": 0,
       "Exported": true,
-      "Local": false,
       "Data": {
         "Exported": true,
         "PkgName": "main",
         "TypeString": "",
         "Kind": "package",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/multiple_mains"
-      }
+      },
+      "TreePath": "."
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/multiple_mains",
       "Path": "main1.go/main",
-      "TreePath": "./main1/main",
       "Name": "main",
       "Kind": "func",
       "File": "multiple_mains/main1.go",
       "DefStart": 78,
       "DefEnd": 114,
-      "Exported": false,
-      "Local": false,
       "Data": {
         "PkgScope": true,
         "PkgName": "main",
@@ -39,19 +35,18 @@
         "UnderlyingTypeString": "func()",
         "Kind": "func",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/multiple_mains"
-      }
+      },
+      "TreePath": "./main1/main"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/multiple_mains",
       "Path": "main1.go/main/x",
-      "TreePath": "./main1/main/x",
       "Name": "x",
       "Kind": "var",
       "File": "multiple_mains/main1.go",
       "DefStart": 97,
       "DefEnd": 105,
-      "Exported": false,
       "Local": true,
       "Data": {
         "PkgName": "main",
@@ -59,19 +54,18 @@
         "UnderlyingTypeString": "string",
         "Kind": "var",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/multiple_mains"
-      }
+      },
+      "TreePath": "./main1/main/x"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/multiple_mains",
       "Path": "main2.go/main/x",
-      "TreePath": "./main2/main/x",
       "Name": "x",
       "Kind": "var",
       "File": "multiple_mains/main2.go",
       "DefStart": 97,
       "DefEnd": 105,
-      "Exported": false,
       "Local": true,
       "Data": {
         "PkgName": "main",
@@ -79,83 +73,80 @@
         "UnderlyingTypeString": "string",
         "Kind": "var",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/multiple_mains"
-      }
+      },
+      "TreePath": "./main2/main/x"
     }
   ],
   "Refs": [
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/multiple_mains",
       "DefPath": ".",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "multiple_mains/main1.go",
       "Start": 8,
       "End": 12
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/multiple_mains",
       "DefPath": ".",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "multiple_mains/main2.go",
       "Start": 8,
       "End": 12
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/multiple_mains",
       "DefPath": "main1.go/main/x",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "multiple_mains/main1.go",
       "Start": 111,
       "End": 112
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/multiple_mains",
       "DefPath": "main1.go/main/x",
+      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
-      "Repo": "",
       "File": "multiple_mains/main1.go",
       "Start": 97,
       "End": 98
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/multiple_mains",
       "DefPath": "main1.go/main",
+      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
-      "Repo": "",
       "File": "multiple_mains/main1.go",
       "Start": 83,
       "End": 87
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/multiple_mains",
       "DefPath": "main2.go/main/x",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "multiple_mains/main2.go",
       "Start": 111,
       "End": 112
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/multiple_mains",
       "DefPath": "main2.go/main/x",
+      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
-      "Repo": "",
       "File": "multiple_mains/main2.go",
       "Start": 97,
       "End": 98
@@ -165,8 +156,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "string",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "multiple_mains/main1.go",
       "Start": 99,
       "End": 105
@@ -176,8 +166,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "string",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "multiple_mains/main2.go",
       "Start": 99,
       "End": 105

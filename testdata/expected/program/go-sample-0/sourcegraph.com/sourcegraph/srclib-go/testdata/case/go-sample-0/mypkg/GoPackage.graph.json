@@ -4,34 +4,31 @@
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "Path": ".",
-      "TreePath": ".",
       "Name": "mypkg",
       "Kind": "package",
       "File": "mypkg",
       "DefStart": 0,
       "DefEnd": 0,
       "Exported": true,
-      "Local": false,
       "Data": {
         "Exported": true,
         "PkgName": "mypkg",
         "TypeString": "",
         "Kind": "package",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg"
-      }
+      },
+      "TreePath": "."
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "Path": "Foo",
-      "TreePath": "./Foo",
       "Name": "Foo",
       "Kind": "func",
       "File": "mypkg/foo.go",
       "DefStart": 15,
       "DefEnd": 28,
       "Exported": true,
-      "Local": false,
       "Data": {
         "Exported": true,
         "PkgScope": true,
@@ -40,20 +37,19 @@
         "UnderlyingTypeString": "func()",
         "Kind": "func",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg"
-      }
+      },
+      "TreePath": "./Foo"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "Path": "Qux",
-      "TreePath": "./Qux",
       "Name": "Qux",
       "Kind": "type",
       "File": "mypkg/bar.go",
       "DefStart": 43,
       "DefEnd": 53,
       "Exported": true,
-      "Local": false,
       "Data": {
         "Exported": true,
         "PkgScope": true,
@@ -62,19 +58,18 @@
         "UnderlyingTypeString": "uint32",
         "Kind": "type",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg"
-      }
+      },
+      "TreePath": "./Qux"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "Path": "init$bar60",
-      "TreePath": "./init$bar60",
       "Name": "init",
       "Kind": "func",
       "File": "mypkg/bar.go",
       "DefStart": 55,
       "DefEnd": 77,
-      "Exported": false,
       "Local": true,
       "Data": {
         "PkgName": "mypkg",
@@ -82,20 +77,18 @@
         "UnderlyingTypeString": "func()",
         "Kind": "func",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg"
-      }
+      },
+      "TreePath": "./init$bar60"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "Path": "numcolors",
-      "TreePath": "./numcolors",
       "Name": "numcolors",
       "Kind": "var",
       "File": "mypkg/foo.go",
       "DefStart": 34,
       "DefEnd": 47,
-      "Exported": false,
-      "Local": false,
       "Data": {
         "PkgScope": true,
         "PkgName": "mypkg",
@@ -103,94 +96,91 @@
         "UnderlyingTypeString": "uint32",
         "Kind": "var",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg"
-      }
+      },
+      "TreePath": "./numcolors"
     }
   ],
   "Refs": [
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-sample-0",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "DefPath": ".",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-sample-0",
       "File": "mypkg/bar.go",
       "Start": 8,
       "End": 13
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-sample-0",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "DefPath": ".",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-sample-0",
       "File": "mypkg/foo.go",
       "Start": 8,
       "End": 13
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-sample-0",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "DefPath": "Foo",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-sample-0",
       "File": "mypkg/bar.go",
       "Start": 70,
       "End": 73
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-sample-0",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "DefPath": "Foo",
+      "Repo": "github.com/sgtest/go-sample-0",
       "Def": true,
-      "Repo": "",
       "File": "mypkg/foo.go",
       "Start": 20,
       "End": 23
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-sample-0",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "DefPath": "Qux",
+      "Repo": "github.com/sgtest/go-sample-0",
       "Def": true,
-      "Repo": "",
       "File": "mypkg/bar.go",
       "Start": 43,
       "End": 46
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-sample-0",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "DefPath": "Qux",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-sample-0",
       "File": "mypkg/foo.go",
       "Start": 44,
       "End": 47
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-sample-0",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "DefPath": "init$bar60",
+      "Repo": "github.com/sgtest/go-sample-0",
       "Def": true,
-      "Repo": "",
       "File": "mypkg/bar.go",
       "Start": 60,
       "End": 64
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-sample-0",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "DefPath": "numcolors",
+      "Repo": "github.com/sgtest/go-sample-0",
       "Def": true,
-      "Repo": "",
       "File": "mypkg/foo.go",
       "Start": 34,
       "End": 43
@@ -200,8 +190,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "uint32",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-sample-0",
       "File": "mypkg/bar.go",
       "Start": 47,
       "End": 53
@@ -213,20 +202,14 @@
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "Path": "Qux",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\nQux is a cool type.\n\u003c/p\u003e\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
+      "Data": "\u003cp\u003e\nQux is a cool type.\n\u003c/p\u003e\n"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "Path": "Qux",
       "Format": "text/plain",
-      "Data": "Qux is a cool type.\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
+      "Data": "Qux is a cool type.\n"
     }
   ]
 }

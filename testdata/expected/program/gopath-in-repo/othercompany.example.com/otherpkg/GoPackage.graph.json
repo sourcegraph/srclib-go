@@ -4,34 +4,31 @@
       "UnitType": "GoPackage",
       "Unit": "othercompany.example.com/otherpkg",
       "Path": ".",
-      "TreePath": ".",
       "Name": "otherpkg",
       "Kind": "package",
       "File": "go/src/othercompany.example.com/otherpkg",
       "DefStart": 0,
       "DefEnd": 0,
       "Exported": true,
-      "Local": false,
       "Data": {
         "Exported": true,
         "PkgName": "otherpkg",
         "TypeString": "",
         "Kind": "package",
         "PackageImportPath": "othercompany.example.com/otherpkg"
-      }
+      },
+      "TreePath": "."
     },
     {
       "UnitType": "GoPackage",
       "Unit": "othercompany.example.com/otherpkg",
       "Path": "Other",
-      "TreePath": "./Other",
       "Name": "Other",
       "Kind": "func",
       "File": "go/src/othercompany.example.com/otherpkg/otherpkg.go",
       "DefStart": 18,
       "DefEnd": 33,
       "Exported": true,
-      "Local": false,
       "Data": {
         "Exported": true,
         "PkgScope": true,
@@ -40,28 +37,28 @@
         "UnderlyingTypeString": "func()",
         "Kind": "func",
         "PackageImportPath": "othercompany.example.com/otherpkg"
-      }
+      },
+      "TreePath": "./Other"
     }
   ],
   "Refs": [
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/gopath-in-repo",
       "DefUnitType": "GoPackage",
       "DefUnit": "othercompany.example.com/otherpkg",
       "DefPath": ".",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/gopath-in-repo",
       "File": "go/src/othercompany.example.com/otherpkg/otherpkg.go",
       "Start": 8,
       "End": 16
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/gopath-in-repo",
       "DefUnitType": "GoPackage",
       "DefUnit": "othercompany.example.com/otherpkg",
       "DefPath": "Other",
+      "Repo": "github.com/sgtest/gopath-in-repo",
       "Def": true,
-      "Repo": "",
       "File": "go/src/othercompany.example.com/otherpkg/otherpkg.go",
       "Start": 23,
       "End": 28

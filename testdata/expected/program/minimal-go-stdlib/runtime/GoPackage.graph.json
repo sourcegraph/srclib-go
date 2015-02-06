@@ -4,31 +4,29 @@
       "UnitType": "GoPackage",
       "Unit": "runtime",
       "Path": ".",
-      "TreePath": ".",
       "Name": "runtime",
       "Kind": "package",
       "File": "src/runtime",
       "DefStart": 0,
       "DefEnd": 0,
       "Exported": true,
-      "Local": false,
       "Data": {
         "Exported": true,
         "PkgName": "runtime",
         "TypeString": "",
         "Kind": "package",
         "PackageImportPath": "runtime"
-      }
+      },
+      "TreePath": "."
     }
   ],
   "Refs": [
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/minimal-go-stdlib",
       "DefUnitType": "GoPackage",
       "DefUnit": "runtime",
       "DefPath": ".",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/minimal-go-stdlib",
       "File": "src/runtime/runtime.go",
       "Start": 8,
       "End": 15

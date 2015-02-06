@@ -4,34 +4,31 @@
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": ".",
-      "TreePath": ".",
       "Name": "scope",
       "Kind": "package",
       "File": "scope",
       "DefStart": 0,
       "DefEnd": 0,
       "Exported": true,
-      "Local": false,
       "Data": {
         "Exported": true,
         "PkgName": "scope",
         "TypeString": "",
         "Kind": "package",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
-      }
+      },
+      "TreePath": "."
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "A",
-      "TreePath": "./A",
       "Name": "A",
       "Kind": "var",
       "File": "scope/scope.go",
       "DefStart": 296,
       "DefEnd": 302,
       "Exported": true,
-      "Local": false,
       "Data": {
         "Exported": true,
         "PkgScope": true,
@@ -40,20 +37,19 @@
         "UnderlyingTypeString": "bool",
         "Kind": "var",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
-      }
+      },
+      "TreePath": "./A"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "T2",
-      "TreePath": "./T2",
       "Name": "T2",
       "Kind": "type",
       "File": "scope/scope.go",
       "DefStart": 611,
       "DefEnd": 622,
       "Exported": true,
-      "Local": false,
       "Data": {
         "Exported": true,
         "PkgScope": true,
@@ -62,20 +58,19 @@
         "UnderlyingTypeString": "struct{}",
         "Kind": "type",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
-      }
+      },
+      "TreePath": "./T2"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "T2/F",
-      "TreePath": "./T2/F",
       "Name": "F",
       "Kind": "func",
       "File": "scope/scope.go",
       "DefStart": 663,
       "DefEnd": 707,
       "Exported": true,
-      "Local": false,
       "Data": {
         "Exported": true,
         "PkgScope": true,
@@ -85,19 +80,18 @@
         "UnderlyingTypeString": "func(a string) (b string)",
         "Kind": "method",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
-      }
+      },
+      "TreePath": "./T2/F"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "T2/F/a",
-      "TreePath": "./T2/F/a",
       "Name": "a",
       "Kind": "var",
       "File": "scope/scope.go",
       "DefStart": 675,
       "DefEnd": 683,
-      "Exported": false,
       "Local": true,
       "Data": {
         "PkgName": "scope",
@@ -105,19 +99,18 @@
         "UnderlyingTypeString": "string",
         "Kind": "var",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
-      }
+      },
+      "TreePath": "./T2/F/a"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "T2/F/b",
-      "TreePath": "./T2/F/b",
       "Name": "b",
       "Kind": "var",
       "File": "scope/scope.go",
       "DefStart": 686,
       "DefEnd": 694,
-      "Exported": false,
       "Local": true,
       "Data": {
         "PkgName": "scope",
@@ -125,20 +118,18 @@
         "UnderlyingTypeString": "string",
         "Kind": "var",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
-      }
+      },
+      "TreePath": "./T2/F/b"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "T2/g",
-      "TreePath": "./T2/g",
       "Name": "g",
       "Kind": "func",
       "File": "scope/scope.go",
       "DefStart": 748,
       "DefEnd": 773,
-      "Exported": false,
-      "Local": false,
       "Data": {
         "PkgScope": true,
         "PkgName": "scope",
@@ -147,20 +138,18 @@
         "UnderlyingTypeString": "func()",
         "Kind": "method",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
-      }
+      },
+      "TreePath": "./T2/g"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "a",
-      "TreePath": "./a",
       "Name": "a",
       "Kind": "var",
       "File": "scope/scope.go",
       "DefStart": 269,
       "DefEnd": 275,
-      "Exported": false,
-      "Local": false,
       "Data": {
         "PkgScope": true,
         "PkgName": "scope",
@@ -168,20 +157,18 @@
         "UnderlyingTypeString": "bool",
         "Kind": "var",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
-      }
+      },
+      "TreePath": "./a"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "fn",
-      "TreePath": "./fn",
       "Name": "fn",
       "Kind": "func",
       "File": "scope/scope.go",
       "DefStart": 310,
       "DefEnd": 588,
-      "Exported": false,
-      "Local": false,
       "Data": {
         "PkgScope": true,
         "PkgName": "scope",
@@ -189,19 +176,18 @@
         "UnderlyingTypeString": "func()",
         "Kind": "func",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
-      }
+      },
+      "TreePath": "./fn"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "fn/$scope0/$scope0/T1",
-      "TreePath": "./fn/$scope0/$scope0/T1",
       "Name": "T1",
       "Kind": "type",
       "File": "scope/scope.go",
       "DefStart": 562,
       "DefEnd": 583,
-      "Exported": false,
       "Local": true,
       "Data": {
         "PkgName": "scope",
@@ -209,19 +195,18 @@
         "UnderlyingTypeString": "struct{f string}",
         "Kind": "type",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
-      }
+      },
+      "TreePath": "./fn/$scope0/$scope0/T1"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "fn/$scope0/$scope0/T1/f",
-      "TreePath": "./fn/$scope0/$scope0/T1/f",
       "Name": "f",
       "Kind": "field",
       "File": "scope/scope.go",
       "DefStart": 573,
       "DefEnd": 581,
-      "Exported": false,
       "Local": true,
       "Data": {
         "PkgName": "scope",
@@ -230,19 +215,18 @@
         "UnderlyingTypeString": "string",
         "Kind": "field",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
-      }
+      },
+      "TreePath": "./fn/$scope0/$scope0/T1/f"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "fn/$scope0/$scope0/Y",
-      "TreePath": "./fn/$scope0/$scope0/Y",
       "Name": "Y",
       "Kind": "var",
       "File": "scope/scope.go",
       "DefStart": 508,
       "DefEnd": 513,
-      "Exported": false,
       "Local": true,
       "Data": {
         "PkgName": "scope",
@@ -250,19 +234,18 @@
         "UnderlyingTypeString": "int",
         "Kind": "var",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
-      }
+      },
+      "TreePath": "./fn/$scope0/$scope0/Y"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "fn/$scope0/$scope0/y",
-      "TreePath": "./fn/$scope0/$scope0/y",
       "Name": "y",
       "Kind": "var",
       "File": "scope/scope.go",
       "DefStart": 472,
       "DefEnd": 478,
-      "Exported": false,
       "Local": true,
       "Data": {
         "PkgName": "scope",
@@ -270,19 +253,18 @@
         "UnderlyingTypeString": "int",
         "Kind": "var",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
-      }
+      },
+      "TreePath": "./fn/$scope0/$scope0/y"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "fn/$scope0/x",
-      "TreePath": "./fn/$scope0/x",
       "Name": "x",
       "Kind": "var",
       "File": "scope/scope.go",
       "DefStart": 310,
       "DefEnd": 588,
-      "Exported": false,
       "Local": true,
       "Data": {
         "PkgName": "scope",
@@ -290,19 +272,18 @@
         "UnderlyingTypeString": "int",
         "Kind": "var",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
-      }
+      },
+      "TreePath": "./fn/$scope0/x"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "fn/T0",
-      "TreePath": "./fn/T0",
       "Name": "T0",
       "Kind": "type",
       "File": "scope/scope.go",
       "DefStart": 391,
       "DefEnd": 412,
-      "Exported": false,
       "Local": true,
       "Data": {
         "PkgName": "scope",
@@ -310,19 +291,18 @@
         "UnderlyingTypeString": "struct{f string}",
         "Kind": "type",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
-      }
+      },
+      "TreePath": "./fn/T0"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "fn/T0/f",
-      "TreePath": "./fn/T0/f",
       "Name": "f",
       "Kind": "field",
       "File": "scope/scope.go",
       "DefStart": 402,
       "DefEnd": 410,
-      "Exported": false,
       "Local": true,
       "Data": {
         "PkgName": "scope",
@@ -331,19 +311,18 @@
         "UnderlyingTypeString": "string",
         "Kind": "field",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
-      }
+      },
+      "TreePath": "./fn/T0/f"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "fn/b",
-      "TreePath": "./fn/b",
       "Name": "b",
       "Kind": "var",
       "File": "scope/scope.go",
       "DefStart": 340,
       "DefEnd": 346,
-      "Exported": false,
       "Local": true,
       "Data": {
         "PkgName": "scope",
@@ -351,19 +330,18 @@
         "UnderlyingTypeString": "bool",
         "Kind": "var",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
-      }
+      },
+      "TreePath": "./fn/b"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "init$scope904",
-      "TreePath": "./init$scope904",
       "Name": "init",
       "Kind": "func",
       "File": "scope/scope.go",
       "DefStart": 899,
       "DefEnd": 929,
-      "Exported": false,
       "Local": true,
       "Data": {
         "PkgName": "scope",
@@ -371,20 +349,18 @@
         "UnderlyingTypeString": "func()",
         "Kind": "func",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
-      }
+      },
+      "TreePath": "./init$scope904"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "t3",
-      "TreePath": "./t3",
       "Name": "t3",
       "Kind": "type",
       "File": "scope/scope.go",
       "DefStart": 818,
       "DefEnd": 829,
-      "Exported": false,
-      "Local": false,
       "Data": {
         "PkgScope": true,
         "PkgName": "scope",
@@ -392,20 +368,19 @@
         "UnderlyingTypeString": "struct{}",
         "Kind": "type",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
-      }
+      },
+      "TreePath": "./t3"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "t3/F",
-      "TreePath": "./t3/F",
       "Name": "F",
       "Kind": "func",
       "File": "scope/scope.go",
       "DefStart": 846,
       "DefEnd": 862,
       "Exported": true,
-      "Local": false,
       "Data": {
         "Exported": true,
         "PkgScope": true,
@@ -415,20 +390,18 @@
         "UnderlyingTypeString": "func()",
         "Kind": "method",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
-      }
+      },
+      "TreePath": "./t3/F"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "t3/g",
-      "TreePath": "./t3/g",
       "Name": "g",
       "Kind": "func",
       "File": "scope/scope.go",
       "DefStart": 881,
       "DefEnd": 897,
-      "Exported": false,
-      "Local": false,
       "Data": {
         "PkgScope": true,
         "PkgName": "scope",
@@ -437,28 +410,18 @@
         "UnderlyingTypeString": "func()",
         "Kind": "method",
         "PackageImportPath": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope"
-      }
+      },
+      "TreePath": "./t3/g"
     }
   ],
   "Refs": [
-    {
-      "DefRepo": "",
-      "DefUnitType": "GoPackage",
-      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
-      "DefPath": ".",
-      "Def": false,
-      "Repo": "",
-      "File": "scope/scope.go",
-      "Start": 50,
-      "End": 55
-    },
     {
       "DefRepo": "github.com/golang/go",
       "DefUnitType": "GoPackage",
       "DefUnit": "strings",
       "DefPath": ".",
+      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
-      "Repo": "",
       "File": "scope/scope.go",
       "Start": 103,
       "End": 104
@@ -468,19 +431,28 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "strings",
       "DefPath": ".",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "scope/scope.go",
       "Start": 918,
       "End": 919
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "DefPath": ".",
+      "Repo": "github.com/sgtest/go-misc",
+      "File": "scope/scope.go",
+      "Start": 50,
+      "End": 55
+    },
+    {
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "A",
+      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
-      "Repo": "",
       "File": "scope/scope.go",
       "Start": 296,
       "End": 297
@@ -490,96 +462,93 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "strings",
       "DefPath": "Replace",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "scope/scope.go",
       "Start": 920,
       "End": 927
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "T2/F/a",
+      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
-      "Repo": "",
       "File": "scope/scope.go",
       "Start": 675,
       "End": 676
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "T2/F/b",
+      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
-      "Repo": "",
       "File": "scope/scope.go",
       "Start": 686,
       "End": 687
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "T2/F",
+      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
-      "Repo": "",
       "File": "scope/scope.go",
       "Start": 673,
       "End": 674
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "T2/g",
+      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
-      "Repo": "",
       "File": "scope/scope.go",
       "Start": 758,
       "End": 759
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "T2",
+      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
-      "Repo": "",
       "File": "scope/scope.go",
       "Start": 611,
       "End": 613
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "T2",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "scope/scope.go",
       "Start": 669,
       "End": 671
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "T2",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "scope/scope.go",
       "Start": 754,
       "End": 756
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "a",
+      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
-      "Repo": "",
       "File": "scope/scope.go",
       "Start": 269,
       "End": 270
@@ -589,8 +558,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "bool",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "scope/scope.go",
       "Start": 271,
       "End": 275
@@ -600,8 +568,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "bool",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "scope/scope.go",
       "Start": 298,
       "End": 302
@@ -611,162 +578,157 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "bool",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "scope/scope.go",
       "Start": 342,
       "End": 346
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "fn/$scope0/$scope0/T1/f",
+      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
-      "Repo": "",
       "File": "scope/scope.go",
       "Start": 573,
       "End": 574
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "fn/$scope0/$scope0/T1",
+      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
-      "Repo": "",
       "File": "scope/scope.go",
       "Start": 562,
       "End": 564
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "fn/$scope0/$scope0/Y",
+      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
-      "Repo": "",
       "File": "scope/scope.go",
       "Start": 508,
       "End": 509
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "fn/$scope0/$scope0/Y",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "scope/scope.go",
       "Start": 520,
       "End": 521
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "fn/$scope0/$scope0/y",
+      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
-      "Repo": "",
       "File": "scope/scope.go",
       "Start": 472,
       "End": 473
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "fn/$scope0/$scope0/y",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "scope/scope.go",
       "Start": 485,
       "End": 486
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "fn/$scope0/x",
+      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
-      "Repo": "",
       "File": "scope/scope.go",
       "Start": 435,
       "End": 436
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "fn/$scope0/x",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "scope/scope.go",
       "Start": 477,
       "End": 478
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "fn/T0/f",
+      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
-      "Repo": "",
       "File": "scope/scope.go",
       "Start": 402,
       "End": 403
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "fn/T0",
+      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
-      "Repo": "",
       "File": "scope/scope.go",
       "Start": 391,
       "End": 393
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "fn/b",
+      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
-      "Repo": "",
       "File": "scope/scope.go",
       "Start": 340,
       "End": 341
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "fn/b",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "scope/scope.go",
       "Start": 352,
       "End": 353
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "fn",
+      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
-      "Repo": "",
       "File": "scope/scope.go",
       "Start": 315,
       "End": 317
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "init$scope904",
+      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
-      "Repo": "",
       "File": "scope/scope.go",
       "Start": 904,
       "End": 908
@@ -776,8 +738,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "int",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "scope/scope.go",
       "Start": 448,
       "End": 451
@@ -787,8 +748,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "int",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "scope/scope.go",
       "Start": 510,
       "End": 513
@@ -798,8 +758,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "string",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "scope/scope.go",
       "Start": 404,
       "End": 410
@@ -809,8 +768,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "string",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "scope/scope.go",
       "Start": 575,
       "End": 581
@@ -820,8 +778,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "string",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "scope/scope.go",
       "Start": 677,
       "End": 683
@@ -831,63 +788,60 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "string",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "scope/scope.go",
       "Start": 688,
       "End": 694
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "t3/F",
+      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
-      "Repo": "",
       "File": "scope/scope.go",
       "Start": 856,
       "End": 857
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "t3/g",
+      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
-      "Repo": "",
       "File": "scope/scope.go",
       "Start": 891,
       "End": 892
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "t3",
+      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
-      "Repo": "",
       "File": "scope/scope.go",
       "Start": 818,
       "End": 820
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "t3",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "scope/scope.go",
       "Start": 852,
       "End": 854
     },
     {
-      "DefRepo": "",
+      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "DefPath": "t3",
-      "Def": false,
-      "Repo": "",
+      "Repo": "github.com/sgtest/go-misc",
       "File": "scope/scope.go",
       "Start": 887,
       "End": 889
@@ -899,180 +853,126 @@
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": ".",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\nThis package tests Exported and Local.\n\u003c/p\u003e\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
+      "Data": "\u003cp\u003e\nThis package tests Exported and Local.\n\u003c/p\u003e\n"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": ".",
       "Format": "text/plain",
-      "Data": "This package tests Exported and Local.\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
+      "Data": "This package tests Exported and Local.\n"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "A",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\nA: exported\n\u003c/p\u003e\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
+      "Data": "\u003cp\u003e\nA: exported\n\u003c/p\u003e\n"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "A",
       "Format": "text/plain",
-      "Data": "A: exported\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
-    },
-    {
-      "UnitType": "GoPackage",
-      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
-      "Path": "T2",
-      "Format": "text/plain",
-      "Data": "T2: exported\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
+      "Data": "A: exported\n"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "T2",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\nT2: exported\n\u003c/p\u003e\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
+      "Data": "\u003cp\u003e\nT2: exported\n\u003c/p\u003e\n"
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "Path": "T2",
+      "Format": "text/plain",
+      "Data": "T2: exported\n"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "T2/F",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\nF: exported\na: local\nb: local\n\u003c/p\u003e\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
+      "Data": "\u003cp\u003e\nF: exported\na: local\nb: local\n\u003c/p\u003e\n"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "T2/F",
       "Format": "text/plain",
-      "Data": "F: exported\na: local\nb: local\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
+      "Data": "F: exported\na: local\nb: local\n"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "T2/g",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\ng: exported type, unexported method\n\u003c/p\u003e\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
+      "Data": "\u003cp\u003e\ng: exported type, unexported method\n\u003c/p\u003e\n"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "T2/g",
       "Format": "text/plain",
-      "Data": "g: exported type, unexported method\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
-    },
-    {
-      "UnitType": "GoPackage",
-      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
-      "Path": "a",
-      "Format": "text/plain",
-      "Data": "a: (unexported)\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
+      "Data": "g: exported type, unexported method\n"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "a",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\na: (unexported)\n\u003c/p\u003e\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
+      "Data": "\u003cp\u003e\na: (unexported)\n\u003c/p\u003e\n"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
-      "Path": "fn",
+      "Path": "a",
       "Format": "text/plain",
-      "Data": "fn\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
+      "Data": "a: (unexported)\n"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "fn",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\nfn\n\u003c/p\u003e\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
+      "Data": "\u003cp\u003e\nfn\n\u003c/p\u003e\n"
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "Path": "fn",
+      "Format": "text/plain",
+      "Data": "fn\n"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "t3/F",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\nF: exported\n\u003c/p\u003e\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
+      "Data": "\u003cp\u003e\nF: exported\n\u003c/p\u003e\n"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "t3/F",
       "Format": "text/plain",
-      "Data": "F: exported\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
-    },
-    {
-      "UnitType": "GoPackage",
-      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
-      "Path": "t3/g",
-      "Format": "text/plain",
-      "Data": "g: unexported\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
+      "Data": "F: exported\n"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "t3/g",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\ng: unexported\n\u003c/p\u003e\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
+      "Data": "\u003cp\u003e\ng: unexported\n\u003c/p\u003e\n"
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "Path": "t3/g",
+      "Format": "text/plain",
+      "Data": "g: unexported\n"
     }
   ]
 }
