@@ -2,12 +2,16 @@ package src
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"path/filepath"
+
+	"code.google.com/p/rog-go/parallel"
 
 	"os"
 	"os/exec"
 	"strings"
+	"syscall"
 
 	"sourcegraph.com/sourcegraph/go-sourcegraph/sourcegraph"
 	"sourcegraph.com/sourcegraph/srclib/graph"
@@ -20,14 +24,7 @@ type Repo struct {
 	CloneURL string // CloneURL of repo.
 }
 
-func (c *Repo) URI() string {
-	uri := graph.MakeURI(c.CloneURL)
-	// TODO(sqs): temp workaround for sourcegraph private repo
-	if uri == "github.com/sourcegraph/sourcegraph" {
-		return "sourcegraph.com/sourcegraph/sourcegraph"
-	}
-	return uri
-}
+func (c *Repo) URI() string { return graph.MakeURI(c.CloneURL) }
 
 func (r *Repo) RepoRevSpec() sourcegraph.RepoRevSpec {
 	return sourcegraph.RepoRevSpec{
@@ -42,37 +39,40 @@ func OpenRepo(dir string) (*Repo, error) {
 		return nil, fmt.Errorf("not a directory: %q", dir)
 	}
 
-	// VCS and root directory
 	rc := new(Repo)
-	pathCompsInFoundRepo := 0 // find the closest ancestor repo
-	for _, vcsType := range []string{"git", "hg"} {
-		if d, err := getRootDir(vcsType, dir); err == nil {
-			if pathComps := strings.Count(d, string(os.PathSeparator)); pathComps > pathCompsInFoundRepo {
-				rc.VCSType = vcsType
-				rc.RootDir = d
-				pathCompsInFoundRepo = pathComps
-			}
-		}
+
+	// VCS and root directory
+	var err error
+	rc.RootDir, rc.VCSType, err = getRootDir(dir)
+	if err != nil {
+		return rc, err
 	}
 	if rc.RootDir == "" {
-		return nil, fmt.Errorf("failed to detect repository root dir for %q", dir)
+		return rc, fmt.Errorf("failed to detect git/hg repository root dir for %q; is it in a git/hg repository?", dir)
 	}
 
-	var err error
-	rc.CommitID, err = resolveWorkingTreeRevision(rc.VCSType, rc.RootDir)
-	if err != nil {
-		return nil, err
-	}
-
-	// Get repo URI from clone URL.
-	cloneURL, err := getVCSCloneURL(rc.VCSType, rc.RootDir)
-	if err != nil {
-		return nil, err
-	}
-	rc.CloneURL = cloneURL
-
-	updateVCSIgnore("." + rc.VCSType + "ignore")
-	return rc, nil
+	par := parallel.NewRun(4)
+	par.Do(func() error {
+		// Current commit ID
+		var err error
+		rc.CommitID, err = resolveWorkingTreeRevision(rc.VCSType, rc.RootDir)
+		return err
+	})
+	par.Do(func() error {
+		// Get repo URI from clone URL.
+		cloneURL, err := getVCSCloneURL(rc.VCSType, rc.RootDir)
+		if err != nil {
+			return err
+		}
+		rc.CloneURL = cloneURL
+		return nil
+	})
+	par.Do(func() error {
+		// Misc
+		updateVCSIgnore("." + rc.VCSType + "ignore")
+		return nil
+	})
+	return rc, par.Wait()
 }
 
 func resolveWorkingTreeRevision(vcsType string, dir string) (string, error) {
@@ -95,33 +95,54 @@ func resolveWorkingTreeRevision(vcsType string, dir string) (string, error) {
 	return strings.TrimSuffix(string(bytes.TrimSpace(out)), "+"), nil
 }
 
-func getRootDir(vcsType string, dir string) (string, error) {
-	var cmd *exec.Cmd
-	switch vcsType {
-	case "git":
-		cmd = exec.Command("git", "rev-parse", "--show-toplevel")
-	case "hg":
-		cmd = exec.Command("hg", "--config", "trusted.users=root", "root")
-	}
-	if cmd == nil {
-		return "", fmt.Errorf("unrecognized VCS %v", vcsType)
-	}
-	cmd.Dir = dir
-	out, err := cmd.Output()
+func getRootDir(dir string) (rootDir string, vcsType string, err error) {
+	dir, err = filepath.Abs(dir)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
-	rootDir := filepath.Clean(strings.TrimSpace(string(out)))
-	return filepath.Abs(rootDir)
+	ancestors := ancestorDirsAndSelfExceptRoot(dir)
+
+	vcsTypes := []string{"git", "hg"}
+	for i := len(ancestors) - 1; i >= 0; i-- {
+		ancDir := ancestors[i]
+		for _, vt := range vcsTypes {
+			// Don't check that the FileInfo is a dir because git
+			// submodules have a .git file.
+			if _, err := os.Stat(filepath.Join(ancDir, "."+vt)); err == nil {
+				return ancDir, vt, nil
+			}
+		}
+	}
+	return "", "", nil
+}
+
+// ancestorDirsAndSelfExceptRoot returns a list of p's ancestor
+// directories (including itself but excluding the root ("." or "/")).
+func ancestorDirsAndSelfExceptRoot(p string) []string {
+	if p == "" {
+		return nil
+	}
+	if len(p) == 1 && (p[0] == '.' || p[0] == '/') {
+		return nil
+	}
+
+	var dirs []string
+	for i, c := range p {
+		if c == '/' {
+			dirs = append(dirs, p[:i])
+		}
+	}
+	dirs = append(dirs, p)
+	return dirs
 }
 
 func getVCSCloneURL(vcsType string, repoDir string) (string, error) {
 	run := func(args ...string) (string, error) {
 		cmd := exec.Command(args[0], args[1:]...)
 		cmd.Dir = repoDir
-		out, err := cmd.Output()
+		out, err := cmd.CombinedOutput()
 		if err != nil {
-			return "", fmt.Errorf("could not get VCS URL: %s", err)
+			return "", err
 		}
 		cloneURL := strings.TrimSpace(string(out))
 		if vcsType == "git" {
@@ -137,10 +158,31 @@ func getVCSCloneURL(vcsType string, repoDir string) (string, error) {
 			return url, nil
 		}
 
-		return run("git", "config", "remote.origin.url")
+		url, err = run("git", "config", "remote.origin.url")
+		if code, _ := exitStatus(err); code == 1 {
+			// `git config --get` returns exit code 1 if the config key doesn't exist.
+			return "", errNoVCSCloneURL
+		}
+		return url, err
 	case "hg":
 		return run("hg", "--config", "trusted.users=root", "paths", "default")
 	default:
 		return "", fmt.Errorf("unrecognized VCS %v", vcsType)
 	}
+}
+
+var errNoVCSCloneURL = errors.New("Could not determine remote clone URL for the current repository. For git repositories, srclib checks for remotes named 'srclib' or 'origin' (in that order). Run 'git remote add NAME URL' to add a remote, where NAME is either 'srclib' or 'origin' and URL is a git clone URL (e.g. https://example.com/repo.git).' to add a remote. For hg repositories, srclib checks the 'default' remote.")
+
+func exitStatus(err error) (uint32, error) {
+	if err != nil {
+		if exiterr, ok := err.(*exec.ExitError); ok {
+			// There is no platform independent way to retrieve
+			// the exit code, but the following will work on Unix
+			if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
+				return uint32(status.ExitStatus()), nil
+			}
+		}
+		return 0, err
+	}
+	return 0, nil
 }

@@ -38,10 +38,10 @@ func sortedFiles(m map[string]*ast.File) []*ast.File {
 	return vallist
 }
 
-func makeSpan(fset *token.FileSet, node ast.Node) [2]int {
+func makeSpan(fset *token.FileSet, node ast.Node) [2]uint32 {
 	pos := node.Pos()
 	start := fset.Position(pos)
-	return [2]int{start.Offset, start.Offset + int((node.End() - pos))}
+	return [2]uint32{uint32(start.Offset), uint32(start.Offset + int((node.End() - pos)))}
 }
 
 func derefNode(n ast.Expr) ast.Expr {

@@ -59,7 +59,7 @@ type defPath struct {
 
 type identPos struct {
 	file       string
-	start, end int
+	start, end uint32
 }
 
 func checkIdents(t *testing.T, fset *token.FileSet, file *ast.File, idents map[identPos]interface{}, defs map[defPath]struct{}, g *Grapher, printAll bool) {
@@ -69,7 +69,7 @@ func checkIdents(t *testing.T, fset *token.FileSet, file *ast.File, idents map[i
 			if printAll {
 				t.Logf("ident %q at %s:%d-%d", x.Name, pos.Filename, pos.Offset, end.Offset)
 			}
-			ip := identPos{pos.Filename, pos.Offset, end.Offset}
+			ip := identPos{pos.Filename, uint32(pos.Offset), uint32(end.Offset)}
 			if obj, present := idents[ip]; !present {
 				t.Errorf("unresolved ident %q at %s", x.Name, pos)
 			} else if ref, ok := obj.(*Ref); ok {

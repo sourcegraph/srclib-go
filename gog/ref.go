@@ -22,7 +22,7 @@ func (g *Grapher) NewRef(node ast.Node, obj types.Object) (*Ref, error) {
 
 type Ref struct {
 	File string
-	Span [2]int
+	Span [2]uint32
 	Def  *DefKey
 
 	// IsDef is true if ref is to the definition of Def, and false if it's to a

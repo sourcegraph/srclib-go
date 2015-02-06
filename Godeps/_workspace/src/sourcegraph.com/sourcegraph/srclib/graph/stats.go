@@ -1,10 +1,5 @@
 package graph
 
-import (
-	"database/sql/driver"
-	"fmt"
-)
-
 // StatType is the name of a def statistic (see below for a listing).
 type StatType string
 
@@ -75,16 +70,15 @@ func (x StatType) IsAbstract() bool {
 	}
 }
 
-// Value implements database/sql/driver.Valuer.
-func (x StatType) Value() (driver.Value, error) {
-	return string(x), nil
-}
-
-// Scan implements database/sql.Scanner.
-func (x *StatType) Scan(v interface{}) error {
-	if data, ok := v.([]byte); ok {
-		*x = StatType(data)
-		return nil
+// UniqueRefDefs groups refs by the RefDefKey field and returns a map of
+// how often each RefDefKey appears. If m is non-nil, counts are incremented
+// and a new map is not created.
+func UniqueRefDefs(refs []*Ref, m map[RefDefKey]int) map[RefDefKey]int {
+	if m == nil {
+		m = make(map[RefDefKey]int)
 	}
-	return fmt.Errorf("%T.Scan failed: %v", x, v)
+	for _, ref := range refs {
+		m[ref.RefDefKey()]++
+	}
+	return m
 }
