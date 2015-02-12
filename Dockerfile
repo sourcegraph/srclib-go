@@ -21,7 +21,6 @@ RUN echo '1.3.3 srclib' > /usr/local/go1.3/VERSION
 
 ENV GOROOT /usr/local/go
 ENV GOROOT13 /usr/local/go1.3
-ENV GOROOT_BOOTSTRAP /usr/local/go
 ENV GOBIN /usr/local/bin
 ENV PATH /usr/local/go/bin:/usr/local/go1.3/bin:$PATH
 ENV GOPATH /srclib
