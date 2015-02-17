@@ -115,7 +115,7 @@ func (c *httpClient) getFiles(urls []string, files []*File) error {
 			ch <- nil
 		}(i)
 	}
-	for range files {
+	for _ = range files {
 		if err := <-ch; err != nil {
 			return err
 		}

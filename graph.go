@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/golang/gddo/gosrc"
+	"github.com/MarkMcCaskey/gddo/gosrc"
 
 	"golang.org/x/tools/go/loader"
 
