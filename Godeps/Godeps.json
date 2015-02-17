@@ -65,7 +65,7 @@
 			"Rev": "ad31557573d621eccf54a8abb7b1fcab8977d648"
 		},
 		{
-			"ImportPath": "github.com/golang/gddo/gosrc",
+			"ImportPath": "github.com/MarkMcCaskey/gddo/gosrc",
 			"Rev": "eae68f08320b6c17b22282eda8a57920811f041b"
 		},
 		{
