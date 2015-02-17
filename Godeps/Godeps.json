@@ -68,7 +68,6 @@
 			"ImportPath": "github.com/MarkMcCaskey/gddo/gosrc",
 			"Rev": "b87d72e1946dc0ac4d529d683ce43a841e58a83d"
 		},
-		},
 		{
 			"ImportPath": "github.com/jessevdk/go-flags",
 			"Comment": "v1-203-gea0aed9",
