@@ -10,7 +10,7 @@ import (
 
 	"go/build"
 
-	"github.com/golang/gddo/gosrc"
+	"github.com/MarkMcCaskey/gddo/gosrc"
 
 	"strings"
 	"sync"
