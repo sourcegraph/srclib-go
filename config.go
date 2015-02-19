@@ -67,6 +67,10 @@ type srcfileConfig struct {
 	// and is set as the GOROOT environment variable.
 	GOROOT string
 
+	// GOROOTForCmd, if set, is used as the GOROOT env var when
+	// invoking the "go" tool.
+	GOROOTForCmd string
+
 	// GOPATH's colon-separated dirs, if specified, are made absolute
 	// (prefixed with the directory that the repository being built is
 	// checked out to) and the resulting value is appended to the
@@ -119,7 +123,7 @@ func (c *srcfileConfig) apply() error {
 				// If GOROOT is empty, assign $GOROOT<version_num> to it.
 				newGOROOT := os.Getenv(fmt.Sprintf("GOROOT%s", strings.Replace(config.GOVERSION, ".", "", -1)))
 				if newGOROOT != "" {
-					config.GOROOT = newGOROOT
+					config.GOROOTForCmd = newGOROOT
 				}
 			}
 			break
@@ -158,6 +162,10 @@ func (c *srcfileConfig) apply() error {
 
 	loaderConfig.SourceImports = config.SourceImports
 
+	if config.GOROOTForCmd == "" {
+		config.GOROOTForCmd = config.GOROOT
+	}
+
 	return nil
 }
 
@@ -166,7 +174,7 @@ func (c *srcfileConfig) env() []string {
 		"PATH=" + os.Getenv("PATH"),
 		"GOARCH=" + buildContext.GOARCH,
 		"GOOS=" + buildContext.GOOS,
-		"GOROOT=" + buildContext.GOROOT,
+		"GOROOT=" + config.GOROOTForCmd,
 		"GOPATH=" + buildContext.GOPATH,
 	}
 }
