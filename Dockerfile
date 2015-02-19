@@ -16,18 +16,21 @@ RUN cd /usr/local/go/src && ./make.bash
 # Grab Go 1.3 as well.
 RUN curl -Lo /tmp/golang1.3.tgz https://storage.googleapis.com/golang/go1.3.3.linux-amd64.tar.gz
 RUN mkdir -p /usr/local/go1.3 && tar -xzf /tmp/golang1.3.tgz -C /usr/local/go1.3 --strip-components=1
-# HOTFIX: We need to add go1.3's GOROOT/pkg/src to the GOPATH so that
-# it can be imported (because GOROOT/src/pkg was moved to GOROOT/src).
+
+# HOTFIX: Make /tmp/goroot1.3 be a valid GOROOT both for Go 1.3 and
+# 1.4 (i.e., GOROOT/src/pkg and GOROOT/src should both be dirs with
+# all the stdlib packages).
 RUN mkdir -p /tmp/goroot1.3/
 RUN ln -s /usr/local/go1.3/src/pkg /tmp/goroot1.3/src
+RUN ln -s /usr/local/go1.3/src/pkg /tmp/goroot1.3/src/pkg
 RUN mv /usr/local/go1.3/bin/go /usr/local/go1.3/bin/go1.3
 RUN echo '1.3.3 srclib' > /usr/local/go1.3/VERSION
 
 ENV GOROOT /usr/local/go
-ENV GOROOT13 /usr/local/go1.3
+ENV GOROOT13 /tmp/goroot1.3
 ENV GOBIN /usr/local/bin
 ENV PATH /usr/local/go/bin:/usr/local/go1.3/bin:$PATH
-ENV GOPATH /tmp/goroot1.3:/srclib
+ENV GOPATH /srclib
 
 RUN go get github.com/kr/godep
 
