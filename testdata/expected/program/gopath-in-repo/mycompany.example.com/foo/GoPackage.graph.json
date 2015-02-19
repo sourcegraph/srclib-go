@@ -43,21 +43,17 @@
   ],
   "Refs": [
     {
-      "DefRepo": "github.com/sgtest/gopath-in-repo",
       "DefUnitType": "GoPackage",
       "DefUnit": "mycompany.example.com/foo",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/gopath-in-repo",
       "File": "go/src/mycompany.example.com/foo/foo.go",
       "Start": 8,
       "End": 11
     },
     {
-      "DefRepo": "github.com/sgtest/gopath-in-repo",
       "DefUnitType": "GoPackage",
       "DefUnit": "mycompany.example.com/foo",
       "DefPath": "Foo",
-      "Repo": "github.com/sgtest/gopath-in-repo",
       "Def": true,
       "File": "go/src/mycompany.example.com/foo/foo.go",
       "Start": 18,

@@ -79,73 +79,59 @@
   ],
   "Refs": [
     {
-      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/multiple_mains",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/go-misc",
       "File": "multiple_mains/main1.go",
       "Start": 8,
       "End": 12
     },
     {
-      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/multiple_mains",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/go-misc",
       "File": "multiple_mains/main2.go",
       "Start": 8,
       "End": 12
     },
     {
-      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/multiple_mains",
       "DefPath": "main1.go/main/x",
-      "Repo": "github.com/sgtest/go-misc",
       "File": "multiple_mains/main1.go",
       "Start": 111,
       "End": 112
     },
     {
-      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/multiple_mains",
       "DefPath": "main1.go/main/x",
-      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
       "File": "multiple_mains/main1.go",
       "Start": 97,
       "End": 98
     },
     {
-      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/multiple_mains",
       "DefPath": "main1.go/main",
-      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
       "File": "multiple_mains/main1.go",
       "Start": 83,
       "End": 87
     },
     {
-      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/multiple_mains",
       "DefPath": "main2.go/main/x",
-      "Repo": "github.com/sgtest/go-misc",
       "File": "multiple_mains/main2.go",
       "Start": 111,
       "End": 112
     },
     {
-      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/multiple_mains",
       "DefPath": "main2.go/main/x",
-      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
       "File": "multiple_mains/main2.go",
       "Start": 97,
@@ -156,7 +142,6 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "string",
-      "Repo": "github.com/sgtest/go-misc",
       "File": "multiple_mains/main1.go",
       "Start": 99,
       "End": 105
@@ -166,7 +151,6 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "string",
-      "Repo": "github.com/sgtest/go-misc",
       "File": "multiple_mains/main2.go",
       "Start": 99,
       "End": 105

@@ -83,11 +83,26 @@
   ],
   "Refs": [
     {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/cgo_sample",
+      "DefPath": ".",
+      "File": "bar.go",
+      "Start": 8,
+      "End": 18
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/cgo_sample",
+      "DefPath": ".",
+      "File": "foo.go",
+      "Start": 8,
+      "End": 18
+    },
+    {
       "DefRepo": "github.com/golang/go",
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/cgo_sample",
       "File": "foo.go",
       "Start": 38,
       "End": 43
@@ -97,69 +112,40 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/cgo_sample",
       "File": "foo.go",
       "Start": 94,
       "End": 97
     },
     {
-      "DefRepo": "github.com/sgtest/cgo_sample",
-      "DefUnitType": "GoPackage",
-      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/cgo_sample",
-      "DefPath": ".",
-      "Repo": "github.com/sgtest/cgo_sample",
-      "File": "bar.go",
-      "Start": 8,
-      "End": 18
-    },
-    {
-      "DefRepo": "github.com/sgtest/cgo_sample",
-      "DefUnitType": "GoPackage",
-      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/cgo_sample",
-      "DefPath": ".",
-      "Repo": "github.com/sgtest/cgo_sample",
-      "File": "foo.go",
-      "Start": 8,
-      "End": 18
-    },
-    {
-      "DefRepo": "github.com/sgtest/cgo_sample",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/cgo_sample",
       "DefPath": "Bar",
-      "Repo": "github.com/sgtest/cgo_sample",
       "Def": true,
       "File": "bar.go",
       "Start": 260,
       "End": 263
     },
     {
-      "DefRepo": "github.com/sgtest/cgo_sample",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/cgo_sample",
       "DefPath": "Foo/s",
-      "Repo": "github.com/sgtest/cgo_sample",
       "File": "foo.go",
       "Start": 106,
       "End": 107
     },
     {
-      "DefRepo": "github.com/sgtest/cgo_sample",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/cgo_sample",
       "DefPath": "Foo/s",
-      "Repo": "github.com/sgtest/cgo_sample",
       "Def": true,
       "File": "foo.go",
       "Start": 59,
       "End": 60
     },
     {
-      "DefRepo": "github.com/sgtest/cgo_sample",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/cgo_sample",
       "DefPath": "Foo",
-      "Repo": "github.com/sgtest/cgo_sample",
       "Def": true,
       "File": "foo.go",
       "Start": 50,
@@ -170,7 +156,6 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": "Println",
-      "Repo": "github.com/sgtest/cgo_sample",
       "File": "foo.go",
       "Start": 98,
       "End": 105

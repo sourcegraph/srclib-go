@@ -22,11 +22,9 @@
   ],
   "Refs": [
     {
-      "DefRepo": "github.com/sgtest/go-testonly",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-testonly",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/go-testonly",
       "File": "foo_test.go",
       "Start": 8,
       "End": 11

@@ -43,82 +43,66 @@
   ],
   "Refs": [
     {
-      "DefRepo": "github.com/sgtest/gopath-in-repo",
       "DefUnitType": "GoPackage",
       "DefUnit": "mycompany.example.com/foo",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/gopath-in-repo",
       "File": "go/src/mycompany.example.com/mypkg/mypkg.go",
       "Start": 107,
       "End": 110
     },
     {
-      "DefRepo": "github.com/sgtest/gopath-in-repo",
       "DefUnitType": "GoPackage",
       "DefUnit": "mycompany.example.com/foo",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/gopath-in-repo",
       "File": "go/src/mycompany.example.com/mypkg/mypkg.go",
       "Start": 25,
       "End": 52
     },
     {
-      "DefRepo": "github.com/sgtest/gopath-in-repo",
       "DefUnitType": "GoPackage",
       "DefUnit": "mycompany.example.com/mypkg",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/gopath-in-repo",
       "File": "go/src/mycompany.example.com/mypkg/mypkg.go",
       "Start": 8,
       "End": 13
     },
     {
-      "DefRepo": "github.com/sgtest/gopath-in-repo",
       "DefUnitType": "GoPackage",
       "DefUnit": "othercompany.example.com/otherpkg",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/gopath-in-repo",
       "File": "go/src/mycompany.example.com/mypkg/mypkg.go",
       "Start": 118,
       "End": 126
     },
     {
-      "DefRepo": "github.com/sgtest/gopath-in-repo",
       "DefUnitType": "GoPackage",
       "DefUnit": "othercompany.example.com/otherpkg",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/gopath-in-repo",
       "File": "go/src/mycompany.example.com/mypkg/mypkg.go",
       "Start": 54,
       "End": 89
     },
     {
-      "DefRepo": "github.com/sgtest/gopath-in-repo",
       "DefUnitType": "GoPackage",
       "DefUnit": "mycompany.example.com/foo",
       "DefPath": "Foo",
-      "Repo": "github.com/sgtest/gopath-in-repo",
       "File": "go/src/mycompany.example.com/mypkg/mypkg.go",
       "Start": 111,
       "End": 114
     },
     {
-      "DefRepo": "github.com/sgtest/gopath-in-repo",
       "DefUnitType": "GoPackage",
       "DefUnit": "mycompany.example.com/mypkg",
       "DefPath": "Foo",
-      "Repo": "github.com/sgtest/gopath-in-repo",
       "Def": true,
       "File": "go/src/mycompany.example.com/mypkg/mypkg.go",
       "Start": 98,
       "End": 101
     },
     {
-      "DefRepo": "github.com/sgtest/gopath-in-repo",
       "DefUnitType": "GoPackage",
       "DefUnit": "othercompany.example.com/otherpkg",
       "DefPath": "Other",
-      "Repo": "github.com/sgtest/gopath-in-repo",
       "File": "go/src/mycompany.example.com/mypkg/mypkg.go",
       "Start": 127,
       "End": 132

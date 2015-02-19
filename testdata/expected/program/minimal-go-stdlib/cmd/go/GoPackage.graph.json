@@ -60,72 +60,58 @@
   ],
   "Refs": [
     {
-      "DefRepo": "github.com/sgtest/minimal-go-stdlib",
       "DefUnitType": "GoPackage",
       "DefUnit": "cmd/go",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/minimal-go-stdlib",
       "File": "src/cmd/go/main.go",
       "Start": 8,
       "End": 12
     },
     {
-      "DefRepo": "github.com/sgtest/minimal-go-stdlib",
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy0",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/minimal-go-stdlib",
       "File": "src/cmd/go/main.go",
       "Start": 21,
       "End": 29
     },
     {
-      "DefRepo": "github.com/sgtest/minimal-go-stdlib",
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy0",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/minimal-go-stdlib",
       "File": "src/cmd/go/main.go",
       "Start": 289,
       "End": 295
     },
     {
-      "DefRepo": "github.com/sgtest/minimal-go-stdlib",
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy0",
       "DefPath": "MyFunc",
-      "Repo": "github.com/sgtest/minimal-go-stdlib",
       "File": "src/cmd/go/main.go",
       "Start": 296,
       "End": 302
     },
     {
-      "DefRepo": "github.com/sgtest/minimal-go-stdlib",
       "DefUnitType": "GoPackage",
       "DefUnit": "cmd/go",
       "DefPath": "main.go/main/v",
-      "Repo": "github.com/sgtest/minimal-go-stdlib",
       "Def": true,
       "File": "src/cmd/go/main.go",
       "Start": 284,
       "End": 285
     },
     {
-      "DefRepo": "github.com/sgtest/minimal-go-stdlib",
       "DefUnitType": "GoPackage",
       "DefUnit": "cmd/go",
       "DefPath": "main.go/main/v",
-      "Repo": "github.com/sgtest/minimal-go-stdlib",
       "File": "src/cmd/go/main.go",
       "Start": 310,
       "End": 311
     },
     {
-      "DefRepo": "github.com/sgtest/minimal-go-stdlib",
       "DefUnitType": "GoPackage",
       "DefUnit": "cmd/go",
       "DefPath": "main.go/main",
-      "Repo": "github.com/sgtest/minimal-go-stdlib",
       "Def": true,
       "File": "src/cmd/go/main.go",
       "Start": 36,

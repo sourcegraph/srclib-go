@@ -62,32 +62,26 @@
   ],
   "Refs": [
     {
-      "DefRepo": "github.com/sgtest/minimal-go-stdlib",
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/minimal-go-stdlib",
       "File": "src/fmt/fake_fmt.go",
       "Start": 8,
       "End": 11
     },
     {
-      "DefRepo": "github.com/sgtest/minimal-go-stdlib",
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": "FakePrintf/s",
-      "Repo": "github.com/sgtest/minimal-go-stdlib",
       "Def": true,
       "File": "src/fmt/fake_fmt.go",
       "Start": 197,
       "End": 198
     },
     {
-      "DefRepo": "github.com/sgtest/minimal-go-stdlib",
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": "FakePrintf",
-      "Repo": "github.com/sgtest/minimal-go-stdlib",
       "Def": true,
       "File": "src/fmt/fake_fmt.go",
       "Start": 186,
@@ -98,7 +92,6 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "string",
-      "Repo": "github.com/sgtest/minimal-go-stdlib",
       "File": "src/fmt/fake_fmt.go",
       "Start": 199,
       "End": 205

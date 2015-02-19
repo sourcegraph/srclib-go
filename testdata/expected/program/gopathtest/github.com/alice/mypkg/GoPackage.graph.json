@@ -43,21 +43,17 @@
   ],
   "Refs": [
     {
-      "DefRepo": "github.com/sgtest/gopathtest",
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/gopathtest",
       "File": "vendor/src/github.com/alice/mypkg/mypkg.go",
       "Start": 51,
       "End": 56
     },
     {
-      "DefRepo": "github.com/sgtest/gopathtest",
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": "Foo",
-      "Repo": "github.com/sgtest/gopathtest",
       "Def": true,
       "File": "vendor/src/github.com/alice/mypkg/mypkg.go",
       "Start": 63,

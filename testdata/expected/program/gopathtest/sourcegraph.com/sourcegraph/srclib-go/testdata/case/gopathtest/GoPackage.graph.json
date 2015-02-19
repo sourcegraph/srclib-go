@@ -41,51 +41,41 @@
   ],
   "Refs": [
     {
-      "DefRepo": "github.com/sgtest/gopathtest",
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/gopathtest",
       "File": "gopathtest.go",
       "Start": 104,
       "End": 128
     },
     {
-      "DefRepo": "github.com/sgtest/gopathtest",
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/gopathtest",
       "File": "gopathtest.go",
       "Start": 178,
       "End": 183
     },
     {
-      "DefRepo": "github.com/sgtest/gopathtest",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/gopathtest",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/gopathtest",
       "File": "gopathtest.go",
       "Start": 81,
       "End": 91
     },
     {
-      "DefRepo": "github.com/sgtest/gopathtest",
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": "Foo",
-      "Repo": "github.com/sgtest/gopathtest",
       "File": "gopathtest.go",
       "Start": 184,
       "End": 187
     },
     {
-      "DefRepo": "github.com/sgtest/gopathtest",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/gopathtest",
       "DefPath": "init$gopathtest167",
-      "Repo": "github.com/sgtest/gopathtest",
       "Def": true,
       "File": "gopathtest.go",
       "Start": 167,

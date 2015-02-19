@@ -4,34 +4,31 @@
       "UnitType": "GoPackage",
       "Unit": "fmt",
       "Path": ".",
-      "TreePath": ".",
       "Name": "fmt",
       "Kind": "package",
       "File": "src/fmt",
       "DefStart": 0,
       "DefEnd": 0,
       "Exported": true,
-      "Local": false,
       "Data": {
         "Exported": true,
         "PkgName": "fmt",
         "TypeString": "",
         "Kind": "package",
         "PackageImportPath": "fmt"
-      }
+      },
+      "TreePath": "."
     },
     {
       "UnitType": "GoPackage",
       "Unit": "fmt",
       "Path": "FakePrintf",
-      "TreePath": "./FakePrintf",
       "Name": "FakePrintf",
       "Kind": "func",
       "File": "src/fmt/fake_fmt.go",
       "DefStart": 181,
       "DefEnd": 209,
       "Exported": true,
-      "Local": false,
       "Data": {
         "Exported": true,
         "PkgScope": true,
@@ -40,19 +37,18 @@
         "UnderlyingTypeString": "func(s string)",
         "Kind": "func",
         "PackageImportPath": "fmt"
-      }
+      },
+      "TreePath": "./FakePrintf"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "fmt",
       "Path": "FakePrintf/s",
-      "TreePath": "./FakePrintf/s",
       "Name": "s",
       "Kind": "var",
       "File": "src/fmt/fake_fmt.go",
       "DefStart": 197,
       "DefEnd": 205,
-      "Exported": false,
       "Local": true,
       "Data": {
         "PkgName": "fmt",
@@ -60,39 +56,33 @@
         "UnderlyingTypeString": "string",
         "Kind": "var",
         "PackageImportPath": "fmt"
-      }
+      },
+      "TreePath": "./FakePrintf/s"
     }
   ],
   "Refs": [
     {
-      "DefRepo": "",
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": ".",
-      "Def": false,
-      "Repo": "",
       "File": "src/fmt/fake_fmt.go",
       "Start": 8,
       "End": 11
     },
     {
-      "DefRepo": "",
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": "FakePrintf/s",
       "Def": true,
-      "Repo": "",
       "File": "src/fmt/fake_fmt.go",
       "Start": 197,
       "End": 198
     },
     {
-      "DefRepo": "",
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": "FakePrintf",
       "Def": true,
-      "Repo": "",
       "File": "src/fmt/fake_fmt.go",
       "Start": 186,
       "End": 196
@@ -102,8 +92,6 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "string",
-      "Def": false,
-      "Repo": "",
       "File": "src/fmt/fake_fmt.go",
       "Start": 199,
       "End": 205
@@ -115,20 +103,14 @@
       "Unit": "fmt",
       "Path": "FakePrintf",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\nFakePrintf is not the real printf. We\u0026#39;re testing that our analyzer looks at\nthe repository being analyzed, and not the Go stdlib, if GoBaseImportPaths is\nset.\n\u003c/p\u003e\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
+      "Data": "\u003cp\u003e\nFakePrintf is not the real printf. We\u0026#39;re testing that our analyzer looks at\nthe repository being analyzed, and not the Go stdlib, if GoBaseImportPaths is\nset.\n\u003c/p\u003e\n"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "fmt",
       "Path": "FakePrintf",
       "Format": "text/plain",
-      "Data": "FakePrintf is not the real printf. We're testing that our analyzer looks at\nthe repository being analyzed, and not the Go stdlib, if GoBaseImportPaths is\nset.\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
+      "Data": "FakePrintf is not the real printf. We're testing that our analyzer looks at\nthe repository being analyzed, and not the Go stdlib, if GoBaseImportPaths is\nset.\n"
     }
   ]
 }
