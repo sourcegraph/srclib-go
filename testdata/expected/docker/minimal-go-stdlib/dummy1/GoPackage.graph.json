@@ -4,34 +4,31 @@
       "UnitType": "GoPackage",
       "Unit": "dummy1",
       "Path": ".",
-      "TreePath": ".",
       "Name": "dummy1",
       "Kind": "package",
       "File": "src/dummy1",
       "DefStart": 0,
       "DefEnd": 0,
       "Exported": true,
-      "Local": false,
       "Data": {
         "Exported": true,
         "PkgName": "dummy1",
         "TypeString": "",
         "Kind": "package",
         "PackageImportPath": "dummy1"
-      }
+      },
+      "TreePath": "."
     },
     {
       "UnitType": "GoPackage",
       "Unit": "dummy1",
       "Path": "MyType",
-      "TreePath": "./MyType",
       "Name": "MyType",
       "Kind": "type",
       "File": "src/dummy1/dummy1.go",
       "DefStart": 21,
       "DefEnd": 31,
       "Exported": true,
-      "Local": false,
       "Data": {
         "Exported": true,
         "PkgScope": true,
@@ -40,28 +37,24 @@
         "UnderlyingTypeString": "int",
         "Kind": "type",
         "PackageImportPath": "dummy1"
-      }
+      },
+      "TreePath": "./MyType"
     }
   ],
   "Refs": [
     {
-      "DefRepo": "",
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy1",
       "DefPath": ".",
-      "Def": false,
-      "Repo": "",
       "File": "src/dummy1/dummy1.go",
       "Start": 8,
       "End": 14
     },
     {
-      "DefRepo": "",
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy1",
       "DefPath": "MyType",
       "Def": true,
-      "Repo": "",
       "File": "src/dummy1/dummy1.go",
       "Start": 21,
       "End": 27
@@ -71,8 +64,6 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "int",
-      "Def": false,
-      "Repo": "",
       "File": "src/dummy1/dummy1.go",
       "Start": 28,
       "End": 31

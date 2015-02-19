@@ -4,33 +4,30 @@
       "UnitType": "GoPackage",
       "Unit": "github.com/sgtest/gopathtest",
       "Path": ".",
-      "TreePath": ".",
       "Name": "gopathtest",
       "Kind": "package",
       "File": ".",
       "DefStart": 0,
       "DefEnd": 0,
       "Exported": true,
-      "Local": false,
       "Data": {
         "Exported": true,
         "PkgName": "gopathtest",
         "TypeString": "",
         "Kind": "package",
         "PackageImportPath": "github.com/sgtest/gopathtest"
-      }
+      },
+      "TreePath": "."
     },
     {
       "UnitType": "GoPackage",
       "Unit": "github.com/sgtest/gopathtest",
       "Path": "init$gopathtest167",
-      "TreePath": "./init$gopathtest167",
       "Name": "init",
       "Kind": "func",
       "File": "gopathtest.go",
       "DefStart": 162,
       "DefEnd": 191,
-      "Exported": false,
       "Local": true,
       "Data": {
         "PkgName": "gopathtest",
@@ -38,61 +35,48 @@
         "UnderlyingTypeString": "func()",
         "Kind": "func",
         "PackageImportPath": "github.com/sgtest/gopathtest"
-      }
+      },
+      "TreePath": "./init$gopathtest167"
     }
   ],
   "Refs": [
     {
-      "DefRepo": "",
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": ".",
-      "Def": false,
-      "Repo": "",
       "File": "gopathtest.go",
       "Start": 104,
       "End": 128
     },
     {
-      "DefRepo": "",
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": ".",
-      "Def": false,
-      "Repo": "",
       "File": "gopathtest.go",
       "Start": 178,
       "End": 183
     },
     {
-      "DefRepo": "",
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/gopathtest",
       "DefPath": ".",
-      "Def": false,
-      "Repo": "",
       "File": "gopathtest.go",
       "Start": 81,
       "End": 91
     },
     {
-      "DefRepo": "",
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": "Foo",
-      "Def": false,
-      "Repo": "",
       "File": "gopathtest.go",
       "Start": 184,
       "End": 187
     },
     {
-      "DefRepo": "",
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/gopathtest",
       "DefPath": "init$gopathtest167",
       "Def": true,
-      "Repo": "",
       "File": "gopathtest.go",
       "Start": 167,
       "End": 171
@@ -104,20 +88,14 @@
       "Unit": "github.com/sgtest/gopathtest",
       "Path": ".",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\nPackage gopathtest tests that it can access vendored deps in vendor/.\n\u003c/p\u003e\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
+      "Data": "\u003cp\u003e\nPackage gopathtest tests that it can access vendored deps in vendor/.\n\u003c/p\u003e\n"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "github.com/sgtest/gopathtest",
       "Path": ".",
       "Format": "text/plain",
-      "Data": "Package gopathtest tests that it can access vendored deps in vendor/.\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
+      "Data": "Package gopathtest tests that it can access vendored deps in vendor/.\n"
     }
   ]
 }

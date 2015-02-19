@@ -81,11 +81,18 @@
   ],
   "Refs": [
     {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import",
+      "DefPath": ".",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 127,
+      "End": 144
+    },
+    {
       "DefRepo": "github.com/golang/net",
       "DefUnitType": "GoPackage",
       "DefUnit": "golang.org/x/net/ipv6",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/go-misc",
       "File": "go_subrepo_import/go_subrepo_import.go",
       "Start": 156,
       "End": 179
@@ -95,7 +102,6 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "golang.org/x/net/ipv6",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/go-misc",
       "File": "go_subrepo_import/go_subrepo_import.go",
       "Start": 233,
       "End": 237
@@ -105,7 +111,6 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "golang.org/x/tools/go/types",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/go-misc",
       "File": "go_subrepo_import/go_subrepo_import.go",
       "Start": 181,
       "End": 210
@@ -115,27 +120,15 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "golang.org/x/tools/go/types",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/go-misc",
       "File": "go_subrepo_import/go_subrepo_import.go",
       "Start": 259,
       "End": 264
-    },
-    {
-      "DefRepo": "github.com/sgtest/go-misc",
-      "DefUnitType": "GoPackage",
-      "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import",
-      "DefPath": ".",
-      "Repo": "github.com/sgtest/go-misc",
-      "File": "go_subrepo_import/go_subrepo_import.go",
-      "Start": 127,
-      "End": 144
     },
     {
       "DefRepo": "github.com/golang/tools",
       "DefUnitType": "GoPackage",
       "DefUnit": "golang.org/x/tools/go/types",
       "DefPath": "Config",
-      "Repo": "github.com/sgtest/go-misc",
       "File": "go_subrepo_import/go_subrepo_import.go",
       "Start": 265,
       "End": 271
@@ -145,59 +138,48 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "golang.org/x/net/ipv6",
       "DefPath": "Conn",
-      "Repo": "github.com/sgtest/go-misc",
       "File": "go_subrepo_import/go_subrepo_import.go",
       "Start": 238,
       "End": 242
     },
     {
-      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import",
       "DefPath": "Foo/c",
-      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
       "File": "go_subrepo_import/go_subrepo_import.go",
       "Start": 228,
       "End": 229
     },
     {
-      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import",
       "DefPath": "Foo/c",
-      "Repo": "github.com/sgtest/go-misc",
       "File": "go_subrepo_import/go_subrepo_import.go",
       "Start": 250,
       "End": 251
     },
     {
-      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import",
       "DefPath": "Foo/t",
-      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
       "File": "go_subrepo_import/go_subrepo_import.go",
       "Start": 254,
       "End": 255
     },
     {
-      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import",
       "DefPath": "Foo/t",
-      "Repo": "github.com/sgtest/go-misc",
       "File": "go_subrepo_import/go_subrepo_import.go",
       "Start": 279,
       "End": 280
     },
     {
-      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import",
       "DefPath": "Foo",
-      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
       "File": "go_subrepo_import/go_subrepo_import.go",
       "Start": 219,

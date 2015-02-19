@@ -4,34 +4,31 @@
       "UnitType": "GoPackage",
       "Unit": "github.com/alice/mypkg",
       "Path": ".",
-      "TreePath": ".",
       "Name": "mypkg",
       "Kind": "package",
       "File": "vendor/src/github.com/alice/mypkg",
       "DefStart": 0,
       "DefEnd": 0,
       "Exported": true,
-      "Local": false,
       "Data": {
         "Exported": true,
         "PkgName": "mypkg",
         "TypeString": "",
         "Kind": "package",
         "PackageImportPath": "github.com/alice/mypkg"
-      }
+      },
+      "TreePath": "."
     },
     {
       "UnitType": "GoPackage",
       "Unit": "github.com/alice/mypkg",
       "Path": "Foo",
-      "TreePath": "./Foo",
       "Name": "Foo",
       "Kind": "func",
       "File": "vendor/src/github.com/alice/mypkg/mypkg.go",
       "DefStart": 58,
       "DefEnd": 71,
       "Exported": true,
-      "Local": false,
       "Data": {
         "Exported": true,
         "PkgScope": true,
@@ -40,28 +37,24 @@
         "UnderlyingTypeString": "func()",
         "Kind": "func",
         "PackageImportPath": "github.com/alice/mypkg"
-      }
+      },
+      "TreePath": "./Foo"
     }
   ],
   "Refs": [
     {
-      "DefRepo": "",
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": ".",
-      "Def": false,
-      "Repo": "",
       "File": "vendor/src/github.com/alice/mypkg/mypkg.go",
       "Start": 51,
       "End": 56
     },
     {
-      "DefRepo": "",
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": "Foo",
       "Def": true,
-      "Repo": "",
       "File": "vendor/src/github.com/alice/mypkg/mypkg.go",
       "Start": 63,
       "End": 66
@@ -73,20 +66,14 @@
       "Unit": "github.com/alice/mypkg",
       "Path": ".",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\nPackage mypkg is a vendored dependency.\n\u003c/p\u003e\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
+      "Data": "\u003cp\u003e\nPackage mypkg is a vendored dependency.\n\u003c/p\u003e\n"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "github.com/alice/mypkg",
       "Path": ".",
       "Format": "text/plain",
-      "Data": "Package mypkg is a vendored dependency.\n",
-      "File": "",
-      "Start": 0,
-      "End": 0
+      "Data": "Package mypkg is a vendored dependency.\n"
     }
   ]
 }

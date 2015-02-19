@@ -43,21 +43,17 @@
   ],
   "Refs": [
     {
-      "DefRepo": "github.com/sgtest/minimal-go-stdlib",
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy1",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/minimal-go-stdlib",
       "File": "src/dummy1/dummy1.go",
       "Start": 8,
       "End": 14
     },
     {
-      "DefRepo": "github.com/sgtest/minimal-go-stdlib",
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy1",
       "DefPath": "MyType",
-      "Repo": "github.com/sgtest/minimal-go-stdlib",
       "Def": true,
       "File": "src/dummy1/dummy1.go",
       "Start": 21,
@@ -68,7 +64,6 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "int",
-      "Repo": "github.com/sgtest/minimal-go-stdlib",
       "File": "src/dummy1/dummy1.go",
       "Start": 28,
       "End": 31

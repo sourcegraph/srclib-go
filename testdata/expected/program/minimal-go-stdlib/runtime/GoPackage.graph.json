@@ -22,11 +22,9 @@
   ],
   "Refs": [
     {
-      "DefRepo": "github.com/sgtest/minimal-go-stdlib",
       "DefUnitType": "GoPackage",
       "DefUnit": "runtime",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/minimal-go-stdlib",
       "File": "src/runtime/runtime.go",
       "Start": 8,
       "End": 15

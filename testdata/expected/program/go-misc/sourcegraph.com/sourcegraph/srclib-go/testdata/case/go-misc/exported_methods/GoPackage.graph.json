@@ -82,54 +82,44 @@
   ],
   "Refs": [
     {
-      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/exported_methods",
       "DefPath": ".",
-      "Repo": "github.com/sgtest/go-misc",
       "File": "exported_methods/exported_methods.go",
       "Start": 150,
       "End": 166
     },
     {
-      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/exported_methods",
       "DefPath": "unexported/ExportedMethod/u",
-      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
       "File": "exported_methods/exported_methods.go",
       "Start": 200,
       "End": 201
     },
     {
-      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/exported_methods",
       "DefPath": "unexported/ExportedMethod",
-      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
       "File": "exported_methods/exported_methods.go",
       "Start": 214,
       "End": 228
     },
     {
-      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/exported_methods",
       "DefPath": "unexported",
-      "Repo": "github.com/sgtest/go-misc",
       "Def": true,
       "File": "exported_methods/exported_methods.go",
       "Start": 173,
       "End": 183
     },
     {
-      "DefRepo": "github.com/sgtest/go-misc",
       "DefUnitType": "GoPackage",
       "DefUnit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/exported_methods",
       "DefPath": "unexported",
-      "Repo": "github.com/sgtest/go-misc",
       "File": "exported_methods/exported_methods.go",
       "Start": 202,
       "End": 212
