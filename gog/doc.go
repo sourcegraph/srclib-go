@@ -2,14 +2,12 @@ package gog
 
 import (
 	"bytes"
-	"fmt"
 	"go/ast"
 	"go/build"
 	"go/doc"
 	"go/parser"
 	"go/token"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -24,7 +22,7 @@ type Doc struct {
 	Format string
 	Data   string
 
-	File string `json:",omitempty"`
+	File string    `json:",omitempty"`
 	Span [2]uint32 `json:",omitempty"`
 }
 
@@ -75,63 +73,82 @@ func (g *Grapher) emitDocs(pkgInfo *loader.PackageInfo) error {
 		return err
 	}
 
-	// ignore errors because we assume that syntax checking has already occurred
-	astPkg, _ := ast.NewPackage(g.program.Fset, files, nil, nil)
+	// TODO(samer): add comments from package statement (check history).
 
-	docPkg := doc.New(astPkg, pkgInfo.Pkg.Path(), doc.AllDecls)
-
-	if docPkg.Doc != "" {
-		err := g.emitDoc(types.NewPkgName(0, pkgInfo.Pkg, pkgInfo.Pkg.Path(), pkgInfo.Pkg), nil, docPkg.Doc)
-		if err != nil {
-			return err
-		}
-	}
-
-	emitDocForSpecs := func(pkgInfo *loader.PackageInfo, decl *ast.GenDecl, docstring string) error {
-		for _, spec := range decl.Specs {
-			switch spec := spec.(type) {
-			case *ast.ValueSpec:
-				for _, name := range spec.Names {
-					g.emitDoc(objOf[g.program.Fset.Position(name.Pos())], firstNonNil(decl.Doc, spec.Doc, spec.Comment), docstring)
+	// First, we walk the AST for comments attached to nodes.
+	for _, f := range files {
+		// docSeen is a map from the starting byte of a doc to
+		// an empty struct.
+		docSeen := make(map[token.Pos]struct{})
+		filename := f.Name.Name
+		ast.Inspect(f, func(node ast.Node) bool {
+			switch n := node.(type) {
+			case *ast.Field:
+				if n.Doc == nil {
+					return true
+				}
+				for _, i := range n.Names {
+					if g.emitDoc(objOf[g.program.Fset.Position(i.Pos())], n.Doc, n.Doc.Text(), filename) {
+						docSeen[n.Doc.Pos()] = struct{}{}
+					}
+				}
+			case *ast.FuncDecl:
+				if n.Doc == nil || n.Name == nil {
+					return true
+				}
+				if g.emitDoc(objOf[g.program.Fset.Position(n.Name.Pos())], n.Doc, n.Doc.Text(), filename) {
+					docSeen[n.Doc.Pos()] = struct{}{}
+				}
+			case *ast.GenDecl:
+				for _, spec := range n.Specs {
+					switch spec := spec.(type) {
+					case *ast.ValueSpec:
+						for _, name := range spec.Names {
+							c := firstNonNil(spec.Doc, spec.Comment, n.Doc)
+							if g.emitDoc(objOf[g.program.Fset.Position(name.Pos())], c, c.Text(), filename) {
+								docSeen[c.Pos()] = struct{}{}
+							}
+						}
+					case *ast.TypeSpec:
+						c := firstNonNil(spec.Doc, spec.Comment, n.Doc)
+						if g.emitDoc(objOf[g.program.Fset.Position(spec.Name.Pos())], c, c.Text(), filename) {
+							docSeen[c.Pos()] = struct{}{}
+						}
+					}
+				}
+			case *ast.ImportSpec:
+				if n.Doc == nil || n.Name == nil {
+					return true
+				}
+				if g.emitDoc(objOf[g.program.Fset.Position(n.Name.Pos())], n.Doc, n.Doc.Text(), filename) {
+					docSeen[n.Doc.Pos()] = struct{}{}
 				}
 			case *ast.TypeSpec:
-				g.emitDoc(objOf[g.program.Fset.Position(spec.Name.Pos())], firstNonNil(decl.Doc, spec.Doc, spec.Comment), docstring)
-			default:
-				log.Panicf("unknown spec type %T", spec)
+				if n.Doc == nil || n.Name == nil {
+					return true
+				}
+				if g.emitDoc(objOf[g.program.Fset.Position(n.Name.Pos())], n.Doc, n.Doc.Text(), filename) {
+					docSeen[n.Doc.Pos()] = struct{}{}
+				}
+			case *ast.ValueSpec:
+				if n.Doc == nil {
+					return true
+				}
+				for _, i := range n.Names {
+					if g.emitDoc(objOf[g.program.Fset.Position(i.Pos())], n.Doc, n.Doc.Text(), filename) {
+						docSeen[n.Doc.Pos()] = struct{}{}
+					}
+				}
+			}
+			return true
+		})
+		// Add comments that haven't already been seen.
+		for _, c := range f.Comments {
+			if _, seen := docSeen[c.Pos()]; !seen {
+				g.emitDoc(nil, c, c.Text(), filename)
 			}
 		}
-
-		return nil
 	}
-
-	for _, cnst := range docPkg.Consts {
-		emitDocForSpecs(pkgInfo, cnst.Decl, cnst.Doc)
-	}
-
-	for _, vari := range docPkg.Vars {
-		emitDocForSpecs(pkgInfo, vari.Decl, vari.Doc)
-	}
-
-	for _, fun := range docPkg.Funcs {
-		g.emitDoc(objOf[g.program.Fset.Position(fun.Decl.Name.Pos())], fun.Decl.Doc, fun.Doc)
-	}
-
-	for _, typ := range docPkg.Types {
-		emitDocForSpecs(pkgInfo, typ.Decl, typ.Doc)
-		for _, cnst := range typ.Consts {
-			emitDocForSpecs(pkgInfo, cnst.Decl, cnst.Doc)
-		}
-		for _, vari := range typ.Vars {
-			emitDocForSpecs(pkgInfo, vari.Decl, vari.Doc)
-		}
-		for _, fun := range typ.Funcs {
-			g.emitDoc(objOf[g.program.Fset.Position(fun.Decl.Name.Pos())], fun.Decl.Doc, fun.Doc)
-		}
-		for _, mth := range typ.Methods {
-			g.emitDoc(objOf[g.program.Fset.Position(mth.Decl.Name.Pos())], mth.Decl.Doc, mth.Doc)
-		}
-	}
-
 	return nil
 }
 
@@ -144,42 +161,59 @@ func firstNonNil(comments ...*ast.CommentGroup) *ast.CommentGroup {
 	return nil
 }
 
-func (g *Grapher) emitDoc(obj types.Object, dc *ast.CommentGroup, docstring string) error {
-	if obj == nil {
-		return nil
-	}
+func (g *Grapher) emitDoc(obj types.Object, dc *ast.CommentGroup, docstring, filename string) bool {
 	if docstring == "" {
-		return nil
+		return false
+	}
+	if obj == nil {
+		var htmlBuf bytes.Buffer
+		doc.ToHTML(&htmlBuf, docstring, nil)
+		var span [2]uint32
+		if dc != nil {
+			span = makeSpan(g.program.Fset, dc)
+		}
+		g.addDoc(&Doc{
+			DefKey: nil,
+			Format: "text/html",
+			Data:   htmlBuf.String(),
+			File:   filename,
+			Span:   span,
+		})
+		g.addDoc(&Doc{
+			DefKey: nil,
+			Format: "text/plain",
+			Data:   docstring,
+			File:   filename,
+			Span:   span,
+		})
 	}
 
 	if g.seenDocObjs == nil {
 		g.seenDocObjs = make(map[types.Object]struct{})
 	}
 	if _, seen := g.seenDocObjs[obj]; seen {
-		return fmt.Errorf("emitDoc: obj %v already seen", obj)
+		return false
 	}
 	g.seenDocObjs[obj] = struct{}{}
 
 	key, _, err := g.defInfo(obj)
 	if err != nil {
-		return err
+		return false
 	}
 
 	if g.seenDocKeys == nil {
 		g.seenDocKeys = make(map[string]struct{})
 	}
 	if _, seen := g.seenDocKeys[key.String()]; seen {
-		return fmt.Errorf("emitDoc: key %v already seen", key)
+		return false
 	}
 	g.seenDocKeys[key.String()] = struct{}{}
 
 	var htmlBuf bytes.Buffer
 	doc.ToHTML(&htmlBuf, docstring, nil)
 
-	var filename string
 	var span [2]uint32
 	if dc != nil {
-		filename = g.program.Fset.Position(dc.Pos()).Filename
 		span = makeSpan(g.program.Fset, dc)
 	}
 
@@ -198,7 +232,7 @@ func (g *Grapher) emitDoc(obj types.Object, dc *ast.CommentGroup, docstring stri
 		Span:   span,
 	})
 
-	return nil
+	return true
 }
 
 func (g *Grapher) addDoc(doc *Doc) {
