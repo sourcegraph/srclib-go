@@ -334,16 +334,20 @@ func convertGoRef(gr *gog.Ref, repoURI string) (*graph.Ref, error) {
 }
 
 func convertGoDoc(gd *gog.Doc, repoURI string) (*graph.Doc, error) {
-	resolvedTarget, err := ResolveDep(gd.PackageImportPath, repoURI)
-	if err != nil {
-		return nil, err
-	}
-	return &graph.Doc{
-		DefKey: graph.DefKey{
+	var key graph.DefKey
+	if gd.DefKey != nil {
+		resolvedTarget, err := ResolveDep(gd.PackageImportPath, repoURI)
+		if err != nil {
+			return nil, err
+		}
+		key = graph.DefKey{
 			Path:     string(pathOrDot(strings.Join(gd.Path, "/"))),
 			Unit:     resolvedTarget.ToUnit,
 			UnitType: resolvedTarget.ToUnitType,
-		},
+		}
+	}
+	return &graph.Doc{
+		DefKey: key,
 		Format: gd.Format,
 		Data:   gd.Data,
 		File:   gd.File,
