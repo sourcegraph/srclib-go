@@ -91,11 +91,10 @@ func (g *Grapher) emitDocs(pkgInfo *loader.PackageInfo) error {
 	g.emitDoc(types.NewPkgName(0, pkgInfo.Pkg, pkgInfo.Pkg.Path(), pkgInfo.Pkg), nil, pkgDoc, "")
 
 	// We walk the AST for comments attached to nodes.
-	for _, f := range files {
+	for filename, f := range files {
 		// docSeen is a map from the starting byte of a doc to
 		// an empty struct.
 		docSeen := make(map[token.Pos]struct{})
-		filename := f.Name.Name
 		ast.Inspect(f, func(node ast.Node) bool {
 			switch n := node.(type) {
 			case *ast.Field:
