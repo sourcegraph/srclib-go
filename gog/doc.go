@@ -73,9 +73,24 @@ func (g *Grapher) emitDocs(pkgInfo *loader.PackageInfo) error {
 		return err
 	}
 
-	// TODO(samer): add comments from package statement (check history).
+	// First we collect all of the Doc comments from the files,
+	// which will make up the Doc for the package. If more than
+	// one file has a doc associated with it, append them
+	// together.
+	pkgDoc := ""
+	for _, f := range files {
+		if f.Doc == nil {
+			continue
+		}
+		if pkgDoc == "" {
+			pkgDoc = f.Doc.Text()
+			continue
+		}
+		pkgDoc += "\n" + f.Doc.Text()
+	}
+	g.emitDoc(types.NewPkgName(0, pkgInfo.Pkg, pkgInfo.Pkg.Path(), pkgInfo.Pkg), nil, pkgDoc, "")
 
-	// First, we walk the AST for comments attached to nodes.
+	// We walk the AST for comments attached to nodes.
 	for _, f := range files {
 		// docSeen is a map from the starting byte of a doc to
 		// an empty struct.
@@ -186,6 +201,7 @@ func (g *Grapher) emitDoc(obj types.Object, dc *ast.CommentGroup, docstring, fil
 			File:   filename,
 			Span:   span,
 		})
+		return true
 	}
 
 	if g.seenDocObjs == nil {
