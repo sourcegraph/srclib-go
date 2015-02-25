@@ -92,9 +92,6 @@ func (g *Grapher) emitDocs(pkgInfo *loader.PackageInfo) error {
 
 	// We walk the AST for comments attached to nodes.
 	for filename, f := range files {
-		if f.Doc != nil {
-			g.emitDoc(nil, f.Doc, f.Doc.Text(), filename)
-		}
 		// docSeen is a map from the starting byte of a doc to
 		// an empty struct.
 		docSeen := make(map[token.Pos]struct{})
