@@ -380,7 +380,7 @@ var allowErrorsInGraph = true
 func doGraph(pkg *build.Package) (*gog.Output, error) {
 	importPath := pkg.ImportPath
 
-	if !loaderConfig.SourceImports {
+	if loaderConfig.ImportFromBinary {
 		imports := map[string]struct{}{}
 		for _, imp := range pkg.Imports {
 			imports[imp] = struct{}{}
