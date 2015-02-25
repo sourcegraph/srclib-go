@@ -8,7 +8,7 @@ install:
 	go get github.com/tools/godep
 	godep go build -o .bin/srclib-go
 
-test: testgo testsrc
+test: gotest srctest
 	godep go test ./...
 	src test -m program
 
