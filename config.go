@@ -87,7 +87,7 @@ type srcfileConfig struct {
 
 	PkgPatterns []string // pattern passed to `go list` (defaults to {"./..."})
 
-	SourceImports bool
+	ImportFromBinary bool
 }
 
 // unmarshalTypedConfig parses config from the Config field of the source unit.
@@ -160,7 +160,7 @@ func (c *srcfileConfig) apply() error {
 		loaderConfig.Build = &buildContext
 	}
 
-	loaderConfig.SourceImports = config.SourceImports
+	loaderConfig.ImportFromBinary = config.ImportFromBinary
 
 	if config.GOROOTForCmd == "" {
 		config.GOROOTForCmd = config.GOROOT
