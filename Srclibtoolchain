@@ -20,6 +20,13 @@
       "SourceUnitTypes": [
         "GoPackage"
       ]
+    },
+    {
+      "Subcmd": "fmt",
+      "Op": "fmt",
+      "SourceUnitTypes": [
+        "GoPackage"
+      ]
     }
   ]
 }
