@@ -33,7 +33,6 @@ func createPkgFromFiles(t *testing.T, path string, filenames []string) *loader.P
 
 func createPkg(t *testing.T, path string, sources []string, names []string) *loader.Program {
 	conf := Default
-	conf.SourceImports = *resolve
 
 	var files []*ast.File
 	for i, src := range sources {

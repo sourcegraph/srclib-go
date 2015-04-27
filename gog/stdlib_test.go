@@ -57,7 +57,6 @@ func testPkg(t *testing.T, path string) {
 		return
 	}
 	conf := Default
-	conf.SourceImports = *resolve
 	conf.Import(path)
 	prog, err := conf.Load()
 	if err != nil {

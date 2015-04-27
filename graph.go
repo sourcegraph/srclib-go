@@ -12,8 +12,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/MarkMcCaskey/gddo/gosrc"
-
 	"golang.org/x/tools/go/loader"
 
 	"sourcegraph.com/sourcegraph/srclib-go/gog"
@@ -383,43 +381,6 @@ var allowErrorsInGraph = true
 
 func doGraph(pkg *build.Package) (*gog.Output, error) {
 	importPath := pkg.ImportPath
-
-	if loaderConfig.ImportFromBinary {
-		imports := map[string]struct{}{}
-		for _, imp := range pkg.Imports {
-			imports[imp] = struct{}{}
-		}
-		for _, imp := range pkg.TestImports {
-			imports[imp] = struct{}{}
-		}
-		for _, imp := range pkg.XTestImports {
-			imports[imp] = struct{}{}
-		}
-
-		for imp, _ := range imports {
-			if imp == "C" {
-				continue
-			}
-			if gosrc.IsGoRepoPath(imp) {
-				// Optimization: don't bother installing builtin
-				// packages because they're already installed. (But if
-				// we accidentally install one, it's OK and not going
-				// to cause any problems.)
-				continue
-			}
-			cmd := exec.Command(goBinaryName, "install", "-v", imp)
-			cmd.Env = config.env()
-			cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
-			if err := cmd.Run(); err != nil {
-				if allowErrorsInGraph {
-					log.Printf("Warning: failed to install package %q (command %v, env vars %v): %s. Continuing...", imp, cmd.Args, cmd.Env, err)
-				} else {
-					return nil, err
-				}
-			}
-		}
-	}
-
 	importUnsafe := importPath == "unsafe"
 
 	// Special-case: if this is a Cgo package, treat the CgoFiles as GoFiles or
