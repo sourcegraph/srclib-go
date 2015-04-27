@@ -13,7 +13,7 @@ import (
 )
 
 var identFile = flag.String("test.idents", "", "print out all idents in files whose name contains this substring")
-var resolve = flag.Bool("test.resolve", false, "test that refs resolve to existing defs")
+var resolve = flag.Bool("test.resolve", false, "test that refs resolve to existing defs (DEPRECATED)")
 
 func TestIdentCoverage(t *testing.T) {
 	files, err := filepath.Glob("testdata/*.go")

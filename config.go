@@ -87,6 +87,11 @@ type srcfileConfig struct {
 
 	PkgPatterns []string // pattern passed to `go list` (defaults to {"./..."})
 
+	// ImportFromBinary is deprecated. go/loader will now always
+	// do a source import.
+	//
+	// TODO(samer): Make sure that configs do not use this option
+	// and remove it by May 4th.
 	ImportFromBinary bool
 }
 
@@ -159,8 +164,6 @@ func (c *srcfileConfig) apply() error {
 		buildContext.GOPATH += ":" + config.GOPATH
 		loaderConfig.Build = &buildContext
 	}
-
-	loaderConfig.ImportFromBinary = config.ImportFromBinary
 
 	if config.GOROOTForCmd == "" {
 		config.GOROOTForCmd = config.GOROOT

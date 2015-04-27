@@ -65,10 +65,6 @@
 			"Rev": "ad31557573d621eccf54a8abb7b1fcab8977d648"
 		},
 		{
-			"ImportPath": "github.com/MarkMcCaskey/gddo/gosrc",
-			"Rev": "b87d72e1946dc0ac4d529d683ce43a841e58a83d"
-		},
-		{
 			"ImportPath": "github.com/jessevdk/go-flags",
 			"Comment": "v1-203-gea0aed9",
 			"Rev": "ea0aed9cfac386a30364a32af2f5ad564c66c7dd"
@@ -101,8 +97,7 @@
 		},
 		{
 			"ImportPath": "golang.org/x/tools/go/loader",
-			"Comment": "null-1248",
-			"Rev": "9622599500adce60e13ea72b2ac73fd516d57493"
+			"Rev": "837a81a1b21294ced895f2610fc258a487486c23"
 		},
 		{
 			"ImportPath": "golang.org/x/tools/go/types",
