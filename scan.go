@@ -61,7 +61,7 @@ func (c *ScanCmd) Execute(args []string) error {
 				log.Printf("Adding %s to GOPATH (auto-detected Go vendored dependencies source dir %s). If you don't want this, make a Srcfile with a GOPATH property set to something other than the empty string.", vdir, filepath.Join(vdir, "src"))
 			}
 		}
-		config.GOPATH = strings.Join(foundGOPATHs, ":")
+		config.GOPATH = strings.Join(foundGOPATHs, string(filepath.ListSeparator))
 	}
 
 	if err := config.apply(); err != nil {
@@ -94,7 +94,7 @@ func (c *ScanCmd) Execute(args []string) error {
 	// Make vendored dep unit names (package import paths) relative to
 	// vendored src dir, not to top-level dir.
 	if config.GOPATH != "" {
-		dirs := strings.Split(config.GOPATH, ":")
+		dirs := filepath.SplitList(config.GOPATH)
 		for _, dir := range dirs {
 			relDir, err := filepath.Rel(cwd, dir)
 			if err != nil {
@@ -133,7 +133,7 @@ func (c *ScanCmd) Execute(args []string) error {
 				u.Config = map[string]interface{}{}
 			}
 
-			dirs := strings.Split(config.GOPATH, ":")
+			dirs := filepath.SplitList(config.GOPATH)
 			for i, dir := range dirs {
 				relDir, err := filepath.Rel(cwd, dir)
 				if err != nil {
@@ -141,7 +141,7 @@ func (c *ScanCmd) Execute(args []string) error {
 				}
 				dirs[i] = relDir
 			}
-			u.Config["GOPATH"] = strings.Join(dirs, ":")
+			u.Config["GOPATH"] = strings.Join(dirs, string(filepath.ListSeparator))
 		}
 	}
 

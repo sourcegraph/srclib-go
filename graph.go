@@ -99,7 +99,7 @@ func (c *GraphCmd) Execute(args []string) error {
 		// For every GOPATH that was in the Srcfile (or autodetected),
 		// move it to a writable dir. (/src is not writable.)
 		if config.GOPATH != "" {
-			dirs := strings.Split(buildContext.GOPATH, ":")
+			dirs := filepath.SplitList(buildContext.GOPATH)
 			for i, dir := range dirs {
 				if dir == mainGOPATHDir || dir == os.Getenv("GOPATH") {
 					continue
@@ -118,7 +118,7 @@ func (c *GraphCmd) Execute(args []string) error {
 				dirs[i] = newGOPATH
 				effectiveConfigGOPATHs = append(effectiveConfigGOPATHs, newSrcDir)
 			}
-			buildContext.GOPATH = strings.Join(dirs, ":")
+			buildContext.GOPATH = strings.Join(dirs, string(filepath.ListSeparator))
 		}
 
 		log.Printf("Changing directory to %q.", dir)
