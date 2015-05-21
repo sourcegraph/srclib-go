@@ -151,7 +151,7 @@ func (c *srcfileConfig) apply() error {
 
 	if config.GOPATH != "" {
 		// clean/absolutize all paths
-		dirs := uniq(strings.Split(config.GOPATH, ":"))
+		dirs := uniq(filepath.SplitList(config.GOPATH))
 		for i, dir := range dirs {
 			dir = filepath.Clean(dir)
 			if !filepath.IsAbs(dir) {
@@ -159,9 +159,9 @@ func (c *srcfileConfig) apply() error {
 			}
 			dirs[i] = dir
 		}
-		config.GOPATH = strings.Join(dirs, ":")
+		config.GOPATH = strings.Join(dirs, string(filepath.ListSeparator))
 
-		buildContext.GOPATH += ":" + config.GOPATH
+		buildContext.GOPATH += string(filepath.ListSeparator) + config.GOPATH
 		loaderConfig.Build = &buildContext
 	}
 
