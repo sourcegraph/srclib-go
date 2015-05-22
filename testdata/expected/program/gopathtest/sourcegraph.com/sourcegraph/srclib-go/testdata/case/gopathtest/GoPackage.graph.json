@@ -84,6 +84,20 @@
   ],
   "Docs": [
     {
+      "Path": "",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\nPackage gopathtest tests that it can access vendored deps in vendor/.\n\u003c/p\u003e\n",
+      "File": "gopathtest.go",
+      "End": 72
+    },
+    {
+      "Path": "",
+      "Format": "text/plain",
+      "Data": "Package gopathtest tests that it can access vendored deps in vendor/.\n",
+      "File": "gopathtest.go",
+      "End": 72
+    },
+    {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/gopathtest",
       "Path": ".",

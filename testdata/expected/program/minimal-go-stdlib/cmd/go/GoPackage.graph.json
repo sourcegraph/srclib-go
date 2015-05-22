@@ -117,5 +117,23 @@
       "Start": 36,
       "End": 40
     }
+  ],
+  "Docs": [
+    {
+      "Path": "",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\nTest that we can refer to any pkg defined in the stdlib repo, not just\npkgs from a predefined list. This tests that if the stdlib adds pkgs or\ndefinitions, we\u0026#39;ll analyze them instead of just analyzing the code in\nGOROOT.\n\u003c/p\u003e\n",
+      "File": "src/cmd/go/main.go",
+      "Start": 46,
+      "End": 281
+    },
+    {
+      "Path": "",
+      "Format": "text/plain",
+      "Data": "Test that we can refer to any pkg defined in the stdlib repo, not just\npkgs from a predefined list. This tests that if the stdlib adds pkgs or\ndefinitions, we'll analyze them instead of just analyzing the code in\nGOROOT.\n",
+      "File": "src/cmd/go/main.go",
+      "Start": 46,
+      "End": 281
+    }
   ]
 }

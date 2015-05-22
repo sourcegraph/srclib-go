@@ -187,18 +187,56 @@
   ],
   "Docs": [
     {
+      "Path": "",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\nFakePrintf should refer to our fake fmt package, not the stdlib package.\n\u003c/p\u003e\n",
+      "File": "src/dummy0/dummy0.go",
+      "Start": 387,
+      "End": 462
+    },
+    {
+      "Path": "",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\nRefs to dummy1.MyType test that we can refer to any pkg defined in this repo\nas a stdlib package, not just pkgs from a predefined list. This tests that if\nthe stdlib adds pkgs or definitions, we\u0026#39;ll analyze them instead of just\nanalyzing the code in GOROOT.\n\u003c/p\u003e\n",
+      "File": "src/dummy0/dummy0.go",
+      "Start": 45,
+      "End": 313
+    },
+    {
+      "Path": "",
+      "Format": "text/plain",
+      "Data": "FakePrintf should refer to our fake fmt package, not the stdlib package.\n",
+      "File": "src/dummy0/dummy0.go",
+      "Start": 387,
+      "End": 462
+    },
+    {
+      "Path": "",
+      "Format": "text/plain",
+      "Data": "Refs to dummy1.MyType test that we can refer to any pkg defined in this repo\nas a stdlib package, not just pkgs from a predefined list. This tests that if\nthe stdlib adds pkgs or definitions, we'll analyze them instead of just\nanalyzing the code in GOROOT.\n",
+      "File": "src/dummy0/dummy0.go",
+      "Start": 45,
+      "End": 313
+    },
+    {
       "UnitType": "GoPackage",
       "Unit": "dummy0",
       "Path": "MyFunc",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\nMyFunc documentation should be found.\n\u003c/p\u003e\n"
+      "Data": "\u003cp\u003e\nMyFunc documentation should be found.\n\u003c/p\u003e\n",
+      "File": "src/dummy0/dummy0.go",
+      "Start": 315,
+      "End": 355
     },
     {
       "UnitType": "GoPackage",
       "Unit": "dummy0",
       "Path": "MyFunc",
       "Format": "text/plain",
-      "Data": "MyFunc documentation should be found.\n"
+      "Data": "MyFunc documentation should be found.\n",
+      "File": "src/dummy0/dummy0.go",
+      "Start": 315,
+      "End": 355
     }
   ]
 }

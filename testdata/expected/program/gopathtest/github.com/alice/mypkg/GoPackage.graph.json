@@ -62,6 +62,20 @@
   ],
   "Docs": [
     {
+      "Path": "",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\nPackage mypkg is a vendored dependency.\n\u003c/p\u003e\n",
+      "File": "vendor/src/github.com/alice/mypkg/mypkg.go",
+      "End": 42
+    },
+    {
+      "Path": "",
+      "Format": "text/plain",
+      "Data": "Package mypkg is a vendored dependency.\n",
+      "File": "vendor/src/github.com/alice/mypkg/mypkg.go",
+      "End": 42
+    },
+    {
       "UnitType": "GoPackage",
       "Unit": "github.com/alice/mypkg",
       "Path": ".",

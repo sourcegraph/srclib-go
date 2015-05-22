@@ -779,6 +779,104 @@
   ],
   "Docs": [
     {
+      "Path": "",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\nThis package tests Exported and Local.\n\u003c/p\u003e\n",
+      "File": "scope/scope.go",
+      "End": 41
+    },
+    {
+      "Path": "",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\nComments indicate the desired scope. The default is unexported and\nnonlocal. Exported and local defs are marked as such.\n\u003c/p\u003e\n",
+      "File": "scope/scope.go",
+      "Start": 118,
+      "End": 244
+    },
+    {
+      "Path": "",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\nx: local\n\u003c/p\u003e\n",
+      "File": "scope/scope.go",
+      "Start": 415,
+      "End": 426
+    },
+    {
+      "Path": "",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\ny: local\n\u003c/p\u003e\n",
+      "File": "scope/scope.go",
+      "Start": 458,
+      "End": 469
+    },
+    {
+      "Path": "",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\nUnexported type, exported methods\n\u003c/p\u003e\n",
+      "File": "scope/scope.go",
+      "Start": 775,
+      "End": 811
+    },
+    {
+      "Path": "",
+      "Format": "text/plain",
+      "Data": "This package tests Exported and Local.\n",
+      "File": "scope/scope.go",
+      "End": 41
+    },
+    {
+      "Path": "",
+      "Format": "text/plain",
+      "Data": "Comments indicate the desired scope. The default is unexported and\nnonlocal. Exported and local defs are marked as such.\n",
+      "File": "scope/scope.go",
+      "Start": 118,
+      "End": 244
+    },
+    {
+      "Path": "",
+      "Format": "text/plain",
+      "Data": "x: local\n",
+      "File": "scope/scope.go",
+      "Start": 415,
+      "End": 426
+    },
+    {
+      "Path": "",
+      "Format": "text/plain",
+      "Data": "y: local\n",
+      "File": "scope/scope.go",
+      "Start": 458,
+      "End": 469
+    },
+    {
+      "Path": "",
+      "Format": "text/plain",
+      "Data": "Unexported type, exported methods\n",
+      "File": "scope/scope.go",
+      "Start": 775,
+      "End": 811
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "fmt",
+      "Path": ".",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\n_: local\n\u003c/p\u003e\n",
+      "File": "scope/scope.go",
+      "Start": 67,
+      "End": 78
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "fmt",
+      "Path": ".",
+      "Format": "text/plain",
+      "Data": "_: local\n",
+      "File": "scope/scope.go",
+      "Start": 67,
+      "End": 78
+    },
+    {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": ".",
@@ -797,112 +895,260 @@
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "A",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\nA: exported\n\u003c/p\u003e\n"
+      "Data": "\u003cp\u003e\nA: exported\n\u003c/p\u003e\n",
+      "File": "scope/scope.go",
+      "Start": 277,
+      "End": 291
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "A",
       "Format": "text/plain",
-      "Data": "A: exported\n"
+      "Data": "A: exported\n",
+      "File": "scope/scope.go",
+      "Start": 277,
+      "End": 291
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "T2",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\nT2: exported\n\u003c/p\u003e\n"
+      "Data": "\u003cp\u003e\nT2: exported\n\u003c/p\u003e\n",
+      "File": "scope/scope.go",
+      "Start": 590,
+      "End": 605
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "T2",
       "Format": "text/plain",
-      "Data": "T2: exported\n"
+      "Data": "T2: exported\n",
+      "File": "scope/scope.go",
+      "Start": 590,
+      "End": 605
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "T2/F",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\nF: exported\na: local\nb: local\n\u003c/p\u003e\n"
+      "Data": "\u003cp\u003e\nF: exported\na: local\nb: local\n\u003c/p\u003e\n",
+      "File": "scope/scope.go",
+      "Start": 624,
+      "End": 662
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "T2/F",
       "Format": "text/plain",
-      "Data": "F: exported\na: local\nb: local\n"
+      "Data": "F: exported\na: local\nb: local\n",
+      "File": "scope/scope.go",
+      "Start": 624,
+      "End": 662
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "T2/g",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\ng: exported type, unexported method\n\u003c/p\u003e\n"
+      "Data": "\u003cp\u003e\ng: exported type, unexported method\n\u003c/p\u003e\n",
+      "File": "scope/scope.go",
+      "Start": 709,
+      "End": 747
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "T2/g",
       "Format": "text/plain",
-      "Data": "g: exported type, unexported method\n"
+      "Data": "g: exported type, unexported method\n",
+      "File": "scope/scope.go",
+      "Start": 709,
+      "End": 747
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "a",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\na: (unexported)\n\u003c/p\u003e\n"
+      "Data": "\u003cp\u003e\na: (unexported)\n\u003c/p\u003e\n",
+      "File": "scope/scope.go",
+      "Start": 246,
+      "End": 264
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "a",
       "Format": "text/plain",
-      "Data": "a: (unexported)\n"
+      "Data": "a: (unexported)\n",
+      "File": "scope/scope.go",
+      "Start": 246,
+      "End": 264
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "fn",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\nfn\n\u003c/p\u003e\n"
+      "Data": "\u003cp\u003e\nfn\n\u003c/p\u003e\n",
+      "File": "scope/scope.go",
+      "Start": 304,
+      "End": 309
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "fn",
       "Format": "text/plain",
-      "Data": "fn\n"
+      "Data": "fn\n",
+      "File": "scope/scope.go",
+      "Start": 304,
+      "End": 309
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "Path": "fn/$scope0/$scope0/T1",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\nT1: local\nT1.f: local\n\u003c/p\u003e\n",
+      "File": "scope/scope.go",
+      "Start": 525,
+      "End": 554
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "Path": "fn/$scope0/$scope0/T1",
+      "Format": "text/plain",
+      "Data": "T1: local\nT1.f: local\n",
+      "File": "scope/scope.go",
+      "Start": 525,
+      "End": 554
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "Path": "fn/$scope0/$scope0/Y",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\nY: local\n\u003c/p\u003e\n",
+      "File": "scope/scope.go",
+      "Start": 490,
+      "End": 501
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "Path": "fn/$scope0/$scope0/Y",
+      "Format": "text/plain",
+      "Data": "Y: local\n",
+      "File": "scope/scope.go",
+      "Start": 490,
+      "End": 501
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "Path": "fn/T0",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\nT0: local\nT0.f: local\n\u003c/p\u003e\n",
+      "File": "scope/scope.go",
+      "Start": 356,
+      "End": 384
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "Path": "fn/T0",
+      "Format": "text/plain",
+      "Data": "T0: local\nT0.f: local\n",
+      "File": "scope/scope.go",
+      "Start": 356,
+      "End": 384
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "Path": "fn/b",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\nb: local\n\u003c/p\u003e\n",
+      "File": "scope/scope.go",
+      "Start": 323,
+      "End": 334
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
+      "Path": "fn/b",
+      "Format": "text/plain",
+      "Data": "b: local\n",
+      "File": "scope/scope.go",
+      "Start": 323,
+      "End": 334
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "t3/F",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\nF: exported\n\u003c/p\u003e\n"
+      "Data": "\u003cp\u003e\nF: exported\n\u003c/p\u003e\n",
+      "File": "scope/scope.go",
+      "Start": 831,
+      "End": 845
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "t3/F",
       "Format": "text/plain",
-      "Data": "F: exported\n"
+      "Data": "F: exported\n",
+      "File": "scope/scope.go",
+      "Start": 831,
+      "End": 845
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "t3/g",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\ng: unexported\n\u003c/p\u003e\n"
+      "Data": "\u003cp\u003e\ng: unexported\n\u003c/p\u003e\n",
+      "File": "scope/scope.go",
+      "Start": 864,
+      "End": 880
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/scope",
       "Path": "t3/g",
       "Format": "text/plain",
-      "Data": "g: unexported\n"
+      "Data": "g: unexported\n",
+      "File": "scope/scope.go",
+      "Start": 864,
+      "End": 880
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "strings",
+      "Path": ".",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\na: local\n\u003c/p\u003e\n",
+      "File": "scope/scope.go",
+      "Start": 90,
+      "End": 101
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "strings",
+      "Path": ".",
+      "Format": "text/plain",
+      "Data": "a: local\n",
+      "File": "scope/scope.go",
+      "Start": 90,
+      "End": 101
     }
   ]
 }

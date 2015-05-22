@@ -185,14 +185,20 @@
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "Path": "Qux",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\nQux is a cool type.\n\u003c/p\u003e\n"
+      "Data": "\u003cp\u003e\nQux is a cool type.\n\u003c/p\u003e\n",
+      "File": "mypkg/bar.go",
+      "Start": 15,
+      "End": 37
     },
     {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-sample-0/mypkg",
       "Path": "Qux",
       "Format": "text/plain",
-      "Data": "Qux is a cool type.\n"
+      "Data": "Qux is a cool type.\n",
+      "File": "mypkg/bar.go",
+      "Start": 15,
+      "End": 37
     }
   ]
 }
