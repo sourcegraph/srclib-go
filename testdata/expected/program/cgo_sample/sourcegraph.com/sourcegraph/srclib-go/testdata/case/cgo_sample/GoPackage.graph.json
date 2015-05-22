@@ -160,5 +160,23 @@
       "Start": 98,
       "End": 105
     }
+  ],
+  "Docs": [
+    {
+      "Path": "",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\nThis file does not use cgo and so is not in go/build\u0026#39;s CgoFiles. This is so\nthat the package is detected by go/build.\n\u003c/p\u003e\n\u003cp\u003e\nThere is a bug in srclib-go where packages containing ONLY CgoFiles and no\nGoFiles are not detected.\n\u003c/p\u003e\n",
+      "File": "bar.go",
+      "Start": 20,
+      "End": 253
+    },
+    {
+      "Path": "",
+      "Format": "text/plain",
+      "Data": "This file does not use cgo and so is not in go/build's CgoFiles. This is so\nthat the package is detected by go/build.\n\nThere is a bug in srclib-go where packages containing ONLY CgoFiles and no\nGoFiles are not detected.\n",
+      "File": "bar.go",
+      "Start": 20,
+      "End": 253
+    }
   ]
 }
