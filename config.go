@@ -183,7 +183,7 @@ func (c *srcfileConfig) env() []string {
 }
 
 func pathHasPrefix(path, prefix string) bool {
-	return prefix == "." || path == prefix || strings.HasPrefix(path, prefix+"/")
+	return prefix == "." || path == prefix || strings.HasPrefix(path, prefix+string(filepath.Separator))
 }
 
 // uniq maintains the order of s.
