@@ -1,4 +1,4 @@
-# srclib-go [![Build Status](https://travis-ci.org/sourcegraph/srclib-go.png?branch=master)](https://travis-ci.org/sourcegraph/srclib-go)
+# srclib-go [![Build Status](https://travis-ci.org/sourcegraph/srclib-go.svg?branch=master)](https://travis-ci.org/sourcegraph/srclib-go)
 
 **srclib-go** is a [srclib](https://srclib.org)
 toolchain that performs Go code analysis: type checking, documentation

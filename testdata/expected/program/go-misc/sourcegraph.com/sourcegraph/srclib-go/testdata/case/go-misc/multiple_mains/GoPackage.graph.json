@@ -155,5 +155,39 @@
       "Start": 99,
       "End": 105
     }
+  ],
+  "Docs": [
+    {
+      "Path": "",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\ntwo go files in the same dir with defs with identical paths\n\u003c/p\u003e\n",
+      "File": "multiple_mains/main1.go",
+      "Start": 14,
+      "End": 76
+    },
+    {
+      "Path": "",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\ntwo go files in the same dir with defs with identical paths\n\u003c/p\u003e\n",
+      "File": "multiple_mains/main2.go",
+      "Start": 14,
+      "End": 76
+    },
+    {
+      "Path": "",
+      "Format": "text/plain",
+      "Data": "two go files in the same dir with defs with identical paths\n",
+      "File": "multiple_mains/main1.go",
+      "Start": 14,
+      "End": 76
+    },
+    {
+      "Path": "",
+      "Format": "text/plain",
+      "Data": "two go files in the same dir with defs with identical paths\n",
+      "File": "multiple_mains/main2.go",
+      "Start": 14,
+      "End": 76
+    }
   ]
 }

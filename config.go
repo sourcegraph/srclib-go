@@ -166,7 +166,7 @@ func (c *srcfileConfig) apply() error {
 	}
 
 	if config.GOROOTForCmd == "" {
-		config.GOROOTForCmd = config.GOROOT
+		config.GOROOTForCmd = buildContext.GOROOT
 	}
 
 	return nil

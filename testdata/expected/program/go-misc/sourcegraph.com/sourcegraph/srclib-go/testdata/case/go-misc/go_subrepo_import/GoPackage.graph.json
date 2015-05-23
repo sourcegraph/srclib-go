@@ -188,6 +188,20 @@
   ],
   "Docs": [
     {
+      "Path": "",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\nPackage go_subrepo_import tests that srclib-go properly resolves imports of\nGo subrepositories (golang.org/x/*).\n\u003c/p\u003e\n",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "End": 118
+    },
+    {
+      "Path": "",
+      "Format": "text/plain",
+      "Data": "Package go_subrepo_import tests that srclib-go properly resolves imports of\nGo subrepositories (golang.org/x/*).\n",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "End": 118
+    },
+    {
       "UnitType": "GoPackage",
       "Unit": "sourcegraph.com/sourcegraph/srclib-go/testdata/case/go-misc/go_subrepo_import",
       "Path": ".",

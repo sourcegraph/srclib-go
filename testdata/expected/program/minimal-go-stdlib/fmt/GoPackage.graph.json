@@ -103,14 +103,20 @@
       "Unit": "fmt",
       "Path": "FakePrintf",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\nFakePrintf is not the real printf. We\u0026#39;re testing that our analyzer looks at\nthe repository being analyzed, and not the Go stdlib, if GoBaseImportPaths is\nset.\n\u003c/p\u003e\n"
+      "Data": "\u003cp\u003e\nFakePrintf is not the real printf. We\u0026#39;re testing that our analyzer looks at\nthe repository being analyzed, and not the Go stdlib, if GoBaseImportPaths is\nset.\n\u003c/p\u003e\n",
+      "File": "src/fmt/fake_fmt.go",
+      "Start": 13,
+      "End": 180
     },
     {
       "UnitType": "GoPackage",
       "Unit": "fmt",
       "Path": "FakePrintf",
       "Format": "text/plain",
-      "Data": "FakePrintf is not the real printf. We're testing that our analyzer looks at\nthe repository being analyzed, and not the Go stdlib, if GoBaseImportPaths is\nset.\n"
+      "Data": "FakePrintf is not the real printf. We're testing that our analyzer looks at\nthe repository being analyzed, and not the Go stdlib, if GoBaseImportPaths is\nset.\n",
+      "File": "src/fmt/fake_fmt.go",
+      "Start": 13,
+      "End": 180
     }
   ]
 }
