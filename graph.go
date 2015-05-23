@@ -78,11 +78,11 @@ func (c *GraphCmd) Execute(args []string) error {
 		}
 
 		// Make a new primary GOPATH.
-		mainGOPATHDir := "/tmp/gopath"
+		mainGOPATHDir := filepath.Join(os.TempDir(), "gopath")
 		if buildContext.GOPATH == "" {
 			buildContext.GOPATH = mainGOPATHDir
 		} else {
-			buildContext.GOPATH = mainGOPATHDir + ":" + buildContext.GOPATH
+			buildContext.GOPATH = mainGOPATHDir + string(filepath.ListSeparator) + buildContext.GOPATH
 		}
 
 		// Set up GOPATH so it has this repo.
@@ -106,7 +106,7 @@ func (c *GraphCmd) Execute(args []string) error {
 				}
 
 				oldSrcDir := filepath.Join(dir, "src")
-				newGOPATH := filepath.Join("/tmp/gopath-" + strconv.Itoa(i) + "-" + filepath.Base(dir))
+				newGOPATH := filepath.Join(os.TempDir(), "gopath-"+strconv.Itoa(i)+"-"+filepath.Base(dir))
 				newSrcDir := filepath.Join(newGOPATH, "src")
 				log.Printf("Creating symlink for non-primary GOPATH to oldname %q at newname %q.", oldSrcDir, newSrcDir)
 				if err := os.MkdirAll(filepath.Dir(newSrcDir), 0700); err != nil {
@@ -141,11 +141,11 @@ func (c *GraphCmd) Execute(args []string) error {
 		var externalDeps []string
 		for _, dep := range unit.Dependencies {
 			importPath := dep.(string)
-			if !strings.HasPrefix(importPath, string(unit.Repo)) && importPath != "C" && strings.Count(filepath.Clean(importPath), "/") > 0 {
+			if !strings.HasPrefix(importPath, string(unit.Repo)) && importPath != "C" && strings.Count(filepath.Clean(importPath), string(filepath.Separator)) > 0 {
 				externalDeps = append(externalDeps, importPath)
 			}
 		}
-		deps := append([]string{"./" + buildPkg.Dir}, externalDeps...)
+		deps := append([]string{"." + string(filepath.Separator) + buildPkg.Dir}, externalDeps...)
 		for _, dep := range deps {
 			cmd := exec.Command(goBinaryName, "get", "-d", "-t", "-v", dep)
 			cmd.Args = append(cmd.Args)
@@ -201,7 +201,7 @@ func relPath(base, path string) string {
 	}
 
 	// TODO(sqs): hack
-	if strings.HasPrefix(rp, "../../../") && dockerCWD != "" {
+	if strings.HasPrefix(rp, filepath.Join("..", "..", "..")+string(filepath.Separator)) && dockerCWD != "" {
 		rp, err = filepath.Rel(dockerCWD, path)
 		if err != nil {
 			log.Fatalf("Failed to make path %q relative to %q: %s", path, cwd, err)
@@ -209,7 +209,7 @@ func relPath(base, path string) string {
 	}
 
 	// TODO(sqs): hack
-	if prefix := "../tmp/gopath-"; strings.HasPrefix(rp, prefix) {
+	if prefix := filepath.Join("..", "tmp", "gopath-"); strings.HasPrefix(rp, prefix) {
 		rp = rp[len(prefix)+2:]
 	}
 
@@ -267,7 +267,7 @@ func convertGoDef(gs *gog.Def, repoURI string) (*graph.Def, error) {
 	if err != nil {
 		return nil, err
 	}
-	path := string(pathOrDot(strings.Join(gs.Path, "/")))
+	path := pathOrDot(filepath.Join(gs.Path...))
 	treePath := treePath(strings.Replace(string(path), ".go", "", -1))
 	if !graph.IsValidTreePath(treePath) {
 		return nil, fmt.Errorf("'%s' is not a valid tree-path", treePath)
@@ -321,7 +321,7 @@ func convertGoRef(gr *gog.Ref, repoURI string) (*graph.Ref, error) {
 
 	return &graph.Ref{
 		DefRepo:     uriOrEmpty(resolvedTarget.ToRepoCloneURL),
-		DefPath:     string(pathOrDot(strings.Join(gr.Def.Path, "/"))),
+		DefPath:     pathOrDot(filepath.Join(gr.Def.Path...)),
 		DefUnit:     resolvedTarget.ToUnit,
 		DefUnitType: resolvedTarget.ToUnitType,
 		Def:         gr.IsDef,
@@ -339,7 +339,7 @@ func convertGoDoc(gd *gog.Doc, repoURI string) (*graph.Doc, error) {
 			return nil, err
 		}
 		key = graph.DefKey{
-			Path:     string(pathOrDot(strings.Join(gd.Path, "/"))),
+			Path:     pathOrDot(filepath.Join(gd.Path...)),
 			Unit:     resolvedTarget.ToUnit,
 			UnitType: resolvedTarget.ToUnitType,
 		}
@@ -372,7 +372,7 @@ func treePath(path string) string {
 	if path == "" || path == "." {
 		return string(".")
 	}
-	return string(fmt.Sprintf("./%s", path))
+	return "." + string(filepath.Separator) + path
 }
 
 // allowErrorsInGraph is whether the grapher should continue after
