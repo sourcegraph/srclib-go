@@ -1,16 +1,8 @@
 language: go
 
-go: tip
+go: 1.4.2
 
 before_install:
-  # install go1.4 devel
-  - curl -Lo /tmp/golang.tgz https://go.googlecode.com/archive/e54b1af55910c77e4a215112193472f0276b3c8d.tar.gz
-  - sudo tar -xzf /tmp/golang.tgz -C /usr/local && sudo mv /usr/local/go-* /usr/local/go
-  - sudo bash -c "echo 'devel +e54b1a srclib' > /usr/local/go/VERSION"
-  - cd /usr/local/go/src && sudo ./make.bash
-  - export GOROOT=/usr/local/go
-  - export PATH=/usr/local/go/bin:$PATH
-
   - mkdir -p $HOME/gopath/src/sourcegraph.com/sourcegraph
   - mv $TRAVIS_BUILD_DIR $HOME/gopath/src/sourcegraph.com/sourcegraph/srclib-go
   - export TRAVIS_BUILD_DIR=$HOME/gopath/src/sourcegraph.com/sourcegraph/srclib-go
