@@ -195,7 +195,7 @@ func (c *GraphCmd) Execute(args []string) error {
 }
 
 func relPath(base, path string) string {
-	rp, err := filepath.Rel(base, path)
+	rp, err := filepath.Rel(evalSymlinks(base), evalSymlinks(path))
 	if err != nil {
 		log.Fatalf("Failed to make path %q relative to %q: %s", path, base, err)
 	}

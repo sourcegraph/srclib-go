@@ -44,9 +44,19 @@ var (
 	effectiveConfigGOPATHs []string
 )
 
+const srclibGopath = ".srclib-gopath"
+
 func init() {
 	if buildContext.GOPATH == "" {
 		log.Fatal("GOPATH must be set.")
+	}
+
+	fullSrclibGopath, err := filepath.Abs(srclibGopath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if _, err := os.Stat(fullSrclibGopath); err == nil {
+		buildContext.GOPATH = fullSrclibGopath + string(filepath.ListSeparator) + buildContext.GOPATH
 	}
 }
 

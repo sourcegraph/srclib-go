@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"go/build"
 	"io"
 	"log"
@@ -68,13 +69,32 @@ func (c *ScanCmd) Execute(args []string) error {
 		return err
 	}
 
+	cwd := getCWD()
+	scanDir := cwd
+	if !isInGopath(scanDir) {
+		scanDir = filepath.Join(cwd, srclibGopath, "src", filepath.FromSlash(c.Repo))
+		buildContext.GOPATH = filepath.Join(cwd, srclibGopath) + string(os.PathListSeparator) + buildContext.GOPATH
+
+		os.RemoveAll(srclibGopath) // ignore error
+		if err := os.MkdirAll(filepath.Dir(scanDir), 0777); err != nil {
+			return err
+		}
+		rel, err := filepath.Rel(filepath.Dir(scanDir), cwd)
+		if err != nil {
+			return err
+		}
+		if err := os.Symlink(rel, scanDir); err != nil {
+			return err
+		}
+	}
+
 	var pkgPatterns []string
 	if config.PkgPatterns != nil {
 		pkgPatterns = config.PkgPatterns
 	} else {
 		pkgPatterns = []string{"./..."}
 	}
-	units, err := scan(pkgPatterns)
+	units, err := scan(pkgPatterns, scanDir)
 	if err != nil {
 		return err
 	}
@@ -155,12 +175,21 @@ func (c *ScanCmd) Execute(args []string) error {
 	return nil
 }
 
-func scan(pkgPatterns []string) ([]*unit.SourceUnit, error) {
+func isInGopath(path string) bool {
+	for _, gopath := range filepath.SplitList(buildContext.GOPATH) {
+		if strings.HasPrefix(evalSymlinks(path), filepath.Join(evalSymlinks(gopath), "src")) {
+			return true
+		}
+	}
+	return false
+}
+
+func scan(pkgPatterns []string, scanDir string) ([]*unit.SourceUnit, error) {
 	// TODO(sqs): include xtest, but we'll have to make them have a distinctly
 	// namespaced def path from the non-xtest pkg.
 
-	cmd := exec.Command(goBinaryName, "list", "-e", "-json")
-	cmd.Args = append(cmd.Args, pkgPatterns...)
+	// Go always evaluates symlinks in the working directory path, using sh is a workaround
+	cmd := exec.Command("sh", "-c", fmt.Sprintf(`cd %s; %s list -e -json %s`, scanDir, goBinaryName, strings.Join(pkgPatterns, " ")))
 	cmd.Env = config.env()
 	cmd.Stderr = os.Stderr
 	stdout, err := cmd.StdoutPipe()
@@ -224,7 +253,7 @@ func scan(pkgPatterns []string) ([]*unit.SourceUnit, error) {
 				fv := pv.Field(i)
 				dir := fv.Interface().(string)
 				if dir != "" {
-					dir, err := filepath.Rel(cwd, dir)
+					dir, err := filepath.Rel(scanDir, dir)
 					if err != nil {
 						return nil, err
 					}
