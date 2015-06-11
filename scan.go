@@ -69,7 +69,10 @@ func (c *ScanCmd) Execute(args []string) error {
 		return err
 	}
 
-	cwd := getCWD()
+	cwd, err := filepath.EvalSymlinks(getCWD())
+	if err != nil {
+		return err
+	}
 	scanDir := cwd
 	if !isInGopath(scanDir) {
 		scanDir = filepath.Join(cwd, srclibGopath, "src", filepath.FromSlash(c.Repo))
