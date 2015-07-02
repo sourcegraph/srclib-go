@@ -28,5 +28,20 @@
         "GoPackage"
       ]
     }
-  ]
+  ],
+  "Bundle": {
+    "Paths": [
+		"Srclibtoolchain",
+		".bin",
+		".bin/srclib-go"
+	],
+    "Commands": [
+		"mkdir -p .bin",
+		"GOPATH=$PWD/Godeps/_workspace:$GOPATH go build -o .bin/srclib-go"
+	],
+    "Variants": [
+		{"GOOS": "linux", "GOARCH": "amd64"},
+		{"GOOS": "darwin", "GOARCH": "amd64"}
+	]
+  }
 }
