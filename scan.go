@@ -10,7 +10,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
-
 	"strings"
 
 	"sourcegraph.com/sourcegraph/srclib"

@@ -3,17 +3,15 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"go/build"
 	"log"
 	"net/http"
 	"os"
 	"runtime"
-
-	"go/build"
-
-	"github.com/MarkMcCaskey/gddo/gosrc"
-
 	"strings"
 	"sync"
+
+	"github.com/MarkMcCaskey/gddo/gosrc"
 
 	"sourcegraph.com/sourcegraph/srclib/dep"
 	"sourcegraph.com/sourcegraph/srclib/unit"
@@ -80,20 +78,35 @@ func (c *DepResolveCmd) Execute(args []string) error {
 	return nil
 }
 
-var (
-	resolveCache   map[string]*dep.ResolvedTarget
-	resolveCacheMu sync.Mutex
-)
+// targetCache caches (dep).ResolvedTarget's for importPaths
+type targetCache struct {
+	data map[string]*dep.ResolvedTarget
+	mu   sync.Mutex
+}
+
+// Get returns the cached (dep).ResolvedTarget for the given import path or nil.
+func (t *targetCache) Get(path string) *dep.ResolvedTarget {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	return t.data[path]
+}
+
+// Put puts a new entry into the cache at the specified import path.
+func (t *targetCache) Put(path string, target *dep.ResolvedTarget) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	if t.data == nil {
+		t.data = make(map[string]*dep.ResolvedTarget)
+	}
+	t.data[path] = target
+}
+
+var resolveCache targetCache
 
 func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, error) {
 	// Look up in cache.
-	resolvedTarget := func() *dep.ResolvedTarget {
-		resolveCacheMu.Lock()
-		defer resolveCacheMu.Unlock()
-		return resolveCache[importPath]
-	}()
-	if resolvedTarget != nil {
-		return resolvedTarget, nil
+	if target := resolveCache.Get(importPath); target != nil {
+		return target, nil
 	}
 	if strings.HasSuffix(importPath, "_test") {
 		// TODO(sqs): handle xtest packages - these should not be appearing here
@@ -125,97 +138,64 @@ func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, 
 		}, nil
 	}
 
-	// Special-case the cgo package "C".
-	if importPath == "C" {
+	// Handle some special (and edge) cases faster for performance and corner-cases.
+	target := &dep.ResolvedTarget{ToUnit: importPath, ToUnitType: "GoPackage"}
+	switch {
+	// CGO package "C"
+	case importPath == "C":
 		return nil, nil
-	}
 
-	if gosrc.IsGoRepoPath(importPath) || strings.HasPrefix(importPath, "debug/") || strings.HasPrefix(importPath, "cmd/") {
-		return &dep.ResolvedTarget{
-			ToRepoCloneURL:  "https://github.com/golang/go",
-			ToVersionString: runtime.Version(),
-			ToRevSpec:       "", // TODO(sqs): fill in when graphing stdlib repo
-			ToUnit:          importPath,
-			ToUnitType:      "GoPackage",
-		}, nil
-	}
+	// Go standard library packages
+	case gosrc.IsGoRepoPath(importPath) || strings.HasPrefix(importPath, "debug/") || strings.HasPrefix(importPath, "cmd/"):
+		target.ToRepoCloneURL = "https://github.com/golang/go"
+		target.ToVersionString = runtime.Version()
+		target.ToRevSpec = "" // TODO(sqs): fill in when graphing stdlib repo
 
 	// Special-case github.com/... import paths for performance.
-	if strings.HasPrefix(importPath, "github.com/") || strings.HasPrefix(importPath, "sourcegraph.com/") {
+	case strings.HasPrefix(importPath, "github.com/") || strings.HasPrefix(importPath, "sourcegraph.com/"):
 		parts := strings.SplitN(importPath, "/", 4)
 		if len(parts) < 3 {
 			return nil, fmt.Errorf("import path starts with '(github|sourcegraph).com/' but is not valid: %q", importPath)
 		}
-		return &dep.ResolvedTarget{
-			ToRepoCloneURL: "https://" + strings.Join(parts[:3], "/") + ".git",
-			ToUnit:         importPath,
-			ToUnitType:     "GoPackage",
-		}, nil
-	}
+		target.ToRepoCloneURL = "https://" + strings.Join(parts[:3], "/") + ".git"
 
 	// Special-case google.golang.org/... (e.g., /appengine) import
 	// paths for performance and to avoid hitting GitHub rate limit.
-	if strings.HasPrefix(importPath, "google.golang.org/") {
-		importPath = strings.Replace(importPath, "google.golang.org/", "github.com/golang/", 1)
-		return &dep.ResolvedTarget{
-			ToRepoCloneURL: "https://" + importPath + ".git",
-			ToUnit:         importPath,
-			ToUnitType:     "GoPackage",
-		}, nil
-	}
+	case strings.HasPrefix(importPath, "google.golang.org/"):
+		target.ToRepoCloneURL = "https://" + strings.Replace(importPath, "google.golang.org/", "github.com/golang/", 1) + ".git"
 
 	// Special-case code.google.com/p/... import paths for performance.
-	if strings.HasPrefix(importPath, "code.google.com/p/") {
+	case strings.HasPrefix(importPath, "code.google.com/p/"):
 		parts := strings.SplitN(importPath, "/", 4)
 		if len(parts) < 3 {
 			return nil, fmt.Errorf("import path starts with 'code.google.com/p/' but is not valid: %q", importPath)
 		}
-		return &dep.ResolvedTarget{
-			ToRepoCloneURL: "https://" + strings.Join(parts[:3], "/"),
-			ToUnit:         importPath,
-			ToUnitType:     "GoPackage",
-		}, nil
-	}
+		target.ToRepoCloneURL = "https://" + strings.Join(parts[:3], "/")
+
 	// Special-case golang.org/x/... import paths for performance.
-	if strings.HasPrefix(importPath, "golang.org/x/") {
+	case strings.HasPrefix(importPath, "golang.org/x/"):
 		parts := strings.SplitN(importPath, "/", 4)
 		if len(parts) < 3 {
 			return nil, fmt.Errorf("import path starts with 'golang.org/x/' but is not valid: %q", importPath)
 		}
-		return &dep.ResolvedTarget{
-			ToRepoCloneURL: "https://" + strings.Replace(strings.Join(parts[:3], "/"), "golang.org/x/", "github.com/golang/", 1),
-			ToUnit:         importPath,
-			ToUnitType:     "GoPackage",
-		}, nil
-	}
+		target.ToRepoCloneURL = "https://" + strings.Replace(strings.Join(parts[:3], "/"), "golang.org/x/", "github.com/golang/", 1)
 
-	log.Printf("Resolving Go dep: %s", importPath)
-
-	dir, err := gosrc.Get(http.DefaultClient, string(importPath), "")
-	if err != nil {
-		if strings.Contains(err.Error(), "Git Repository is empty.") {
-			// Not fatal, just weird.
-			return nil, nil
+	// Try to resolve everything else
+	default:
+		log.Printf("Resolving Go dep: %s", importPath)
+		dir, err := gosrc.Get(http.DefaultClient, string(importPath), "")
+		if err != nil {
+			if strings.Contains(err.Error(), "Git Repository is empty.") {
+				// Not fatal, just weird.
+				return nil, nil
+			}
+			return nil, fmt.Errorf("unable to fetch information about Go package %q: %s", importPath, err)
 		}
-		return nil, fmt.Errorf("unable to fetch information about Go package %q: %s", importPath, err)
-	}
-
-	// gosrc returns code.google.com URLs ending in a slash. Remove it.
-	dir.ProjectURL = strings.TrimSuffix(dir.ProjectURL, "/")
-
-	resolvedTarget = &dep.ResolvedTarget{
-		ToRepoCloneURL: dir.ProjectURL,
-		ToUnit:         importPath,
-		ToUnitType:     "GoPackage",
+		target.ToRepoCloneURL = strings.TrimSuffix(dir.ProjectURL, "/")
 	}
 
 	// Save in cache.
-	resolveCacheMu.Lock()
-	defer resolveCacheMu.Unlock()
-	if resolveCache == nil {
-		resolveCache = make(map[string]*dep.ResolvedTarget)
-	}
-	resolveCache[importPath] = resolvedTarget
+	resolveCache.Put(importPath, target)
 
-	return resolvedTarget, nil
+	return target, nil
 }
