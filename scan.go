@@ -9,9 +9,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"reflect"
-
 	"sort"
+
 	"strings"
 
 	"sourcegraph.com/sourcegraph/srclib"
@@ -91,11 +90,9 @@ func (c *ScanCmd) Execute(args []string) error {
 		}
 	}
 
-	var pkgPatterns []string
+	pkgPatterns := []string{"./..."}
 	if config.PkgPatterns != nil {
 		pkgPatterns = config.PkgPatterns
-	} else {
-		pkgPatterns = []string{"./..."}
 	}
 	units, err := scan(pkgPatterns, scanDir)
 	if err != nil {
@@ -207,62 +204,58 @@ func scan(pkgPatterns []string, scanDir string) ([]*unit.SourceUnit, error) {
 	var units []*unit.SourceUnit
 	for {
 		var pkg *build.Package
-		if err := dec.Decode(&pkg); err == io.EOF {
-			break
-		} else if err != nil {
+		if err := dec.Decode(&pkg); err != nil {
+			if err == io.EOF {
+				break
+			}
 			return nil, err
 		}
 
-		pv, pt := reflect.ValueOf(pkg).Elem(), reflect.TypeOf(*pkg)
-
-		// collect all files
+		// Collect all files
 		var files []string
-		for i := 0; i < pt.NumField(); i++ {
-			f := pt.Field(i)
-			if strings.HasSuffix(f.Name, "Files") {
-				fv := pv.Field(i).Interface()
-				files = append(files, fv.([]string)...)
-			}
-		}
+		files = append(files, pkg.GoFiles...)
+		files = append(files, pkg.CgoFiles...)
+		files = append(files, pkg.IgnoredGoFiles...)
+		files = append(files, pkg.CFiles...)
+		files = append(files, pkg.CXXFiles...)
+		files = append(files, pkg.MFiles...)
+		files = append(files, pkg.HFiles...)
+		files = append(files, pkg.SFiles...)
+		files = append(files, pkg.SwigFiles...)
+		files = append(files, pkg.SwigCXXFiles...)
+		files = append(files, pkg.SysoFiles...)
+		files = append(files, pkg.TestGoFiles...)
+		files = append(files, pkg.XTestGoFiles...)
 
-		// collect all imports
-		depsMap := map[string]struct{}{}
-		for i := 0; i < pt.NumField(); i++ {
-			f := pt.Field(i)
-			if strings.HasSuffix(f.Name, "Imports") {
-				fv := pv.Field(i).Interface()
-				imports := fv.([]string)
-				for _, imp := range imports {
-					depsMap[imp] = struct{}{}
-				}
-			}
-		}
-		deps0 := make([]string, len(depsMap))
-		i := 0
-		for imp := range depsMap {
-			deps0[i] = imp
-			i++
-		}
-		sort.Strings(deps0)
-		deps := make([]interface{}, len(deps0))
-		for i, imp := range deps0 {
+		// Collect all imports. We use a map to remove duplicates.
+		var imports []string
+		imports = append(imports, pkg.Imports...)
+		imports = append(imports, pkg.TestImports...)
+		imports = append(imports, pkg.XTestImports...)
+		imports = uniq(imports)
+		sort.Strings(imports)
+
+		// Create appropriate type for (unit).SourceUnit
+		deps := make([]interface{}, len(imports))
+		for i, imp := range imports {
 			deps[i] = imp
 		}
 
-		// make all dirs relative to the current dir
-		for i := 0; i < pt.NumField(); i++ {
-			f := pt.Field(i)
-			if strings.HasSuffix(f.Name, "Dir") {
-				fv := pv.Field(i)
-				dir := fv.Interface().(string)
-				if dir != "" {
-					dir, err := filepath.Rel(scanDir, dir)
-					if err != nil {
-						return nil, err
-					}
-					fv.Set(reflect.ValueOf(dir))
+		// Make all dirs relative to the current one.
+		makeRel := func(dirs ...*string) (err error) {
+			for _, d := range dirs {
+				if *d == "" {
+					continue
+				}
+				*d, err = filepath.Rel(scanDir, *d)
+				if err != nil {
+					return err
 				}
 			}
+			return nil
+		}
+		if err := makeRel(&pkg.Dir, &pkg.BinDir, &pkg.ConflictDir); err != nil {
+			return nil, err
 		}
 
 		// Root differs depending on the system, so it's hard to compare results
