@@ -171,7 +171,7 @@ func (c *srcfileConfig) apply() error {
 		}
 		config.GOPATH = strings.Join(dirs, string(filepath.ListSeparator))
 
-		buildContext.GOPATH += string(filepath.ListSeparator) + config.GOPATH
+		buildContext.GOPATH = config.GOPATH + string(filepath.ListSeparator) + buildContext.GOPATH
 		loaderConfig.Build = &buildContext
 	}
 
