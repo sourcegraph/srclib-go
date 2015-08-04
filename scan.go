@@ -2,13 +2,12 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"go/build"
-	"io"
+	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -89,13 +88,27 @@ func (c *ScanCmd) Execute(args []string) error {
 		}
 	}
 
-	pkgPatterns := []string{"./..."}
-	if config.PkgPatterns != nil {
-		pkgPatterns = config.PkgPatterns
-	}
-	units, err := scan(pkgPatterns, scanDir)
+	units, err := scan(scanDir)
 	if err != nil {
 		return err
+	}
+
+	if len(config.PkgPatterns) != 0 {
+		matchers := make([]func(name string) bool, len(config.PkgPatterns))
+		for i, pattern := range config.PkgPatterns {
+			matchers[i] = matchPattern(pattern)
+		}
+
+		var filteredUnits []*unit.SourceUnit
+		for _, unit := range units {
+			for _, m := range matchers {
+				if m(unit.Name) {
+					filteredUnits = append(filteredUnits, unit)
+					break
+				}
+			}
+		}
+		units = filteredUnits
 	}
 
 	// Fix up import paths to be consistent when running as a program and as
@@ -183,33 +196,17 @@ func isInGopath(path string) bool {
 	return false
 }
 
-func scan(pkgPatterns []string, scanDir string) ([]*unit.SourceUnit, error) {
+func scan(scanDir string) ([]*unit.SourceUnit, error) {
 	// TODO(sqs): include xtest, but we'll have to make them have a distinctly
 	// namespaced def path from the non-xtest pkg.
 
-	// Go always evaluates symlinks in the working directory path, using sh is a workaround
-	cmd := exec.Command("sh", "-c", fmt.Sprintf(`cd %s; %s list -e -json %s`, scanDir, goBinaryName, strings.Join(pkgPatterns, " ")))
-	cmd.Env = config.env()
-	cmd.Stderr = os.Stderr
-	stdout, err := cmd.StdoutPipe()
+	pkgs, err := scanForPackages(scanDir)
 	if err != nil {
 		return nil, err
 	}
-	if err := cmd.Start(); err != nil {
-		return nil, err
-	}
 
-	dec := json.NewDecoder(stdout)
 	var units []*unit.SourceUnit
-	for {
-		var pkg *build.Package
-		if err := dec.Decode(&pkg); err != nil {
-			if err == io.EOF {
-				break
-			}
-			return nil, err
-		}
-
+	for _, pkg := range pkgs {
 		// Collect all files
 		var files []string
 		files = append(files, pkg.GoFiles...)
@@ -272,9 +269,53 @@ func scan(pkgPatterns []string, scanDir string) ([]*unit.SourceUnit, error) {
 			Ops:          map[string]*srclib.ToolRef{"depresolve": nil, "graph": nil},
 		})
 	}
-	if err := cmd.Wait(); err != nil {
-		return nil, err
-	}
 
 	return units, nil
+}
+
+func scanForPackages(dir string) ([]*build.Package, error) {
+	var pkgs []*build.Package
+
+	pkg, err := buildContext.ImportDir(dir, 0)
+	if _, isNoGoError := err.(*build.NoGoError); err != nil && !isNoGoError {
+		return nil, err
+	}
+	if err == nil {
+		pkgs = append(pkgs, pkg)
+	}
+
+	infos, err := ioutil.ReadDir(dir)
+	if err != nil {
+		return nil, err
+	}
+	for _, info := range infos {
+		name := info.Name()
+		if info.IsDir() && name[0] != '.' && name[0] != '_' && name != "testdata" {
+			fullPath := filepath.Join(dir, name)
+			subPkgs, err := scanForPackages(fullPath)
+			if err != nil {
+				return nil, err
+			}
+			pkgs = append(pkgs, subPkgs...)
+		}
+	}
+
+	return pkgs, nil
+}
+
+// matchPattern(pattern)(name) reports whether
+// name matches pattern.  Pattern is a limited glob
+// pattern in which '...' means 'any string' and there
+// is no other special syntax.
+func matchPattern(pattern string) func(name string) bool {
+	re := regexp.QuoteMeta(pattern)
+	re = strings.Replace(re, `\.\.\.`, `.*`, -1)
+	// Special case: foo/... matches foo too.
+	if strings.HasSuffix(re, `/.*`) {
+		re = re[:len(re)-len(`/.*`)] + `(/.*)?`
+	}
+	reg := regexp.MustCompile(`^` + re + `$`)
+	return func(name string) bool {
+		return reg.MatchString(name)
+	}
 }
