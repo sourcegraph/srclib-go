@@ -237,22 +237,12 @@ func scan(scanDir string) ([]*unit.SourceUnit, error) {
 			deps[i] = imp
 		}
 
-		// Make all dirs relative to the current one.
-		makeRel := func(dirs ...*string) (err error) {
-			for _, d := range dirs {
-				if *d == "" {
-					continue
-				}
-				*d, err = filepath.Rel(scanDir, *d)
-				if err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-		if err := makeRel(&pkg.Dir, &pkg.BinDir, &pkg.ConflictDir); err != nil {
+		pkg.Dir, err = filepath.Rel(scanDir, pkg.Dir)
+		if err != nil {
 			return nil, err
 		}
+		pkg.BinDir = ""
+		pkg.ConflictDir = ""
 
 		// Root differs depending on the system, so it's hard to compare results
 		// across environments (when running as a program). Clear it so we can
