@@ -251,6 +251,10 @@ func scan(scanDir string) ([]*unit.SourceUnit, error) {
 		pkg.SrcRoot = ""
 		pkg.PkgRoot = ""
 
+		pkg.ImportPos = nil
+		pkg.TestImportPos = nil
+		pkg.XTestImportPos = nil
+
 		units = append(units, &unit.SourceUnit{
 			Name:         pkg.ImportPath,
 			Type:         "GoPackage",
