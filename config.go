@@ -103,6 +103,8 @@ type srcfileConfig struct {
 	// TODO(samer): Make sure that configs do not use this option
 	// and remove it by May 4th.
 	ImportFromBinary bool
+
+	SkipGodeps bool
 }
 
 // unmarshalTypedConfig parses config from the Config field of the source unit.
