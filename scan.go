@@ -248,6 +248,8 @@ func scan(scanDir string) ([]*unit.SourceUnit, error) {
 		// across environments (when running as a program). Clear it so we can
 		// compare results in tests more easily.
 		pkg.Root = ""
+		pkg.SrcRoot = ""
+		pkg.PkgRoot = ""
 
 		units = append(units, &unit.SourceUnit{
 			Name:         pkg.ImportPath,
