@@ -103,6 +103,12 @@ type srcfileConfig struct {
 	// TODO(samer): Make sure that configs do not use this option
 	// and remove it by May 4th.
 	ImportFromBinary bool
+
+	// SkipGodeps makes srclib-go skip the Godeps/_workspace directory when
+	// scanning for packages. This causes references to those packages to point
+	// to the files in their respective repositories instead of the local copies
+	// inside of Godeps/_workspace.
+	SkipGodeps bool
 }
 
 // unmarshalTypedConfig parses config from the Config field of the source unit.
@@ -171,7 +177,7 @@ func (c *srcfileConfig) apply() error {
 		}
 		config.GOPATH = strings.Join(dirs, string(filepath.ListSeparator))
 
-		buildContext.GOPATH += string(filepath.ListSeparator) + config.GOPATH
+		buildContext.GOPATH = config.GOPATH + string(filepath.ListSeparator) + buildContext.GOPATH
 		loaderConfig.Build = &buildContext
 	}
 
