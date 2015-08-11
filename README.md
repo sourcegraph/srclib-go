@@ -26,7 +26,7 @@ Then run:
 ```
 # download and fetch dependencies
 go get -v sourcegraph.com/sourcegraph/srclib-go
-cd $GOPATH/sourcegraph.com/sourcegraph/srclib-go
+cd $GOPATH/src/sourcegraph.com/sourcegraph/srclib-go
 
 # build the srclib-go program in .bin/srclib-go (this is currently required by srclib to discover the program)
 make
