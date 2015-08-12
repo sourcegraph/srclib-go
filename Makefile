@@ -1,6 +1,3 @@
-CURRENT_MAKEFILE_LIST := $(MAKEFILE_LIST)
-makefileDir := $(dir $(firstword $(CURRENT_MAKEFILE_LIST)))
-
 .PHONY: install test gotest srctest
 
 install:
