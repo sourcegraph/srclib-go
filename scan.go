@@ -151,7 +151,7 @@ func (c *ScanCmd) Execute(args []string) error {
 	for _, u := range units {
 		pkgSubdir := filepath.Join(c.Subdir, u.Data.(*build.Package).Dir)
 		for i, f := range u.Files {
-			u.Files[i] = filepath.Join(pkgSubdir, f)
+			u.Files[i] = filepath.ToSlash(filepath.Join(pkgSubdir, f))
 		}
 	}
 
@@ -241,6 +241,7 @@ func scan(scanDir string) ([]*unit.SourceUnit, error) {
 		if err != nil {
 			return nil, err
 		}
+		pkg.Dir = filepath.ToSlash(pkg.Dir)
 		pkg.BinDir = ""
 		pkg.ConflictDir = ""
 
