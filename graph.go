@@ -213,7 +213,7 @@ func relPath(base, path string) string {
 		rp = rp[len(prefix)+2:]
 	}
 
-	return rp
+	return filepath.ToSlash(rp)
 }
 
 func Graph(unit *unit.SourceUnit) (*graph.Output, error) {
@@ -267,7 +267,7 @@ func convertGoDef(gs *gog.Def, repoURI string) (*graph.Def, error) {
 	if err != nil {
 		return nil, err
 	}
-	path := pathOrDot(filepath.Join(gs.Path...))
+	path := filepath.ToSlash(pathOrDot(filepath.Join(gs.Path...)))
 	treePath := treePath(strings.Replace(string(path), ".go", "", -1))
 	if !graph.IsValidTreePath(treePath) {
 		return nil, fmt.Errorf("'%s' is not a valid tree-path", treePath)
@@ -284,7 +284,7 @@ func convertGoDef(gs *gog.Def, repoURI string) (*graph.Def, error) {
 		Name: gs.Name,
 		Kind: definfo.GeneralKindMap[gs.Kind],
 
-		File:     gs.File,
+		File:     filepath.ToSlash(gs.File),
 		DefStart: gs.DeclSpan[0],
 		DefEnd:   gs.DeclSpan[1],
 
@@ -320,12 +320,12 @@ func convertGoRef(gr *gog.Ref, repoURI string) (*graph.Ref, error) {
 	}
 
 	return &graph.Ref{
-		DefRepo:     uriOrEmpty(resolvedTarget.ToRepoCloneURL),
-		DefPath:     pathOrDot(filepath.Join(gr.Def.Path...)),
+		DefRepo:     filepath.ToSlash(uriOrEmpty(resolvedTarget.ToRepoCloneURL)),
+		DefPath:     filepath.ToSlash(pathOrDot(filepath.Join(gr.Def.Path...))),
 		DefUnit:     resolvedTarget.ToUnit,
 		DefUnitType: resolvedTarget.ToUnitType,
 		Def:         gr.IsDef,
-		File:        gr.File,
+		File:        filepath.ToSlash(gr.File),
 		Start:       gr.Span[0],
 		End:         gr.Span[1],
 	}, nil
@@ -339,7 +339,7 @@ func convertGoDoc(gd *gog.Doc, repoURI string) (*graph.Doc, error) {
 			return nil, err
 		}
 		key = graph.DefKey{
-			Path:     pathOrDot(filepath.Join(gd.Path...)),
+			Path:     filepath.ToSlash(pathOrDot(filepath.Join(gd.Path...))),
 			Unit:     resolvedTarget.ToUnit,
 			UnitType: resolvedTarget.ToUnitType,
 		}
@@ -348,7 +348,7 @@ func convertGoDoc(gd *gog.Doc, repoURI string) (*graph.Doc, error) {
 		DefKey: key,
 		Format: gd.Format,
 		Data:   gd.Data,
-		File:   gd.File,
+		File:   filepath.ToSlash(gd.File),
 		Start:  gd.Span[0],
 		End:    gd.Span[1],
 	}, nil
@@ -372,7 +372,7 @@ func treePath(path string) string {
 	if path == "" || path == "." {
 		return string(".")
 	}
-	return "." + string(filepath.Separator) + path
+	return "./" + path
 }
 
 // allowErrorsInGraph is whether the grapher should continue after
