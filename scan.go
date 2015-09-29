@@ -274,8 +274,13 @@ func scanForPackages(dir string) ([]*build.Package, error) {
 	var pkgs []*build.Package
 
 	pkg, err := buildContext.ImportDir(dir, 0)
-	if _, isNoGoError := err.(*build.NoGoError); err != nil && !isNoGoError {
-		return nil, err
+	if err != nil {
+		switch err.(type) {
+		case *build.NoGoError, *build.MultiplePackageError:
+			// These errors are not fatal, continue.
+		default:
+			return nil, err
+		}
 	}
 	if err == nil {
 		pkgs = append(pkgs, pkg)
