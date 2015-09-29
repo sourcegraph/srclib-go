@@ -275,9 +275,9 @@ func scanForPackages(dir string) ([]*build.Package, error) {
 
 	pkg, err := buildContext.ImportDir(dir, 0)
 	if err != nil {
-		switch e := err.(type) {
+		switch err.(type) {
 		case *build.NoGoError, *build.MultiplePackageError:
-			break
+			// These errors are not fatal, continue.
 		default:
 			return nil, err
 		}
