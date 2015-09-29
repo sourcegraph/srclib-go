@@ -274,8 +274,13 @@ func scanForPackages(dir string) ([]*build.Package, error) {
 	var pkgs []*build.Package
 
 	pkg, err := buildContext.ImportDir(dir, 0)
-	if _, isNoGoError := err.(*build.NoGoError); err != nil && !isNoGoError {
-		return nil, err
+	if err != nil {
+		switch e := err.(type) {
+		case *build.NoGoError, *build.MultiplePackageError:
+			break
+		default:
+			return nil, err
+		}
 	}
 	if err == nil {
 		pkgs = append(pkgs, pkg)
@@ -291,10 +296,7 @@ func scanForPackages(dir string) ([]*build.Package, error) {
 		if info.IsDir() && ((name[0] != '.' && name[0] != '_' && name != "testdata") || (strings.HasSuffix(filepath.ToSlash(fullPath), "/Godeps/_workspace") && !config.SkipGodeps)) {
 			subPkgs, err := scanForPackages(fullPath)
 			if err != nil {
-				// if dir contains multiple packages, ignore it and continue.
-				if _, ok := err.(*build.MultiplePackageError); !ok {
-					return nil, err
-				}
+				return nil, err
 			}
 			pkgs = append(pkgs, subPkgs...)
 		}
