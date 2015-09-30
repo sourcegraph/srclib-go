@@ -275,12 +275,7 @@ func scanForPackages(dir string) ([]*build.Package, error) {
 
 	pkg, err := buildContext.ImportDir(dir, 0)
 	if err != nil {
-		switch err.(type) {
-		case *build.NoGoError, *build.MultiplePackageError:
-			// These errors are not fatal, continue.
-		default:
-			return nil, err
-		}
+		log.Printf("Error scanning %s for packages: %v. Ignoring source files in this directory.", dir, err)
 	}
 	if err == nil {
 		pkgs = append(pkgs, pkg)
