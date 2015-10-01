@@ -72,7 +72,7 @@ func (c *ScanCmd) Execute(args []string) error {
 	}
 	scanDir := cwd
 	if !isInGopath(scanDir) {
-		scanDir = filepath.Join(cwd, srclibGopath, "src", filepath.FromSlash(c.Repo))
+		scanDir = filepath.Join(cwd, srclibGopath, "src", filepath.FromSlash(config.ImportPathRoot), filepath.FromSlash(c.Repo))
 		buildContext.GOPATH = filepath.Join(cwd, srclibGopath) + string(os.PathListSeparator) + buildContext.GOPATH
 
 		os.RemoveAll(srclibGopath) // ignore error
