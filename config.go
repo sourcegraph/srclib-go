@@ -105,6 +105,10 @@ type srcfileConfig struct {
 	// to the files in their respective repositories instead of the local copies
 	// inside of Godeps/_workspace.
 	SkipGodeps bool
+
+	// ImportPathRoot is a prefix which is used when converting from repository
+	// URI to Go import path.
+	ImportPathRoot string
 }
 
 // unmarshalTypedConfig parses config from the Config field of the source unit.
