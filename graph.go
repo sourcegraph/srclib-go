@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"go/build"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -71,14 +72,18 @@ func (c *GraphCmd) Execute(args []string) error {
 		return err
 	}
 
-	if os.Getenv("IN_DOCKER_CONTAINER") != "" {
+	if os.Getenv("IN_DOCKER_CONTAINER") != "" || os.Getenv("SRCLIB_FETCH_DEPS") != "" {
 		buildPkg, err := UnitDataAsBuildPackage(unit)
 		if err != nil {
 			return err
 		}
 
 		// Make a new primary GOPATH.
-		mainGOPATHDir := filepath.Join(os.TempDir(), "gopath")
+		mainGOPATHDir, err := ioutil.TempDir("", "gopath")
+		if err != nil {
+			return err
+		}
+		defer os.RemoveAll(mainGOPATHDir)
 		if buildContext.GOPATH == "" {
 			buildContext.GOPATH = mainGOPATHDir
 		} else {
