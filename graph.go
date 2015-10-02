@@ -111,7 +111,10 @@ func (c *GraphCmd) Execute(args []string) error {
 				}
 
 				oldSrcDir := filepath.Join(dir, "src")
-				newGOPATH := filepath.Join(os.TempDir(), "gopath-"+strconv.Itoa(i)+"-"+filepath.Base(dir))
+				newGOPATH, err := ioutil.TempDir("", "gopath-"+strconv.Itoa(i)+"-"+filepath.Base(dir))
+				if err != nil {
+					return err
+				}
 				newSrcDir := filepath.Join(newGOPATH, "src")
 				log.Printf("Creating symlink for non-primary GOPATH to oldname %q at newname %q.", oldSrcDir, newSrcDir)
 				if err := os.MkdirAll(filepath.Dir(newSrcDir), 0700); err != nil {
