@@ -184,14 +184,12 @@ func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, 
 	default:
 		log.Printf("Resolving Go dep: %s", importPath)
 		dir, err := gosrc.Get(http.DefaultClient, string(importPath), "")
-		if err != nil {
-			if strings.Contains(err.Error(), "Git Repository is empty.") {
-				// Not fatal, just weird.
-				return nil, nil
-			}
-			return nil, fmt.Errorf("unable to fetch information about Go package %q: %s", importPath, err)
+		if err == nil {
+			target.ToRepoCloneURL = strings.TrimSuffix(dir.ProjectURL, "/")
+		} else {
+			log.Printf("warning: unable to fetch information about Go package %q: %s", importPath, err)
+			target.ToRepoCloneURL = importPath
 		}
-		target.ToRepoCloneURL = strings.TrimSuffix(dir.ProjectURL, "/")
 	}
 
 	// Save in cache.
