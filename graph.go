@@ -115,6 +115,7 @@ func (c *GraphCmd) Execute(args []string) error {
 				if err != nil {
 					return err
 				}
+				defer os.RemoveAll(newGOPATH)
 				newSrcDir := filepath.Join(newGOPATH, "src")
 				log.Printf("Creating symlink for non-primary GOPATH to oldname %q at newname %q.", oldSrcDir, newSrcDir)
 				if err := os.MkdirAll(filepath.Dir(newSrcDir), 0700); err != nil {
