@@ -13,15 +13,15 @@ before_install:
   - export GOBIN=$HOME/gopath/bin
 
 install:
-  - wget -NO /tmp/src.zip 'https://api.equinox.io/1/Applications/ap_BQxVz1iWMxmjQnbVGd85V58qz6/Updates/Asset/src-0.0.28.zip?os=linux&arch=amd64&channel=stable'
-  - unzip /tmp/src*.zip -d $HOME/gopath/bin
-  - mv $HOME/gopath/bin/src-* $HOME/gopath/bin/src
-  - chmod +x $HOME/gopath/bin/src
-  - src toolchain add sourcegraph.com/sourcegraph/srclib-go
+  - wget -NO /tmp/srclib.zip 'https://api.equinox.io/1/Applications/ap_BQxVz1iWMxmjQnbVGd85V58qz6/Updates/Asset/srclib-0.0.42.zip?os=linux&arch=amd64&channel=stable'
+  - unzip /tmp/srclib*.zip -d $HOME/gopath/bin
+  - mv $HOME/gopath/bin/srclib-* $HOME/gopath/bin/srclib
+  - chmod +x $HOME/gopath/bin/srclib
+  - srclib toolchain add sourcegraph.com/sourcegraph/srclib-go
   # for tests
   - go get -d -v golang.org/x/net/ipv6 golang.org/x/tools/go/types
   - make
 
 # TODO(sqs): add `go test`
 script:
-  - src test -m program
+  - srclib test -m program
