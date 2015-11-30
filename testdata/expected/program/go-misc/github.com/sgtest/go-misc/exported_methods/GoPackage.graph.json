@@ -1,0 +1,158 @@
+{
+  "Defs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/exported_methods",
+      "Path": ".",
+      "Name": "exported_methods",
+      "Kind": "package",
+      "File": "exported_methods",
+      "DefStart": 0,
+      "DefEnd": 0,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgName": "exported_methods",
+        "TypeString": "",
+        "Kind": "package",
+        "PackageImportPath": "github.com/sgtest/go-misc/exported_methods"
+      },
+      "TreePath": "."
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/exported_methods",
+      "Path": "unexported",
+      "Name": "unexported",
+      "Kind": "type",
+      "File": "exported_methods/exported_methods.go",
+      "DefStart": 173,
+      "DefEnd": 192,
+      "Data": {
+        "PkgScope": true,
+        "PkgName": "exported_methods",
+        "TypeString": "github.com/sgtest/go-misc/exported_methods.unexported",
+        "UnderlyingTypeString": "struct{}",
+        "Kind": "type",
+        "PackageImportPath": "github.com/sgtest/go-misc/exported_methods"
+      },
+      "TreePath": "./unexported"
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/exported_methods",
+      "Path": "unexported/ExportedMethod",
+      "Name": "ExportedMethod",
+      "Kind": "func",
+      "File": "exported_methods/exported_methods.go",
+      "DefStart": 194,
+      "DefEnd": 234,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgScope": true,
+        "PkgName": "exported_methods",
+        "Receiver": "unexported",
+        "TypeString": "func()",
+        "UnderlyingTypeString": "func()",
+        "Kind": "method",
+        "PackageImportPath": "github.com/sgtest/go-misc/exported_methods"
+      },
+      "TreePath": "./unexported/ExportedMethod"
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/exported_methods",
+      "Path": "unexported/ExportedMethod/u",
+      "Name": "u",
+      "Kind": "var",
+      "File": "exported_methods/exported_methods.go",
+      "DefStart": 200,
+      "DefEnd": 212,
+      "Local": true,
+      "Data": {
+        "PkgName": "exported_methods",
+        "TypeString": "github.com/sgtest/go-misc/exported_methods.unexported",
+        "UnderlyingTypeString": "struct{}",
+        "Kind": "var",
+        "PackageImportPath": "github.com/sgtest/go-misc/exported_methods"
+      },
+      "TreePath": "./unexported/ExportedMethod/u"
+    }
+  ],
+  "Refs": [
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/exported_methods",
+      "DefPath": ".",
+      "File": "exported_methods/exported_methods.go",
+      "Start": 150,
+      "End": 166
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/exported_methods",
+      "DefPath": "unexported/ExportedMethod/u",
+      "Def": true,
+      "File": "exported_methods/exported_methods.go",
+      "Start": 200,
+      "End": 201
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/exported_methods",
+      "DefPath": "unexported/ExportedMethod",
+      "Def": true,
+      "File": "exported_methods/exported_methods.go",
+      "Start": 214,
+      "End": 228
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/exported_methods",
+      "DefPath": "unexported",
+      "Def": true,
+      "File": "exported_methods/exported_methods.go",
+      "Start": 173,
+      "End": 183
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/exported_methods",
+      "DefPath": "unexported",
+      "File": "exported_methods/exported_methods.go",
+      "Start": 202,
+      "End": 212
+    }
+  ],
+  "Docs": [
+    {
+      "Path": "",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\nPackage exported_methods tests that srclib-go exports all\ncapitalized methods, even if the type that the method is on is\nunexported.\n\u003c/p\u003e\n",
+      "File": "exported_methods/exported_methods.go",
+      "End": 141
+    },
+    {
+      "Path": "",
+      "Format": "text/plain",
+      "Data": "Package exported_methods tests that srclib-go exports all\ncapitalized methods, even if the type that the method is on is\nunexported.\n",
+      "File": "exported_methods/exported_methods.go",
+      "End": 141
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/exported_methods",
+      "Path": ".",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\nPackage exported_methods tests that srclib-go exports all\ncapitalized methods, even if the type that the method is on is\nunexported.\n\u003c/p\u003e\n"
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/exported_methods",
+      "Path": ".",
+      "Format": "text/plain",
+      "Data": "Package exported_methods tests that srclib-go exports all\ncapitalized methods, even if the type that the method is on is\nunexported.\n"
+    }
+  ]
+}
