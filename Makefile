@@ -20,9 +20,9 @@ gotest:
 	.bin/godep go test ./...
 
 srctest:
-# go1.5 excludes repos who's ImportPath would include testdata. Since all
-# the test repos are under testdata dir, we change the GOPATH to not root
-# the testdata dir
+# go1.5 excludes repos whose ImportPath would include testdata. Since all the
+# test repos are under testdata dir, we change the GOPATH to not root the
+# testdata dir
 	git submodule update --init
 	GOPATH=${PWD}/.test go get -d golang.org/x/net/ipv6 golang.org/x/tools/go/types
 	GOPATH=${PWD}/.test src test -m program
