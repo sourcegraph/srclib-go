@@ -1,11 +1,11 @@
 language: go
 
-go: 1.4.2
+go: 1.5.1
 
 sudo: false
 
 before_install:
-  - mkdir -p $HOME/gopath/src/sourcegraph.com/sourcegraph
+  - mkdir -p $HOME/gopath/src/sourcegraph.com/sourcegraph $HOME/testgopath
   - mv $TRAVIS_BUILD_DIR $HOME/gopath/src/sourcegraph.com/sourcegraph/srclib-go
   - export TRAVIS_BUILD_DIR=$HOME/gopath/src/sourcegraph.com/sourcegraph/srclib-go
   - cd $TRAVIS_BUILD_DIR
@@ -13,15 +13,15 @@ before_install:
   - export GOBIN=$HOME/gopath/bin
 
 install:
-  - wget -NO /tmp/src.zip 'https://api.equinox.io/1/Applications/ap_BQxVz1iWMxmjQnbVGd85V58qz6/Updates/Asset/src-0.0.28.zip?os=linux&arch=amd64&channel=stable'
-  - unzip /tmp/src*.zip -d $HOME/gopath/bin
-  - mv $HOME/gopath/bin/src-* $HOME/gopath/bin/src
-  - chmod +x $HOME/gopath/bin/src
-  - src toolchain add sourcegraph.com/sourcegraph/srclib-go
-  # for tests
-  - go get -d -v golang.org/x/net/ipv6 golang.org/x/tools/go/types
+  - wget -NO /tmp/srclib.zip 'https://api.equinox.io/1/Applications/ap_BQxVz1iWMxmjQnbVGd85V58qz6/Updates/Asset/srclib-0.0.42.zip?os=linux&arch=amd64&channel=stable'
+  - unzip /tmp/srclib*.zip -d $HOME/gopath/bin
+  - mv $HOME/gopath/bin/srclib-* $HOME/gopath/bin/srclib
+  # TODO(keegancsmith) update srclib so that srclib test executes srclib
+  - ln -s $HOME/gopath/bin/srclib $HOME/gopath/bin/src
+  - chmod +x $HOME/gopath/bin/src*
+  - srclib toolchain add sourcegraph.com/sourcegraph/srclib-go
   - make
 
 # TODO(sqs): add `go test`
 script:
-  - src test -m program
+  - make srctest
