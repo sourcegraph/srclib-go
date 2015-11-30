@@ -20,13 +20,8 @@ install:
   - ln -s $HOME/gopath/bin/srclib $HOME/gopath/bin/src
   - chmod +x $HOME/gopath/bin/src*
   - srclib toolchain add sourcegraph.com/sourcegraph/srclib-go
-  # for tests
-  - GOPATH=$HOME/testgopath go get -d -v golang.org/x/net/ipv6 golang.org/x/tools/go/types
   - make
 
 # TODO(sqs): add `go test`
 script:
-  # go1.5 excludes repos who's ImportPath would include testdata. Since all
-  # the test repos are under testdata dir, we change the GOPATH to not root
-  # the testdata dir
-  - GOPATH=$HOME/testgopath srclib test -m program
+  - make srctest
