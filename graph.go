@@ -148,9 +148,14 @@ func (c *GraphCmd) Execute(args []string) error {
 		// * have no slashes in their import path (which occurs when graphing the Go stdlib, for pkgs like "fmt");
 		//   we'll just assume that these packages are never remote and do not need `go get`ting.
 		var externalDeps []string
+		isInRepo := func(importPath string) bool { return strings.HasPrefix(importPath, string(unit.Repo)) }
+		isCImport := func(importPath string) bool { return importPath == "C" }
+		isStdLib := func(importPath string) bool {
+			return strings.Count(filepath.Clean(importPath), string(filepath.Separator)) <= 0
+		}
 		for _, dep := range unit.Dependencies {
 			importPath := dep.(string)
-			if !strings.HasPrefix(importPath, string(unit.Repo)) && importPath != "C" && strings.Count(filepath.Clean(importPath), string(filepath.Separator)) > 0 {
+			if !isInRepo(importPath) && !isCImport(importPath) && !isStdLib(importPath) {
 				externalDeps = append(externalDeps, importPath)
 			}
 		}
