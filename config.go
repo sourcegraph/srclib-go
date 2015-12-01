@@ -195,6 +195,7 @@ func (c *srcfileConfig) env() []string {
 		"GOOS=" + buildContext.GOOS,
 		"GOROOT=" + config.GOROOTForCmd,
 		"GOPATH=" + buildContext.GOPATH,
+		"GO15VENDOREXPERIMENT=1",
 	}
 }
 
