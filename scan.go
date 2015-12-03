@@ -193,6 +193,30 @@ func (c *ScanCmd) Execute(args []string) error {
 		}
 	}
 
+	// Find vendored units to build a list of vendor directories
+	vendorDirs := map[string]struct{}{}
+	for _, u := range units {
+		i, ok := findVendor(u.Dir)
+		// Don't include old style vendor dirs
+		if !ok || strings.HasPrefix(u.Dir[i:], "vendor/src/") {
+			continue
+		}
+		vendorDirs[u.Dir[:i+len("vendor")]] = struct{}{}
+	}
+
+	for _, u := range units {
+		if u.Config == nil {
+			u.Config = map[string]interface{}{}
+		}
+
+		var dirs []string
+		for dir := range vendorDirs {
+			// TODO(keegancsmith) sort and filter out irrelevant dirs
+			dirs = append(dirs, dir)
+		}
+		u.Config["VendorDirs"] = dirs
+	}
+
 	b, err := json.MarshalIndent(units, "", "  ")
 	if err != nil {
 		return err

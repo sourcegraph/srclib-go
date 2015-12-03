@@ -109,6 +109,15 @@ type srcfileConfig struct {
 	// ImportPathRoot is a prefix which is used when converting from repository
 	// URI to Go import path.
 	ImportPathRoot string
+
+	// VendorDirs are a list of all src directories used by a package,
+	// relative to the repository root. These are used for
+	// GO15VENDOREXPERIMENT related vendor support, and this is usually
+	// not set by the user. At build time a GOPATH is created which will
+	// include each VendorDir on it linked to src. VendorDirs should be
+	// sorted by longest path to shortest (ie most specific to least
+	// specific)
+	VendorDirs []string
 }
 
 // unmarshalTypedConfig parses config from the Config field of the source unit.
@@ -174,6 +183,8 @@ func (c *srcfileConfig) apply() error {
 		buildContext.GOPATH = strings.Join(uniq(dirs), string(filepath.ListSeparator))
 		loaderConfig.Build = &buildContext
 	}
+
+	config.VendorDirs = cleanDirs(config.VendorDirs)
 
 	if config.GOROOTForCmd == "" {
 		config.GOROOTForCmd = buildContext.GOROOT

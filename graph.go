@@ -102,16 +102,14 @@ func (c *GraphCmd) Execute(args []string) error {
 		}
 
 		var srcDirs []string
-		if config.GOPATH != "" {
+		srcDirs = append(srcDirs, config.VendorDirs...)
+		for _, dir := range filepath.SplitList(buildContext.GOPATH) {
 			// For every GOPATH that was in the Srcfile (or autodetected),
 			// move it to a writable dir. (/src is not writable.)
-			dirs := filepath.SplitList(buildContext.GOPATH)
-			for _, dir := range dirs {
-				if dir == mainGOPATHDir || dir == os.Getenv("GOPATH") {
-					continue
-				}
-				srcDirs = append(srcDirs, filepath.Join(dir, "src"))
+			if dir == mainGOPATHDir || dir == os.Getenv("GOPATH") {
+				continue
 			}
+			srcDirs = append(srcDirs, filepath.Join(dir, "src"))
 		}
 		writeableGOPATHs := make([]string, len(srcDirs))
 		for i, oldSrcDir := range srcDirs {
