@@ -1,6 +1,6 @@
 {
 	"ImportPath": "sourcegraph.com/sourcegraph/srclib-go",
-	"GoVersion": "go1.4.2",
+	"GoVersion": "go1.5.1",
 	"Packages": [
 		"./..."
 	],
@@ -13,46 +13,6 @@
 		{
 			"ImportPath": "github.com/MarkMcCaskey/gddo/gosrc",
 			"Rev": "7a102f78cf1ffc540dff33c75d3397ac6a0558e7"
-		},
-		{
-			"ImportPath": "github.com/Sirupsen/logrus",
-			"Comment": "v0.6.2-2-g4266e0e",
-			"Rev": "4266e0eb6811bb6ac2087bfa61ea345e56db5777"
-		},
-		{
-			"ImportPath": "github.com/docker/docker/pkg/archive",
-			"Comment": "v1.3.0-764-g4083fa2",
-			"Rev": "4083fa26208fe4a1b78cad9ab85cdbb50293cedd"
-		},
-		{
-			"ImportPath": "github.com/docker/docker/pkg/fileutils",
-			"Comment": "v1.3.0-764-g4083fa2",
-			"Rev": "4083fa26208fe4a1b78cad9ab85cdbb50293cedd"
-		},
-		{
-			"ImportPath": "github.com/docker/docker/pkg/ioutils",
-			"Comment": "v1.3.0-764-g4083fa2",
-			"Rev": "4083fa26208fe4a1b78cad9ab85cdbb50293cedd"
-		},
-		{
-			"ImportPath": "github.com/docker/docker/pkg/pools",
-			"Comment": "v1.3.0-764-g4083fa2",
-			"Rev": "4083fa26208fe4a1b78cad9ab85cdbb50293cedd"
-		},
-		{
-			"ImportPath": "github.com/docker/docker/pkg/promise",
-			"Comment": "v1.3.0-764-g4083fa2",
-			"Rev": "4083fa26208fe4a1b78cad9ab85cdbb50293cedd"
-		},
-		{
-			"ImportPath": "github.com/docker/docker/pkg/system",
-			"Comment": "v1.3.0-764-g4083fa2",
-			"Rev": "4083fa26208fe4a1b78cad9ab85cdbb50293cedd"
-		},
-		{
-			"ImportPath": "github.com/docker/docker/vendor/src/code.google.com/p/go/src/pkg/archive/tar",
-			"Comment": "v1.3.0-764-g4083fa2",
-			"Rev": "4083fa26208fe4a1b78cad9ab85cdbb50293cedd"
 		},
 		{
 			"ImportPath": "github.com/fsouza/go-dockerclient",
@@ -116,6 +76,10 @@
 			"ImportPath": "sourcegraph.com/sourcegraph/srclib",
 			"Comment": "v0.0.35-35-g19df897",
 			"Rev": "19df8971972254f3686aef435765e1a499efba6c"
+		},
+		{
+			"ImportPath": "sourcegraph.com/sqs/pbtypes",
+			"Rev": "588352d106ca472fa2a91b2425b8e35b52e3822e"
 		}
 	]
 }
