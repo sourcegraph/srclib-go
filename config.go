@@ -167,14 +167,7 @@ func (c *srcfileConfig) apply() error {
 
 	if config.GOPATH != "" {
 		// clean/absolutize all paths
-		dirs := uniq(filepath.SplitList(config.GOPATH))
-		for i, dir := range dirs {
-			dir = filepath.Clean(dir)
-			if !filepath.IsAbs(dir) {
-				dir = filepath.Join(cwd, dir)
-			}
-			dirs[i] = dir
-		}
+		dirs := cleanDirs(filepath.SplitList(config.GOPATH))
 		config.GOPATH = strings.Join(dirs, string(filepath.ListSeparator))
 
 		dirs = append(dirs, filepath.SplitList(buildContext.GOPATH)...)
@@ -202,6 +195,19 @@ func (c *srcfileConfig) env() []string {
 
 func pathHasPrefix(path, prefix string) bool {
 	return prefix == "." || path == prefix || strings.HasPrefix(path, prefix+string(filepath.Separator))
+}
+
+// cleanDirs takes a list of paths cleans/abs them + removes duplicates
+func cleanDirs(dirs []string) []string {
+	dirs = uniq(dirs)
+	for i, dir := range dirs {
+		dir = filepath.Clean(dir)
+		if !filepath.IsAbs(dir) {
+			dir = filepath.Join(cwd, dir)
+		}
+		dirs[i] = dir
+	}
+	return dirs
 }
 
 // uniq maintains the order of s.
