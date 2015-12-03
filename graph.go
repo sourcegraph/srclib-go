@@ -101,33 +101,39 @@ func (c *GraphCmd) Execute(args []string) error {
 			return err
 		}
 
-		// For every GOPATH that was in the Srcfile (or autodetected),
-		// move it to a writable dir. (/src is not writable.)
+		var srcDirs []string
 		if config.GOPATH != "" {
+			// For every GOPATH that was in the Srcfile (or autodetected),
+			// move it to a writable dir. (/src is not writable.)
 			dirs := filepath.SplitList(buildContext.GOPATH)
-			for i, dir := range dirs {
+			for _, dir := range dirs {
 				if dir == mainGOPATHDir || dir == os.Getenv("GOPATH") {
 					continue
 				}
-
-				oldSrcDir := filepath.Join(dir, "src")
-				newGOPATH, err := ioutil.TempDir("", "gopath-"+strconv.Itoa(i)+"-"+filepath.Base(dir))
-				if err != nil {
-					return err
-				}
-				defer os.RemoveAll(newGOPATH)
-				newSrcDir := filepath.Join(newGOPATH, "src")
-				log.Printf("Creating symlink for non-primary GOPATH to oldname %q at newname %q.", oldSrcDir, newSrcDir)
-				if err := os.MkdirAll(filepath.Dir(newSrcDir), 0700); err != nil {
-					return err
-				}
-				if err := os.Symlink(oldSrcDir, newSrcDir); err != nil {
-					return err
-				}
-				dirs[i] = newGOPATH
-				effectiveConfigGOPATHs = append(effectiveConfigGOPATHs, newSrcDir)
+				srcDirs = append(srcDirs, filepath.Join(dir, "src"))
 			}
-			buildContext.GOPATH = strings.Join(dirs, string(filepath.ListSeparator))
+		}
+		writeableGOPATHs := make([]string, len(srcDirs))
+		for i, oldSrcDir := range srcDirs {
+			oldBaseDir := filepath.Base(filepath.Dir(oldSrcDir))
+			newGOPATH, err := ioutil.TempDir("", "gopath-"+strconv.Itoa(i)+"-"+oldBaseDir)
+			if err != nil {
+				return err
+			}
+			defer os.RemoveAll(newGOPATH)
+			newSrcDir := filepath.Join(newGOPATH, "src")
+			log.Printf("Creating symlink for non-primary GOPATH to oldname %q at newname %q.", oldSrcDir, newSrcDir)
+			if err := os.MkdirAll(filepath.Dir(newSrcDir), 0700); err != nil {
+				return err
+			}
+			if err := os.Symlink(oldSrcDir, newSrcDir); err != nil {
+				return err
+			}
+			writeableGOPATHs[i] = newGOPATH
+			effectiveConfigGOPATHs = append(effectiveConfigGOPATHs, newSrcDir)
+		}
+		if len(writeableGOPATHs) > 0 {
+			buildContext.GOPATH = strings.Join(writeableGOPATHs, string(filepath.ListSeparator))
 		}
 
 		log.Printf("Changing directory to %q.", dir)
