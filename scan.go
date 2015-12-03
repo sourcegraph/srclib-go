@@ -209,11 +209,16 @@ func (c *ScanCmd) Execute(args []string) error {
 			u.Config = map[string]interface{}{}
 		}
 
-		var dirs []string
+		unitDir := u.Dir + string(filepath.Separator)
+		var dirs vendorDirSlice
 		for dir := range vendorDirs {
-			// TODO(keegancsmith) sort and filter out irrelevant dirs
-			dirs = append(dirs, dir)
+			// Must be a child of baseDir to use the vendor dir
+			baseDir := filepath.Dir(dir) + string(filepath.Separator)
+			if filepath.Clean(baseDir) == "." || strings.HasPrefix(unitDir, baseDir) {
+				dirs = append(dirs, dir)
+			}
 		}
+		sort.Sort(dirs)
 		u.Config["VendorDirs"] = dirs
 	}
 
@@ -370,3 +375,10 @@ func matchPattern(pattern string) func(name string) bool {
 		return reg.MatchString(name)
 	}
 }
+
+// StringSlice attaches the methods of sort.Interface to []string, sorting in decreasing string length
+type vendorDirSlice []string
+
+func (p vendorDirSlice) Len() int           { return len(p) }
+func (p vendorDirSlice) Less(i, j int) bool { return len(p[i]) >= len(p[j]) }
+func (p vendorDirSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
