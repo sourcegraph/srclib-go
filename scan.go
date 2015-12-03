@@ -205,10 +205,6 @@ func (c *ScanCmd) Execute(args []string) error {
 	}
 
 	for _, u := range units {
-		if u.Config == nil {
-			u.Config = map[string]interface{}{}
-		}
-
 		unitDir := u.Dir + string(filepath.Separator)
 		var dirs vendorDirSlice
 		for dir := range vendorDirs {
@@ -219,7 +215,12 @@ func (c *ScanCmd) Execute(args []string) error {
 			}
 		}
 		sort.Sort(dirs)
-		u.Config["VendorDirs"] = dirs
+		if len(dirs) > 0 {
+			if u.Config == nil {
+				u.Config = map[string]interface{}{}
+			}
+			u.Config["VendorDirs"] = dirs
+		}
 	}
 
 	b, err := json.MarshalIndent(units, "", "  ")
