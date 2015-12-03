@@ -147,22 +147,6 @@ func (c *ScanCmd) Execute(args []string) error {
 		}
 	}
 
-	// Make go1.5 style vendored dep unit names (package import paths)
-	// relative to vendored dir, not to top-level dir.
-	for _, u := range units {
-		pkg := u.Data.(*build.Package)
-		i, ok := findVendor(pkg.Dir)
-		if !ok {
-			continue
-		}
-		relDir := pkg.Dir[i+len("vendor"):]
-		if strings.HasPrefix(relDir, "/src/") || !strings.HasPrefix(relDir, "/") {
-			continue
-		}
-		relImport := relDir[1:]
-		u.Name = relImport
-	}
-
 	// make files relative to repository root
 	for _, u := range units {
 		pkgSubdir := filepath.Join(c.Subdir, u.Data.(*build.Package).Dir)
@@ -193,36 +177,6 @@ func (c *ScanCmd) Execute(args []string) error {
 		}
 	}
 
-	// Find vendored units to build a list of vendor directories
-	vendorDirs := map[string]struct{}{}
-	for _, u := range units {
-		i, ok := findVendor(u.Dir)
-		// Don't include old style vendor dirs
-		if !ok || strings.HasPrefix(u.Dir[i:], "vendor/src/") {
-			continue
-		}
-		vendorDirs[u.Dir[:i+len("vendor")]] = struct{}{}
-	}
-
-	for _, u := range units {
-		unitDir := u.Dir + string(filepath.Separator)
-		var dirs vendorDirSlice
-		for dir := range vendorDirs {
-			// Must be a child of baseDir to use the vendor dir
-			baseDir := filepath.Dir(dir) + string(filepath.Separator)
-			if filepath.Clean(baseDir) == "." || strings.HasPrefix(unitDir, baseDir) {
-				dirs = append(dirs, dir)
-			}
-		}
-		sort.Sort(dirs)
-		if len(dirs) > 0 {
-			if u.Config == nil {
-				u.Config = map[string]interface{}{}
-			}
-			u.Config["VendorDirs"] = dirs
-		}
-	}
-
 	b, err := json.MarshalIndent(units, "", "  ")
 	if err != nil {
 		return err
@@ -231,20 +185,6 @@ func (c *ScanCmd) Execute(args []string) error {
 		return err
 	}
 	return nil
-}
-
-// findVendor from golang/go/cmd/go/pkg.go
-func findVendor(path string) (index int, ok bool) {
-	// Two cases, depending on internal at start of string or not.
-	// The order matters: we must return the index of the final element,
-	// because the final one is where the effective import path starts.
-	switch {
-	case strings.Contains(path, "/vendor/"):
-		return strings.LastIndex(path, "/vendor/") + 1, true
-	case strings.HasPrefix(path, "vendor/"):
-		return 0, true
-	}
-	return 0, false
 }
 
 func isInGopath(path string) bool {
@@ -376,10 +316,3 @@ func matchPattern(pattern string) func(name string) bool {
 		return reg.MatchString(name)
 	}
 }
-
-// StringSlice attaches the methods of sort.Interface to []string, sorting in decreasing string length
-type vendorDirSlice []string
-
-func (p vendorDirSlice) Len() int           { return len(p) }
-func (p vendorDirSlice) Less(i, j int) bool { return len(p[i]) >= len(p[j]) }
-func (p vendorDirSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
