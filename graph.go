@@ -101,37 +101,39 @@ func (c *GraphCmd) Execute(args []string) error {
 			return err
 		}
 
-		var srcDirs []string
-		srcDirs = append(srcDirs, config.VendorDirs...)
-		for _, dir := range filepath.SplitList(buildContext.GOPATH) {
-			// For every GOPATH that was in the Srcfile (or autodetected),
-			// move it to a writable dir. (/src is not writable.)
-			if dir == mainGOPATHDir || dir == os.Getenv("GOPATH") {
-				continue
+		if config.GOPATH != "" {
+			var srcDirs []string
+			srcDirs = append(srcDirs, config.VendorDirs...)
+			for _, dir := range filepath.SplitList(buildContext.GOPATH) {
+				// For every GOPATH that was in the Srcfile (or autodetected),
+				// move it to a writable dir. (/src is not writable.)
+				if dir == mainGOPATHDir || dir == os.Getenv("GOPATH") {
+					continue
+				}
+				srcDirs = append(srcDirs, filepath.Join(dir, "src"))
 			}
-			srcDirs = append(srcDirs, filepath.Join(dir, "src"))
-		}
-		writeableGOPATHs := make([]string, len(srcDirs))
-		for i, oldSrcDir := range srcDirs {
-			oldBaseDir := filepath.Base(filepath.Dir(oldSrcDir))
-			newGOPATH, err := ioutil.TempDir("", "gopath-"+strconv.Itoa(i)+"-"+oldBaseDir)
-			if err != nil {
-				return err
+			writeableGOPATHs := make([]string, len(srcDirs))
+			for i, oldSrcDir := range srcDirs {
+				oldBaseDir := filepath.Base(filepath.Dir(oldSrcDir))
+				newGOPATH, err := ioutil.TempDir("", "gopath-"+strconv.Itoa(i)+"-"+oldBaseDir)
+				if err != nil {
+					return err
+				}
+				defer os.RemoveAll(newGOPATH)
+				newSrcDir := filepath.Join(newGOPATH, "src")
+				log.Printf("Creating symlink for non-primary GOPATH to oldname %q at newname %q.", oldSrcDir, newSrcDir)
+				if err := os.MkdirAll(filepath.Dir(newSrcDir), 0700); err != nil {
+					return err
+				}
+				if err := os.Symlink(oldSrcDir, newSrcDir); err != nil {
+					return err
+				}
+				writeableGOPATHs[i] = newGOPATH
+				effectiveConfigGOPATHs = append(effectiveConfigGOPATHs, newSrcDir)
 			}
-			defer os.RemoveAll(newGOPATH)
-			newSrcDir := filepath.Join(newGOPATH, "src")
-			log.Printf("Creating symlink for non-primary GOPATH to oldname %q at newname %q.", oldSrcDir, newSrcDir)
-			if err := os.MkdirAll(filepath.Dir(newSrcDir), 0700); err != nil {
-				return err
+			if len(writeableGOPATHs) > 0 {
+				buildContext.GOPATH = strings.Join(writeableGOPATHs, string(filepath.ListSeparator))
 			}
-			if err := os.Symlink(oldSrcDir, newSrcDir); err != nil {
-				return err
-			}
-			writeableGOPATHs[i] = newGOPATH
-			effectiveConfigGOPATHs = append(effectiveConfigGOPATHs, newSrcDir)
-		}
-		if len(writeableGOPATHs) > 0 {
-			buildContext.GOPATH = strings.Join(writeableGOPATHs, string(filepath.ListSeparator))
 		}
 
 		log.Printf("Changing directory to %q.", dir)
