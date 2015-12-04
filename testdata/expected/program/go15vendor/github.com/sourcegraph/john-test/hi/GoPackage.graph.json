@@ -1,0 +1,94 @@
+{
+  "Defs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go15vendor/vendor/github.com/sourcegraph/john-test/hi",
+      "Path": ".",
+      "Name": "hi",
+      "Kind": "package",
+      "File": "vendor/github.com/sourcegraph/john-test/hi",
+      "DefStart": 0,
+      "DefEnd": 0,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgName": "hi",
+        "TypeString": "",
+        "Kind": "package",
+        "PackageImportPath": "github.com/sgtest/go15vendor/vendor/github.com/sourcegraph/john-test/hi"
+      },
+      "TreePath": "."
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go15vendor/vendor/github.com/sourcegraph/john-test/hi",
+      "Path": "GetHi",
+      "Name": "GetHi",
+      "Kind": "func",
+      "File": "vendor/github.com/sourcegraph/john-test/hi/hi.go",
+      "DefStart": 48,
+      "DefEnd": 93,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgScope": true,
+        "PkgName": "hi",
+        "TypeString": "func() string",
+        "UnderlyingTypeString": "func() string",
+        "Kind": "func",
+        "PackageImportPath": "github.com/sgtest/go15vendor/vendor/github.com/sourcegraph/john-test/hi"
+      },
+      "TreePath": "./GetHi"
+    }
+  ],
+  "Refs": [
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go15vendor/vendor/github.com/sourcegraph/john-test/hi",
+      "DefPath": ".",
+      "File": "vendor/github.com/sourcegraph/john-test/hi/hi.go",
+      "Start": 8,
+      "End": 10
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go15vendor/vendor/github.com/sourcegraph/john-test/hi",
+      "DefPath": "GetHi",
+      "Def": true,
+      "File": "vendor/github.com/sourcegraph/john-test/hi/hi.go",
+      "Start": 53,
+      "End": 58
+    },
+    {
+      "DefRepo": "github.com/golang/go",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "builtin",
+      "DefPath": "string",
+      "File": "vendor/github.com/sourcegraph/john-test/hi/hi.go",
+      "Start": 61,
+      "End": 67
+    }
+  ],
+  "Docs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go15vendor/vendor/github.com/sourcegraph/john-test/hi",
+      "Path": "GetHi",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\nGetHi returns a string saying hi\n\u003c/p\u003e\n",
+      "File": "vendor/github.com/sourcegraph/john-test/hi/hi.go",
+      "Start": 12,
+      "End": 47
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go15vendor/vendor/github.com/sourcegraph/john-test/hi",
+      "Path": "GetHi",
+      "Format": "text/plain",
+      "Data": "GetHi returns a string saying hi\n",
+      "File": "vendor/github.com/sourcegraph/john-test/hi/hi.go",
+      "Start": 12,
+      "End": 47
+    }
+  ]
+}

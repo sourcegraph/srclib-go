@@ -101,17 +101,21 @@ func (c *GraphCmd) Execute(args []string) error {
 			return err
 		}
 
-		// For every GOPATH that was in the Srcfile (or autodetected),
-		// move it to a writable dir. (/src is not writable.)
 		if config.GOPATH != "" {
-			dirs := filepath.SplitList(buildContext.GOPATH)
-			for i, dir := range dirs {
+			var srcDirs []string
+			srcDirs = append(srcDirs, config.VendorDirs...)
+			for _, dir := range filepath.SplitList(buildContext.GOPATH) {
+				// For every GOPATH that was in the Srcfile (or autodetected),
+				// move it to a writable dir. (/src is not writable.)
 				if dir == mainGOPATHDir || dir == os.Getenv("GOPATH") {
 					continue
 				}
-
-				oldSrcDir := filepath.Join(dir, "src")
-				newGOPATH, err := ioutil.TempDir("", "gopath-"+strconv.Itoa(i)+"-"+filepath.Base(dir))
+				srcDirs = append(srcDirs, filepath.Join(dir, "src"))
+			}
+			writeableGOPATHs := make([]string, len(srcDirs))
+			for i, oldSrcDir := range srcDirs {
+				oldBaseDir := filepath.Base(filepath.Dir(oldSrcDir))
+				newGOPATH, err := ioutil.TempDir("", "gopath-"+strconv.Itoa(i)+"-"+oldBaseDir)
 				if err != nil {
 					return err
 				}
@@ -124,10 +128,12 @@ func (c *GraphCmd) Execute(args []string) error {
 				if err := os.Symlink(oldSrcDir, newSrcDir); err != nil {
 					return err
 				}
-				dirs[i] = newGOPATH
+				writeableGOPATHs[i] = newGOPATH
 				effectiveConfigGOPATHs = append(effectiveConfigGOPATHs, newSrcDir)
 			}
-			buildContext.GOPATH = strings.Join(dirs, string(filepath.ListSeparator))
+			if len(writeableGOPATHs) > 0 {
+				buildContext.GOPATH = strings.Join(writeableGOPATHs, string(filepath.ListSeparator))
+			}
 		}
 
 		log.Printf("Changing directory to %q.", dir)
@@ -148,9 +154,14 @@ func (c *GraphCmd) Execute(args []string) error {
 		// * have no slashes in their import path (which occurs when graphing the Go stdlib, for pkgs like "fmt");
 		//   we'll just assume that these packages are never remote and do not need `go get`ting.
 		var externalDeps []string
+		isInRepo := func(importPath string) bool { return strings.HasPrefix(importPath, string(unit.Repo)) }
+		isCImport := func(importPath string) bool { return importPath == "C" }
+		isStdLib := func(importPath string) bool {
+			return strings.Count(filepath.Clean(importPath), string(filepath.Separator)) <= 0
+		}
 		for _, dep := range unit.Dependencies {
 			importPath := dep.(string)
-			if !strings.HasPrefix(importPath, string(unit.Repo)) && importPath != "C" && strings.Count(filepath.Clean(importPath), string(filepath.Separator)) > 0 {
+			if !isInRepo(importPath) && !isCImport(importPath) && !isStdLib(importPath) {
 				externalDeps = append(externalDeps, importPath)
 			}
 		}
