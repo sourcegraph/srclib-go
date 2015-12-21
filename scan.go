@@ -34,10 +34,6 @@ type ScanCmd struct {
 var scanCmd ScanCmd
 
 func (c *ScanCmd) Execute(args []string) error {
-	if c.Repo == "" && os.Getenv("IN_DOCKER_CONTAINER") != "" {
-		log.Println("Warning: no --repo specified, and tool is running in a Docker container (i.e., without awareness of host's GOPATH). Go import paths in source units produced by the scanner may be inaccurate. To fix this, ensure that the --repo URI is specified. Report this issue if you are seeing it unexpectedly.")
-	}
-
 	if err := json.NewDecoder(os.Stdin).Decode(&config); err != nil {
 		return err
 	}
@@ -109,18 +105,6 @@ func (c *ScanCmd) Execute(args []string) error {
 			}
 		}
 		units = filteredUnits
-	}
-
-	// Fix up import paths to be consistent when running as a program and as
-	// a Docker container. But if a GOROOT is set, then we probably want import
-	// paths to not contain the repo, so only do this if there's no GOROOT set
-	// in the Srcfile.
-	if os.Getenv("IN_DOCKER_CONTAINER") != "" && config.GOROOT == "" {
-		for _, u := range units {
-			pkg := u.Data.(*build.Package)
-			pkg.ImportPath = filepath.Join(c.Repo, c.Subdir, pkg.Dir)
-			u.Name = pkg.ImportPath
-		}
 	}
 
 	// Make vendored dep unit names (package import paths) relative to

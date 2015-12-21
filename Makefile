@@ -4,7 +4,7 @@ else
 	SRCLIB_GO_EXE := .bin/srclib-go
 endif
 
-.PHONY: install test gotest srctest
+.PHONY: install test gotest srctest release
 
 install: ${SRCLIB_GO_EXE}
 
@@ -26,3 +26,6 @@ srctest:
 	git submodule update --init
 	GOPATH=${PWD}/.test go get -d golang.org/x/net/ipv6 golang.org/x/tools/go/types
 	GOPATH=${PWD}/.test src test -m program
+
+release:
+	docker build -t srclib/srclib-go .
