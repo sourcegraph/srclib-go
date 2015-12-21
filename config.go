@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"go/build"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -28,33 +27,11 @@ var (
 
 	validVersions = []string{"", "1.3", "1.2", "1.1", "1"}
 
-	// virtualCWD is the vfs cwd that corresponds to the non-vfs cwd, when using
-	// vfs. It is used to determine whether a vfs path is effectively underneath
-	// the cwd.
-	virtualCWD string
-
-	// dockerCWD is the original docker cwd before symlinking. If set (and if
-	// running in Docker), it is used to determine whether a path is effectively
-	// underneath the cwd.
-	dockerCWD string
-
 	// effectiveConfigGOPATHs is a list of GOPATH dirs that were
 	// created as a result of the GOPATH config property. These are
 	// the dirs that are appended to the actual build context GOPATH.
 	effectiveConfigGOPATHs []string
 )
-
-const srclibGopath = ".srclib-gopath"
-
-func init() {
-	fullSrclibGopath, err := filepath.Abs(srclibGopath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	if _, err := os.Stat(fullSrclibGopath); err == nil {
-		buildContext.GOPATH = fullSrclibGopath + string(filepath.ListSeparator) + buildContext.GOPATH
-	}
-}
 
 // isInEffectiveConfigGOPATH is true if dir is underneath any of the
 // dirs in effectiveConfigGOPATHs.
@@ -92,13 +69,6 @@ type srcfileConfig struct {
 	GOVERSION string
 
 	PkgPatterns []string // pattern passed to `go list` (defaults to {"./..."})
-
-	// ImportFromBinary is deprecated. go/loader will now always
-	// do a source import.
-	//
-	// TODO(samer): Make sure that configs do not use this option
-	// and remove it by May 4th.
-	ImportFromBinary bool
 
 	// SkipGodeps makes srclib-go skip the Godeps/_workspace directory when
 	// scanning for packages. This causes references to those packages to point

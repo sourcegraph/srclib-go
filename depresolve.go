@@ -115,7 +115,7 @@ func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, 
 	}
 
 	// Check if this import path is in this tree.
-	if pkg, err := buildContext.Import(importPath, "", build.FindOnly); err == nil && (pathHasPrefix(pkg.Dir, cwd) || (virtualCWD != "" && pathHasPrefix(pkg.Dir, virtualCWD)) || (dockerCWD != "" && pathHasPrefix(pkg.Dir, dockerCWD)) || isInEffectiveConfigGOPATH(pkg.Dir)) {
+	if pkg, err := buildContext.Import(importPath, "", build.FindOnly); err == nil && (pathHasPrefix(pkg.Dir, cwd) || isInEffectiveConfigGOPATH(pkg.Dir)) {
 		// TODO(sqs): do we want to link refs to vendored deps to
 		// their vendored code inside this repo? that's what it's
 		// doing now. The alternative is to link to the external repo
