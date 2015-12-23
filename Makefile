@@ -9,7 +9,7 @@ endif
 install: ${SRCLIB_GO_EXE}
 
 ${SRCLIB_GO_EXE}: $(shell /usr/bin/find . -type f -and -name '*.go' -not -path './Godeps/*')
-	GOBIN=.bin go get github.com/tools/godep
+	GOBIN=$(CURDIR)/.bin go get github.com/tools/godep
 	.bin/godep go build -o ${SRCLIB_GO_EXE}
 
 test: gotest srctest
