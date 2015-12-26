@@ -26,10 +26,7 @@ func init() {
 	}
 }
 
-type ScanCmd struct {
-	Repo   string `long:"repo" description:"repository URI" value-name:"URI"`
-	Subdir string `long:"subdir" description:"subdirectory in repository" value-name:"DIR"`
-}
+type ScanCmd struct{}
 
 var scanCmd ScanCmd
 
@@ -62,26 +59,9 @@ func (c *ScanCmd) Execute(args []string) error {
 		return err
 	}
 
-	cwd, err := filepath.EvalSymlinks(getCWD())
+	scanDir, err := filepath.EvalSymlinks(getCWD())
 	if err != nil {
 		return err
-	}
-	scanDir := cwd
-	if !isInGopath(scanDir) {
-		scanDir = filepath.Join(cwd, srclibGopath, "src", filepath.FromSlash(config.ImportPathRoot), filepath.FromSlash(c.Repo))
-		buildContext.GOPATH = filepath.Join(cwd, srclibGopath) + string(os.PathListSeparator) + buildContext.GOPATH
-
-		os.RemoveAll(srclibGopath) // ignore error
-		if err := os.MkdirAll(filepath.Dir(scanDir), 0777); err != nil {
-			return err
-		}
-		rel, err := filepath.Rel(filepath.Dir(scanDir), cwd)
-		if err != nil {
-			return err
-		}
-		if err := os.Symlink(rel, scanDir); err != nil {
-			return err
-		}
 	}
 
 	units, err := scan(scanDir)
@@ -149,7 +129,7 @@ func (c *ScanCmd) Execute(args []string) error {
 
 	// make files relative to repository root
 	for _, u := range units {
-		pkgSubdir := filepath.Join(c.Subdir, u.Data.(*build.Package).Dir)
+		pkgSubdir := u.Data.(*build.Package).Dir
 		for i, f := range u.Files {
 			u.Files[i] = filepath.ToSlash(filepath.Join(pkgSubdir, f))
 		}
