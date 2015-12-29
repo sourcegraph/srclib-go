@@ -335,7 +335,11 @@ func scanForPackages(dir string) ([]*build.Package, error) {
 
 	pkg, err := buildContext.ImportDir(dir, 0)
 	if err != nil {
-		log.Printf("Error scanning %s for packages: %v. Ignoring source files in this directory.", dir, err)
+		if _, ok := err.(*build.NoGoError); ok {
+			// ignore
+		} else {
+			log.Printf("Error scanning %s for packages: %v. Ignoring source files in this directory.", dir, err)
+		}
 	}
 	if err == nil {
 		pkgs = append(pkgs, pkg)
