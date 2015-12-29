@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"sourcegraph.com/sourcegraph/srclib"
+	"sourcegraph.com/sourcegraph/srclib/graph2"
 	"sourcegraph.com/sourcegraph/srclib/unit"
 )
 
@@ -29,6 +30,7 @@ func init() {
 type ScanCmd struct {
 	Repo   string `long:"repo" description:"repository URI" value-name:"URI"`
 	Subdir string `long:"subdir" description:"subdirectory in repository" value-name:"DIR"`
+	Schema string `long:"schema" description:"version of output schema" value-name:"SCHEMA"`
 }
 
 var scanCmd ScanCmd
@@ -203,7 +205,6 @@ func (c *ScanCmd) Execute(args []string) error {
 		}
 		vendorDirs[u.Dir[:i+len("vendor")]] = struct{}{}
 	}
-
 	for _, u := range units {
 		unitDir := u.Dir + string(filepath.Separator)
 		var dirs vendorDirSlice
@@ -223,14 +224,64 @@ func (c *ScanCmd) Execute(args []string) error {
 		}
 	}
 
-	b, err := json.MarshalIndent(units, "", "  ")
-	if err != nil {
-		return err
+	var b []byte
+	if c.Schema == "2" {
+		units2, err := convertUnits(units)
+		b, err = json.MarshalIndent(units2, "", "  ")
+		if err != nil {
+			return err
+		}
+	} else {
+		b, err = json.MarshalIndent(units, "", "  ")
+		if err != nil {
+			return err
+		}
 	}
 	if _, err := os.Stdout.Write(b); err != nil {
 		return err
 	}
 	return nil
+}
+
+func convertUnits(u0 []*unit.SourceUnit) ([]*graph2.Unit, error) {
+	u1 := make([]*graph2.Unit, len(u0))
+	for i, u := range u0 {
+		dataBytes, err := json.Marshal(u.Data)
+		if err != nil {
+			return nil, err
+		}
+
+		var key graph2.UnitKey
+		key.Genus = "git"
+		key.URI = u.Repo
+		key.Version = u.CommitID
+		key.UnitName = u.Name
+		key.UnitType = u.Type
+
+		var info *graph2.UnitInfo
+		if u.Info != nil {
+			info = &graph2.UnitInfo{
+				NameInRepository: u.Info.NameInRepository,
+				GlobalName:       u.Info.GlobalName,
+				Description:      u.Info.Description,
+				TypeName:         u.Info.TypeName,
+			}
+		}
+
+		newU := &graph2.Unit{
+			UnitKey: key,
+			Globs:   u.Globs,
+			Files:   u.Files,
+			Dir:     u.Dir,
+			// RawDeps: TODO(beyang),
+			// Deps: TODO(beyang),
+			DerivedFrom: nil,
+			Info:        info,
+			Data:        dataBytes,
+		}
+		u1[i] = newU
+	}
+	return u1, nil
 }
 
 // findVendor from golang/go/cmd/go/pkg.go
