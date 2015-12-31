@@ -48,7 +48,9 @@ func init() {
 	}
 }
 
-type GraphCmd struct{}
+type GraphCmd struct {
+	Schema string `long:"schema" description:"version of output schema" value-name:"SCHEMA"`
+}
 
 var graphCmd GraphCmd
 
@@ -208,7 +210,16 @@ func (c *GraphCmd) Execute(args []string) error {
 		}
 	}
 
-	if err := json.NewEncoder(os.Stdout).Encode(out); err != nil {
+	var outData interface{} = out
+	if c.Schema == "2" {
+		out2, err := convertGraphOutput(out)
+		if err != nil {
+			return nil
+		}
+		outData = out2
+	}
+
+	if err := json.NewEncoder(os.Stdout).Encode(outData); err != nil {
 		return err
 	}
 	return nil
