@@ -19,6 +19,7 @@ import (
 	"sourcegraph.com/sourcegraph/srclib-go/gog/definfo"
 	defpkg "sourcegraph.com/sourcegraph/srclib-go/golang_def"
 	"sourcegraph.com/sourcegraph/srclib/graph"
+	"sourcegraph.com/sourcegraph/srclib/graph2"
 	"sourcegraph.com/sourcegraph/srclib/unit"
 )
 
@@ -27,6 +28,15 @@ func init() {
 		"graph a Go package",
 		"Graph a Go package, producing all defs, refs, and docs.",
 		&graphCmd,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = parser.AddCommand("graph2",
+		"graph a Go package",
+		"Graph a Go package, producing all defs, refs, and docs.",
+		&graphCmd2,
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -48,6 +58,15 @@ func init() {
 	}
 }
 
+type GraphCmd2 struct{}
+
+var graphCmd2 GraphCmd2
+
+func (c *GraphCmd2) Execute(args []string) error {
+	graphCmd.Schema = "2"
+	return graphCmd.Execute(args)
+}
+
 type GraphCmd struct {
 	Schema string `long:"schema" description:"version of output schema" value-name:"SCHEMA"`
 }
@@ -60,11 +79,27 @@ var allowErrorsInGoGet = true
 
 func (c *GraphCmd) Execute(args []string) error {
 	var unit *unit.SourceUnit
-	if err := json.NewDecoder(os.Stdin).Decode(&unit); err != nil {
-		return err
-	}
-	if err := os.Stdin.Close(); err != nil {
-		return err
+	if c.Schema == "2" {
+		var unit2 *graph2.Unit
+		var err error
+		if err := json.NewDecoder(os.Stdin).Decode(&unit2); err != nil {
+			return err
+		}
+		if err := os.Stdin.Close(); err != nil {
+			return err
+		}
+
+		unit, err = deconvertUnit(unit2)
+		if err != nil {
+			return err
+		}
+	} else {
+		if err := json.NewDecoder(os.Stdin).Decode(&unit); err != nil {
+			return err
+		}
+		if err := os.Stdin.Close(); err != nil {
+			return err
+		}
 	}
 
 	if err := unmarshalTypedConfig(unit.Config); err != nil {

@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"go/build"
 
 	"sourcegraph.com/sourcegraph/srclib/graph"
 	"sourcegraph.com/sourcegraph/srclib/graph2"
@@ -54,6 +55,38 @@ func convertUnit(u *unit.SourceUnit) (*graph2.Unit, error) {
 		DerivedFrom: nil,
 		Info:        info,
 		Data:        dataBytes,
+	}, nil
+}
+
+func deconvertUnit(u *graph2.Unit) (*unit.SourceUnit, error) {
+	var info *unit.Info
+	if u.Info != nil {
+		info = &unit.Info{
+			NameInRepository: u.Info.NameInRepository,
+			GlobalName:       u.Info.GlobalName,
+			Description:      u.Info.Description,
+			TypeName:         u.Info.TypeName,
+		}
+	}
+
+	var data build.Package
+	if err := json.Unmarshal(u.Data, &data); err != nil {
+		return nil, err
+	}
+
+	return &unit.SourceUnit{
+		Name:     u.UnitName,
+		Type:     u.UnitType,
+		Repo:     u.URI,
+		CommitID: u.Version,
+		Globs:    u.Globs,
+		Files:    u.Files,
+		Dir:      u.Dir,
+		// Dependencies: TODO,
+		Info: info,
+		Data: &data,
+		// Config: TODO,
+		// Ops: TODO,
 	}, nil
 }
 
