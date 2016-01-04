@@ -4,7 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"go/build"
+	"log"
 
+	"strings"
+
+	"sourcegraph.com/sourcegraph/srclib/dep"
 	"sourcegraph.com/sourcegraph/srclib/graph"
 	"sourcegraph.com/sourcegraph/srclib/graph2"
 	"sourcegraph.com/sourcegraph/srclib/unit"
@@ -45,13 +49,21 @@ func convertUnit(u *unit.SourceUnit) (*graph2.Unit, error) {
 		}
 	}
 
+	var newDeps []*graph2.Dep
+	for _, dep := range u.Dependencies {
+		if newDep, err := convertRawDep(dep); err == nil {
+			newDeps = append(newDeps, newDep)
+		} else {
+			log.Printf("warning: %s", err)
+		}
+	}
+
 	return &graph2.Unit{
-		UnitKey: key,
-		Globs:   u.Globs,
-		Files:   u.Files,
-		Dir:     u.Dir,
-		// RawDeps: TODO(beyang),
-		// Deps: TODO(beyang),
+		UnitKey:     key,
+		Globs:       u.Globs,
+		Files:       u.Files,
+		Dir:         u.Dir,
+		Deps:        newDeps,
 		DerivedFrom: nil,
 		Info:        info,
 		Data:        dataBytes,
@@ -74,17 +86,22 @@ func deconvertUnit(u *graph2.Unit) (*unit.SourceUnit, error) {
 		return nil, err
 	}
 
+	var oldDeps []interface{}
+	for _, dep := range u.Deps {
+		oldDeps = append(oldDeps, deconvertRawDep(dep))
+	}
+
 	return &unit.SourceUnit{
-		Name:     u.UnitName,
-		Type:     u.UnitType,
-		Repo:     u.URI,
-		CommitID: u.Version,
-		Globs:    u.Globs,
-		Files:    u.Files,
-		Dir:      u.Dir,
-		// Dependencies: TODO,
-		Info: info,
-		Data: &data,
+		Name:         u.UnitName,
+		Type:         u.UnitType,
+		Repo:         u.URI,
+		CommitID:     u.Version,
+		Globs:        u.Globs,
+		Files:        u.Files,
+		Dir:          u.Dir,
+		Dependencies: oldDeps,
+		Info:         info,
+		Data:         &data,
 		// Config: TODO,
 		// Ops: TODO,
 	}, nil
@@ -176,4 +193,63 @@ func convertGraphOutput(out0 *graph.Output) (*graph2.Output, error) {
 		DocEdges: docEdges,
 		Anns:     out0.Anns,
 	}, nil
+}
+
+func convertRawDep(rd interface{}) (*graph2.Dep, error) {
+	switch rd := rd.(type) {
+	case string:
+		return &graph2.Dep{Raw: graph2.RawDep{Name: rd}}, nil
+	default:
+		return nil, fmt.Errorf("could not convert dep of type %T: %+v", rd, rd)
+	}
+}
+
+func deconvertRawDep(rd *graph2.Dep) interface{} {
+	depStr := rd.Raw.Name
+	if rd.Raw.Version != "" {
+		depStr += "==" + rd.Raw.Version
+	}
+	return rd.Raw.Name
+}
+
+func convertDepOutput(deps []*dep.Resolution) ([]*graph2.Dep, error) {
+	newDeps := make([]*graph2.Dep, len(deps))
+	for i, dep := range deps {
+		newDeps[i] = convertDep(dep)
+	}
+	return newDeps, nil
+}
+
+func convertDep(dep *dep.Resolution) *graph2.Dep {
+	var rawDep string
+	if depStringer, stringable := dep.Raw.(fmt.Stringer); stringable {
+		rawDep = depStringer.String()
+	} else {
+		rawDep = fmt.Sprintf("%v", dep.Raw)
+	}
+
+	// TODO(beyang): robustly parse out the version from the rawDep string
+	var rawVersion string
+	if strings.Contains(rawDep, "==") {
+		parts := strings.SplitN(rawDep, "==", 2)
+		rawDep, rawVersion = parts[0], parts[1]
+	}
+
+	var resolvedDep *graph2.UnitKey
+	if dep.Target != nil {
+		resolvedDep = &graph2.UnitKey{
+			TreeKey:  graph2.TreeKey{URI: dep.Target.ToRepoCloneURL, Genus: "git"},
+			Version:  dep.Target.ToVersionString,
+			UnitName: dep.Target.ToUnit,
+			UnitType: dep.Target.ToUnitType,
+		}
+	}
+	return &graph2.Dep{
+		Raw: graph2.RawDep{
+			Name:    rawDep,
+			Version: rawVersion,
+		},
+		Dep: resolvedDep,
+		Err: dep.Error,
+	}
 }

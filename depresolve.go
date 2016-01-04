@@ -14,6 +14,7 @@ import (
 	"github.com/MarkMcCaskey/gddo/gosrc"
 
 	"sourcegraph.com/sourcegraph/srclib/dep"
+	"sourcegraph.com/sourcegraph/srclib/graph2"
 	"sourcegraph.com/sourcegraph/srclib/unit"
 )
 
@@ -26,9 +27,31 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	_, err = parser.AddCommand("depresolve2",
+		"resolve a Go package's imports",
+		"Resolve a Go package's imports to their repository clone URL.",
+		&depResolveCmd2,
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+type DepResolveCmd2 struct {
+	Config []string `long:"config" description:"config property from Srcfile" value-name:"KEY=VALUE"`
+}
+
+var depResolveCmd2 DepResolveCmd2
+
+func (c *DepResolveCmd2) Execute(args []string) error {
+	depResolveCmd.Config = c.Config
+	depResolveCmd.Schema = "2"
+	return depResolveCmd.Execute(args)
 }
 
 type DepResolveCmd struct {
+	Schema string   `long:"schema" description:"version of output schema" value-name:"SCHEMA"`
 	Config []string `long:"config" description:"config property from Srcfile" value-name:"KEY=VALUE"`
 }
 
@@ -36,11 +59,27 @@ var depResolveCmd DepResolveCmd
 
 func (c *DepResolveCmd) Execute(args []string) error {
 	var unit *unit.SourceUnit
-	if err := json.NewDecoder(os.Stdin).Decode(&unit); err != nil {
-		return err
-	}
-	if err := os.Stdin.Close(); err != nil {
-		return err
+	if c.Schema == "2" {
+		var unit2 *graph2.Unit
+		var err error
+		if err := json.NewDecoder(os.Stdin).Decode(&unit2); err != nil {
+			return err
+		}
+		if err := os.Stdin.Close(); err != nil {
+			return err
+		}
+
+		unit, err = deconvertUnit(unit2)
+		if err != nil {
+			return err
+		}
+	} else {
+		if err := json.NewDecoder(os.Stdin).Decode(&unit); err != nil {
+			return err
+		}
+		if err := os.Stdin.Close(); err != nil {
+			return err
+		}
 	}
 
 	if err := unmarshalTypedConfig(unit.Config); err != nil {
@@ -67,14 +106,18 @@ func (c *DepResolveCmd) Execute(args []string) error {
 		res[i].Target = rt
 	}
 
-	b, err := json.MarshalIndent(res, "", "  ")
-	if err != nil {
+	var outData interface{} = res
+	if c.Schema == "2" {
+		out2, err := convertDepOutput(res)
+		if err != nil {
+			return nil
+		}
+		outData = out2
+	}
+
+	if err := json.NewEncoder(os.Stdout).Encode(outData); err != nil {
 		return err
 	}
-	if _, err := os.Stdout.Write(b); err != nil {
-		return err
-	}
-	fmt.Println()
 	return nil
 }
 
