@@ -44,7 +44,7 @@ func createPkg(t *testing.T, path string, sources []string, names []string) *loa
 		}
 		f, err := conf.ParseFile(name, src)
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("ParseFile: %s\n\n%s", err, src)
 		}
 		files = append(files, f)
 	}
