@@ -73,7 +73,7 @@ func (g *Grapher) scopeLabel(s *types.Scope) (path []string) {
 	node, present := g.scopeNodes[s]
 	if !present {
 		// TODO(sqs): diagnose why this happens. See https://github.com/sourcegraph/sourcegraph.com/issues/163.
-		log.Printf("no node found for scope (giving a dummy label); scope is: %s", s.String())
+		// log.Printf("no node found for scope (giving a dummy label); scope is: %s", s.String())
 		return []string{fmt.Sprintf("ERROR%d", rand.Intn(10000))}
 	}
 
