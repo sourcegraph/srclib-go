@@ -33,7 +33,7 @@ func convertUnit(u *unit.SourceUnit) (*graph2.Unit, error) {
 	}
 
 	var key graph2.UnitKey
-	key.Genus = "git"
+	key.TreeType = "git"
 	key.URI = u.Repo
 	key.Version = u.CommitID
 	key.UnitName = u.Name
@@ -238,7 +238,7 @@ func convertDep(dep *dep.Resolution) *graph2.Dep {
 	var resolvedDep *graph2.UnitKey
 	if dep.Target != nil {
 		resolvedDep = &graph2.UnitKey{
-			TreeKey:  graph2.TreeKey{URI: dep.Target.ToRepoCloneURL, Genus: "git"},
+			TreeKey:  graph2.TreeKey{URI: dep.Target.ToRepoCloneURL, TreeType: "git"},
 			Version:  dep.Target.ToVersionString,
 			UnitName: dep.Target.ToUnit,
 			UnitType: dep.Target.ToUnitType,
