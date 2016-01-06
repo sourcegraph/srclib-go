@@ -74,8 +74,8 @@
 		},
 		{
 			"ImportPath": "sourcegraph.com/sourcegraph/srclib",
-			"Comment": "v0.0.35-35-g19df897",
-			"Rev": "19df8971972254f3686aef435765e1a499efba6c"
+			"Comment": "v0.1.1-no-docker4-33-gc4fd196",
+			"Rev": "c4fd196afa45ab4ff1d29b3f46da9d147451fcc8"
 		},
 		{
 			"ImportPath": "sourcegraph.com/sqs/pbtypes",

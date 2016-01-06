@@ -1,0 +1,6 @@
+/release/
+
+/.tmp-selfupdate/
+
+*.test
+*~

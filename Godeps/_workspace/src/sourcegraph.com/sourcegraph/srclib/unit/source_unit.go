@@ -42,12 +42,12 @@ type SourceUnit struct {
 
 	// Repo is the URI of the repository containing this source unit, if any.
 	// The scanner tool does not need to set this field - it can be left blank,
-	// to be filled in by the `src` tool
+	// to be filled in by the `srclib` tool
 	Repo string `json:",omitempty"`
 
 	// CommitID is the commit ID of the repository containing this
 	// source unit, if any. The scanner tool need not fill this in; it
-	// should be left blank, to be filled in by the `src` tool.
+	// should be left blank, to be filled in by the `srclib` tool.
 	CommitID string `json:",omitempty"`
 
 	// Globs is a list of patterns that match files that make up this source
@@ -59,7 +59,7 @@ type SourceUnit struct {
 
 	// Files is all of the files that make up this source unit. Filepaths should
 	// be relative to the repository root.
-	Files []string `json:",omitempty"`
+	Files []string
 
 	// Dir is the root directory of this source unit. It is optional and maybe
 	// empty.

@@ -2,6 +2,7 @@ package flagutil
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 
 	"sourcegraph.com/sourcegraph/go-flags"
@@ -15,7 +16,10 @@ func MarshalArgs(v interface{}) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
+	return marshalArgsInGroup(group, "")
+}
 
+func marshalArgsInGroup(group *flags.Group, prefix string) ([]string, error) {
 	var args []string
 	for _, opt := range group.Options() {
 		flagStr := opt.String()
@@ -25,24 +29,53 @@ func MarshalArgs(v interface{}) ([]string, error) {
 			flagStr = flagStr[i+2:]
 		}
 
-		v := opt.Value()
-		if m, ok := v.(flags.Marshaler); ok {
-			s, err := m.MarshalFlag()
+		switch v := opt.Value().(type) {
+		case flags.Marshaler:
+			s, err := v.MarshalFlag()
 			if err != nil {
 				return nil, err
 			}
 			args = append(args, flagStr, s)
-		} else if ss, ok := v.([]string); ok {
-			for _, s := range ss {
+		case []string:
+			for _, s := range v {
 				args = append(args, flagStr, s)
 			}
-		} else if bv, ok := v.(bool); ok {
-			if bv {
+		case bool:
+			if v {
 				args = append(args, flagStr)
 			}
-		} else {
-			args = append(args, flagStr, fmt.Sprintf("%v", opt.Value()))
+		default:
+			if !isDefaultValue(opt, fmt.Sprintf("%v", v)) {
+				args = append(args, flagStr, fmt.Sprintf("%v", v))
+			}
 		}
 	}
+	for _, g := range group.Groups() {
+		// TODO(sqs): assumes that the NamespaceDelimiter is "."
+		const namespaceDelimiter = "."
+		groupArgs, err := marshalArgsInGroup(g, g.Namespace+namespaceDelimiter)
+		if err != nil {
+			return nil, err
+		}
+		args = append(args, groupArgs...)
+	}
+
 	return args, nil
+}
+
+func isDefaultValue(opt *flags.Option, val string) bool {
+	var defaultVal string
+
+	switch len(opt.Default) {
+	case 0:
+		if k := reflect.TypeOf(opt.Value()).Kind(); k >= reflect.Int && k <= reflect.Uint64 {
+			defaultVal = "0"
+		}
+	case 1:
+		defaultVal = fmt.Sprintf("%v", opt.Default[0])
+	default:
+		return false
+	}
+
+	return defaultVal == fmt.Sprintf("%v", val)
 }

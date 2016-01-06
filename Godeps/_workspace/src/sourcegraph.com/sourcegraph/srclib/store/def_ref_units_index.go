@@ -3,6 +3,7 @@ package store
 import (
 	"fmt"
 	"io"
+	"sync"
 
 	"github.com/alecthomas/binary"
 	"github.com/gogo/protobuf/proto"
@@ -12,13 +13,14 @@ import (
 	"sourcegraph.com/sourcegraph/srclib/unit"
 )
 
-// NOTE(sqs): There is a lot of duplication here with defFilesIndex and unitFilesIndex.
+// NOTE(sqs): There is a lot of duplication here with unitFilesIndex.
 
 // defRefUnitsIndex makes it fast to determine which source units
 // contain refs to a def.
 type defRefUnitsIndex struct {
 	phtable *phtable.CHD
 	ready   bool
+	sync.RWMutex
 }
 
 var _ interface {
@@ -28,7 +30,7 @@ var _ interface {
 	unitIndex
 } = (*defRefUnitsIndex)(nil)
 
-var c_defRefUnitsIndex_getByDef = 0 // counter
+var c_defRefUnitsIndex_getByDef = &counter{count: new(int64)}
 
 func (x *defRefUnitsIndex) String() string { return fmt.Sprintf("defRefUnitsIndex(ready=%v)", x.ready) }
 
@@ -36,7 +38,7 @@ func (x *defRefUnitsIndex) String() string { return fmt.Sprintf("defRefUnitsInde
 // specified def.
 func (x *defRefUnitsIndex) getByDef(def graph.RefDefKey) ([]unit.ID2, bool, error) {
 	vlog.Printf("defRefUnitsIndex.getByDef(%v)", def)
-	c_defRefUnitsIndex_getByDef++
+	c_defRefUnitsIndex_getByDef.increment()
 
 	k, err := proto.Marshal(&def)
 	if err != nil {
@@ -71,6 +73,8 @@ func (x *defRefUnitsIndex) Covers(filters interface{}) int {
 
 // Units implements unitIndex.
 func (x *defRefUnitsIndex) Units(fs ...UnitFilter) ([]unit.ID2, error) {
+	x.RLock()
+	defer x.RUnlock()
 	for _, f := range fs {
 		if ff, ok := f.(ByRefDefFilter); ok {
 			us, found, err := x.getByDef(ff.withEmptyImpliedValues())
@@ -88,6 +92,8 @@ func (x *defRefUnitsIndex) Units(fs ...UnitFilter) ([]unit.ID2, error) {
 
 // Build implements unitRefIndexBuilder.
 func (x *defRefUnitsIndex) Build(unitRefIndexes map[unit.ID2]*defRefsIndex) error {
+	x.Lock()
+	defer x.Unlock()
 	vlog.Printf("defRefUnitsIndex: building inverted def->units index (%d units)...", len(unitRefIndexes))
 	defToUnits := map[graph.RefDefKey][]unit.ID2{}
 	for u, x := range unitRefIndexes {
@@ -141,6 +147,8 @@ func (x *defRefUnitsIndex) Build(unitRefIndexes map[unit.ID2]*defRefsIndex) erro
 
 // Write implements persistedIndex.
 func (x *defRefUnitsIndex) Write(w io.Writer) error {
+	x.RLock()
+	defer x.RUnlock()
 	if x.phtable == nil {
 		panic("no phtable to write")
 	}
@@ -149,11 +157,17 @@ func (x *defRefUnitsIndex) Write(w io.Writer) error {
 
 // Read implements persistedIndex.
 func (x *defRefUnitsIndex) Read(r io.Reader) error {
-	var err error
-	x.phtable, err = phtable.Read(r)
+	phtable, err := phtable.Read(r)
+	x.Lock()
+	defer x.Unlock()
+	x.phtable = phtable
 	x.ready = (err == nil)
 	return err
 }
 
 // Ready implements persistedIndex.
-func (x *defRefUnitsIndex) Ready() bool { return x.ready }
+func (x *defRefUnitsIndex) Ready() bool {
+	x.RLock()
+	defer x.RUnlock()
+	return x.ready
+}

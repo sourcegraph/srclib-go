@@ -2,6 +2,7 @@ package grapher
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"sourcegraph.com/sourcegraph/makex"
@@ -12,6 +13,7 @@ import (
 	"sourcegraph.com/sourcegraph/srclib/plan"
 	"sourcegraph.com/sourcegraph/srclib/toolchain"
 	"sourcegraph.com/sourcegraph/srclib/unit"
+	"sourcegraph.com/sourcegraph/srclib/util"
 )
 
 const graphOp = "graph"
@@ -21,7 +23,7 @@ func init() {
 	buildstore.RegisterDataType("graph", &graph.Output{})
 }
 
-func makeGraphRules(c *config.Tree, dataDir string, existing []makex.Rule, opt plan.Options) ([]makex.Rule, error) {
+func makeGraphRules(c *config.Tree, dataDir string, existing []makex.Rule) ([]makex.Rule, error) {
 	const op = graphOp
 	var rules []makex.Rule
 	for _, u := range c.SourceUnits {
@@ -34,7 +36,9 @@ func makeGraphRules(c *config.Tree, dataDir string, existing []makex.Rule, opt p
 			toolRef = choice
 		}
 
-		rules = append(rules, &GraphUnitRule{dataDir, u, toolRef, opt})
+		if toolRef != nil {
+			rules = append(rules, &GraphUnitRule{dataDir, u, toolRef})
+		}
 	}
 	return rules, nil
 }
@@ -43,22 +47,31 @@ type GraphUnitRule struct {
 	dataDir string
 	Unit    *unit.SourceUnit
 	Tool    *srclib.ToolRef
-	opt     plan.Options
 }
 
 func (r *GraphUnitRule) Target() string {
-	return filepath.Join(r.dataDir, plan.SourceUnitDataFilename(&graph.Output{}, r.Unit))
+	return filepath.ToSlash(filepath.Join(r.dataDir, plan.SourceUnitDataFilename(&graph.Output{}, r.Unit)))
 }
 
 func (r *GraphUnitRule) Prereqs() []string {
-	ps := []string{filepath.Join(r.dataDir, plan.SourceUnitDataFilename(unit.SourceUnit{}, r.Unit))}
-	ps = append(ps, r.Unit.Files...)
+	ps := []string{filepath.ToSlash(filepath.Join(r.dataDir, plan.SourceUnitDataFilename(unit.SourceUnit{}, r.Unit)))}
+	for _, file := range r.Unit.Files {
+		if _, err := os.Stat(file); err != nil && os.IsNotExist(err) {
+			// skip not-existent files listed in source unit
+			continue
+		}
+		ps = append(ps, file)
+	}
 	return ps
 }
 
 func (r *GraphUnitRule) Recipes() []string {
+	if r.Tool == nil {
+		return nil
+	}
+	safeCommand := util.SafeCommandName(srclib.CommandName)
 	return []string{
-		fmt.Sprintf("src tool %s %q %q < $< | src internal normalize-graph-data --unit-type %q --dir . 1> $@", r.opt.ToolchainExecOpt, r.Tool.Toolchain, r.Tool.Subcmd, r.Unit.Type),
+		fmt.Sprintf("%s tool %q %q < $< | %s internal normalize-graph-data --unit-type %q --dir . 1> $@", safeCommand, r.Tool.Toolchain, r.Tool.Subcmd, safeCommand, r.Unit.Type),
 	}
 }
 

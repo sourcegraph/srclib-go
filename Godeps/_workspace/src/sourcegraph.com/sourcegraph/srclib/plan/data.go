@@ -1,10 +1,10 @@
 package plan
 
 import (
-	"fmt"
 	"path/filepath"
 
 	"sourcegraph.com/sourcegraph/srclib/buildstore"
+	"sourcegraph.com/sourcegraph/srclib/graph2"
 	"sourcegraph.com/sourcegraph/srclib/unit"
 )
 
@@ -13,5 +13,9 @@ func RepositoryCommitDataFilename(emptyData interface{}) string {
 }
 
 func SourceUnitDataFilename(emptyData interface{}, u *unit.SourceUnit) string {
-	return filepath.Clean(fmt.Sprintf("%s/%s.%s", u.Name, u.Type, buildstore.DataTypeSuffix(emptyData)))
+	return filepath.Join(u.Name, u.Type+"."+buildstore.DataTypeSuffix(emptyData))
+}
+
+func SourceUnitDataFilename2(emptyData interface{}, u *graph2.Unit) string {
+	return filepath.Join(u.UnitName, u.UnitType+"."+buildstore.DataTypeSuffix(emptyData))
 }

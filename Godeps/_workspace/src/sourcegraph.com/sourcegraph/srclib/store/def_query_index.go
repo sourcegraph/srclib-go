@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"sync"
 
 	"github.com/alecthomas/binary"
 	"github.com/smartystreets/mafsa"
@@ -19,6 +20,7 @@ type defQueryIndex struct {
 	mt    *mafsaTable
 	f     DefFilter
 	ready bool
+	sync.RWMutex
 }
 
 var _ interface {
@@ -28,13 +30,13 @@ var _ interface {
 	defIndex
 } = (*defQueryIndex)(nil)
 
-var c_defQueryIndex_getByQuery = 0 // counter
+var c_defQueryIndex_getByQuery = &counter{count: new(int64)}
 
 func (x *defQueryIndex) String() string { return fmt.Sprintf("defQueryIndex(ready=%v)", x.ready) }
 
 func (x *defQueryIndex) getByQuery(q string) (byteOffsets, bool) {
 	vlog.Printf("defQueryIndex.getByQuery(%q)", q)
-	c_defQueryIndex_getByQuery++
+	c_defQueryIndex_getByQuery.increment()
 
 	if x.mt == nil {
 		panic("mafsaTable not built/read")
@@ -71,6 +73,8 @@ func (x *defQueryIndex) Covers(filters interface{}) int {
 
 // Defs implements defIndex.
 func (x *defQueryIndex) Defs(f ...DefFilter) (byteOffsets, error) {
+	x.RLock()
+	defer x.RUnlock()
 	for _, ff := range f {
 		if pf, ok := ff.(ByDefQueryFilter); ok {
 			ofs, found := x.getByQuery(pf.ByDefQuery())
@@ -96,6 +100,8 @@ func (ds defsByLowerName) Less(i, j int) bool { return ds[i].lowerName < ds[j].l
 
 // Build implements defIndexBuilder.
 func (x *defQueryIndex) Build(defs []*graph.Def, ofs byteOffsets) (err error) {
+	x.Lock()
+	defer x.Unlock()
 	vlog.Printf("defQueryIndex: building index... (%d defs)", len(defs))
 
 	defer func() {
@@ -156,6 +162,8 @@ func (x *defQueryIndex) Build(defs []*graph.Def, ofs byteOffsets) (err error) {
 
 // Write implements persistedIndex.
 func (x *defQueryIndex) Write(w io.Writer) error {
+	x.RLock()
+	defer x.RUnlock()
 	if x.mt == nil {
 		panic("no mafsaTable to write")
 	}
@@ -173,6 +181,8 @@ func (x *defQueryIndex) Read(r io.Reader) error {
 	if err != nil {
 		return err
 	}
+	x.Lock()
+	defer x.Unlock()
 	var mt mafsaTable
 	err = binary.Unmarshal(b, &mt)
 	x.mt = &mt
@@ -184,7 +194,49 @@ func (x *defQueryIndex) Read(r io.Reader) error {
 }
 
 // Ready implements persistedIndex.
-func (x *defQueryIndex) Ready() bool { return x.ready }
+func (x *defQueryIndex) Ready() bool {
+	x.RLock()
+	defer x.RUnlock()
+	return x.ready
+}
+
+// Fprint prints a human-readable representation of the index.
+func (x *defQueryIndex) Fprint(w io.Writer) error {
+	x.RLock()
+	defer x.RUnlock()
+	if x.mt == nil {
+		panic("mafsaTable not built/read")
+	}
+
+	allTerms := make([]string, 0, len(x.mt.Values))
+	var getAllTerms func(term string, n *mafsa.MinTreeNode)
+	getAllTerms = func(term string, n *mafsa.MinTreeNode) {
+		if n.Final {
+			allTerms = append(allTerms, term)
+		}
+		for _, c := range n.OrderedEdges() {
+			getAllTerms(term+string([]rune{c}), n.Edges[c])
+		}
+	}
+
+	getAllTerms("", x.mt.t.Root)
+	fmt.Fprintln(w, "Terms")
+	for i, term := range allTerms {
+		fmt.Fprintf(w, "  %d - %q\n", i, term)
+	}
+
+	fmt.Fprintln(w)
+
+	fmt.Fprintln(w, "Unit offsets")
+	for i, ofs := range x.mt.Values {
+		fmt.Fprintf(w, "Term %q (node %d)\n", allTerms[i], i)
+		for _, ofs := range ofs {
+			fmt.Fprintf(w, "\t\t%d\n", ofs)
+		}
+	}
+
+	return nil
+}
 
 // A mafsaTable is a minimal perfect hashed MA-FSA with an associated
 // table of values for each entry in the MA-FSA (indexed on the

@@ -4,6 +4,11 @@
 <iframe class="embed-responsive-item" src="//www.youtube.com/embed/oSg0N0fV6o4?rel=0" frameborder="0" allowfullscreen></iframe>
 </div>
 
+## Disclaimer
+
+*Editor plugins are temporarily incompatible with srclib `master`. Please
+[download an older version of srclib](./compatiblebinaries.md) to use editor plugins.*
+
 ## Features
 
 - Documentation lookups
@@ -13,7 +18,7 @@
 ## Installing
 
 First, make sure you've installed srclib, following
-the [instructions here](../gettingstarted.md#install-srclib).
+the [instructions here](../install.md#install-srclib).
 
 To install, either use
 [Package Control](https://sublime.wbond.net/packages/Sourcegraph) to install it
