@@ -112,11 +112,11 @@ func convertDefKey(d graph.DefKey) graph2.NodeKey {
 }
 
 func convertRefKey(r *graph.Ref) graph2.NodeKey {
-	return graph2.NewNodeKey("git", r.Repo, r.CommitID, r.Unit, r.UnitType, fmt.Sprintf("ref:%s:%s-%s:%s", r.File, r.Start, r.End, r.DefKey().Path))
+	return graph2.NewNodeKey("git", r.Repo, r.CommitID, r.Unit, r.UnitType, fmt.Sprintf("ref:%s:%d-%d:%s", r.File, r.Start, r.End, r.DefKey().Path))
 }
 
-func convertDocKey(d graph.DefKey) graph2.NodeKey {
-	return graph2.NewNodeKey("git", d.Repo, d.CommitID, d.Unit, d.UnitType, fmt.Sprintf("doc:%s", d.Path))
+func convertDocKey(d *graph.Doc) graph2.NodeKey {
+	return graph2.NewNodeKey("git", d.Repo, d.CommitID, d.Unit, d.UnitType, fmt.Sprintf("doc:%s:%s:%d-%d:%s", d.Format, d.File, d.Start, d.End, d.Path))
 }
 
 func convertDef(d *graph.Def) *graph2.Node {
@@ -138,7 +138,7 @@ func convertDef(d *graph.Def) *graph2.Node {
 }
 
 func convertDoc(d *graph.Doc) (*graph2.Node, *graph2.Edge) {
-	docKey := convertDocKey(d.DefKey)
+	docKey := convertDocKey(d)
 	return &graph2.Node{
 			NodeKey: docKey,
 			Kind:    "doc",
