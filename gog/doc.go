@@ -8,7 +8,9 @@ import (
 	"go/parser"
 	"go/token"
 	"io"
+	"log"
 	"os"
+	"path"
 	"path/filepath"
 	"sort"
 
@@ -45,9 +47,12 @@ func parseFiles(fset *token.FileSet, filenames []string) (map[string]*ast.File, 
 
 		file, err := parser.ParseFile(fset, path, f, parser.ParseComments)
 		if err != nil {
-			return nil, err
+			// Don't fail on parser errors.
+			log.Printf("Warning: parsing: %s.", err)
 		}
-		files[path] = file
+		if file != nil {
+			files[path] = file
+		}
 	}
 	return files, nil
 }
@@ -65,7 +70,9 @@ func (g *Grapher) emitDocs(pkgInfo *loader.PackageInfo) error {
 			// skip cgo-generated file
 			continue
 		}
-		filenames = append(filenames, name)
+		if path.Ext(name) == ".go" {
+			filenames = append(filenames, name)
+		}
 	}
 	sort.Strings(filenames)
 	files, err := parseFiles(g.program.Fset, filenames)
