@@ -11,7 +11,7 @@ import (
 
 	"compress/gzip"
 
-	"code.google.com/p/rog-go/parallel"
+	"github.com/rogpeppe/rog-go/parallel"
 
 	"sort"
 	"strings"
@@ -28,6 +28,9 @@ type indexedStore interface {
 
 	// BuildIndex builds the index with the specified name.
 	BuildIndex(name string, x Index) error
+
+	// readIndex calls the readIndex func on the given index.
+	readIndex(name string, x persistedIndex) error
 
 	// statIndex calls vfs.Stat on the index's backing file or
 	// directory.
@@ -47,6 +50,10 @@ type indexedTreeStore struct {
 	// (e.g., def indexes, ref indexes, etc.).
 	indexes map[string]Index
 
+	// cacheKey uniquely identifies the collection of indexes. This is
+	// used to sharing indexes in concurrent queries
+	cacheKey interface{}
+
 	*fsTreeStore
 }
 
@@ -61,19 +68,21 @@ const (
 
 // newIndexedTreeStore creates a new indexed tree store that stores
 // data and indexes in fs.
-func newIndexedTreeStore(fs rwvfs.FileSystem) TreeStoreImporter {
+func newIndexedTreeStore(fs rwvfs.FileSystem, cacheKey interface{}) TreeStoreImporter {
 	return &indexedTreeStore{
 		indexes: map[string]Index{
-			"file_to_units":     &unitFilesIndex{},
-			"def_to_ref_units":  &defRefUnitsIndex{},
-			"def_query_to_defs": &defQueryTreeIndex{},
-			unitsIndexName:      &unitsIndex{},
+			"file_to_units":       &unitFilesIndex{},
+			"def_to_ref_units":    &defRefUnitsIndex{},
+			"def_query_to_defs16": &defQueryTreeIndex{},
+			unitsIndexName:        &unitsIndex{},
 		},
+		cacheKey:    cacheKey,
 		fsTreeStore: newFSTreeStore(fs),
 	}
 }
 
-func (s *indexedTreeStore) String() string { return "indexedTreeStore" }
+func (s *indexedTreeStore) StoreKey() interface{} { return s.cacheKey }
+func (s *indexedTreeStore) String() string        { return "indexedTreeStore" }
 
 // errNotIndexed occurs when that a query was unable to be performed
 // using an index. In most cases, it indicates that the caller should
@@ -100,9 +109,13 @@ func (s *indexedTreeStore) unitIDs(indexOnly bool, fs ...UnitFilter) ([]unit.ID2
 
 	// Try to find an index that covers this query.
 	if xname, bx := bestCoverageIndex(s.indexes, fs, isUnitIndex); bx != nil {
+		if !bx.Ready() {
+			bx = cacheGet(s, xname, bx)
+		}
 		if err := prepareIndex(s.fs, xname, bx); err != nil {
 			return nil, err
 		}
+		cachePut(s, xname, bx)
 		vlog.Printf("indexedTreeStore.unitIDs(%v): Found covering index %q (%v).", fs, xname, bx)
 		return bx.(unitIndex).Units(fs...)
 	}
@@ -313,6 +326,10 @@ func (s *indexedTreeStore) BuildIndex(name string, x Index) error {
 	return s.buildIndexes(map[string]Index{name: x}, nil, nil, nil)
 }
 
+func (s *indexedTreeStore) readIndex(name string, x persistedIndex) error {
+	return readIndex(s.fs, name, x)
+}
+
 func (s *indexedTreeStore) buildIndexes(xs map[string]Index, units []*unit.SourceUnit, unitRefIndexes map[unit.ID2]*defRefsIndex, unitDefQueryIndexes map[unit.ID2]*defQueryIndex) error {
 	// TODO(sqs): there's a race condition here if multiple imports
 	// are running concurrently, they could clobber each other's
@@ -432,7 +449,7 @@ func (s *indexedTreeStore) buildIndexes(xs map[string]Index, units []*unit.Sourc
 		return unitDefQueryIndexes, getUnitDefQueryIndexesErr
 	}
 
-	par := parallel.NewRun(len(xs))
+	par := parallel.NewRun(runtime.GOMAXPROCS(0))
 	for name_, x_ := range xs {
 		name, x := name_, x_
 		par.Do(func() error {
@@ -502,23 +519,15 @@ var _ interface {
 
 // newIndexedUnitStore creates a new indexed unit store that stores
 // data and indexes in fs.
-func newIndexedUnitStore(fs rwvfs.FileSystem) UnitStoreImporter {
+func newIndexedUnitStore(fs rwvfs.FileSystem, label string) UnitStoreImporter {
 	return &indexedUnitStore{
 		indexes: map[string]Index{
-			"path_to_def":  &defPathIndex{},
-			"file_to_refs": &refFileIndex{},
-			"file_to_7_exported_non_local_defs": &defFilesIndex{
-				filters: []DefFilter{
-					DefFilterFunc(func(def *graph.Def) bool {
-						return def.Exported || !def.Local
-					}),
-				},
-				perFile: 7,
-			},
+			"path_to_def":      &defPathIndex{},
+			"file_to_refs":     &refFileIndex{},
 			defToRefsIndexName: &defRefsIndex{},
 			defQueryIndexName:  &defQueryIndex{f: defQueryFilter},
 		},
-		fsUnitStore: &fsUnitStore{fs: fs},
+		fsUnitStore: &fsUnitStore{fs: fs, label: label},
 	}
 }
 
@@ -612,6 +621,10 @@ func (s *indexedUnitStore) BuildIndex(name string, x Index) error {
 	return s.buildIndexes(map[string]Index{name: x}, nil, nil, nil, nil)
 }
 
+func (s *indexedUnitStore) readIndex(name string, x persistedIndex) error {
+	return readIndex(s.fs, name, x)
+}
+
 func (s *indexedUnitStore) buildIndexes(xs map[string]Index, data *graph.Output, defOfs byteOffsets, refFBRs fileByteRanges, refOfs byteOffsets) error {
 	var defs []*graph.Def
 	var refs []*graph.Ref
@@ -659,7 +672,7 @@ func (s *indexedUnitStore) buildIndexes(xs map[string]Index, data *graph.Output,
 		return refs, refFBRs, refOfs, getRefsErr
 	}
 
-	par := parallel.NewRun(len(xs))
+	par := parallel.NewRun(runtime.GOMAXPROCS(0))
 	for name_, x_ := range xs {
 		name, x := name_, x_
 		par.Do(func() error {

@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"sourcegraph.com/sourcegraph/srclib/util"
 )
@@ -20,6 +19,10 @@ var (
 	// SRCLIBCACHE environment variable; if empty, it defaults to DIR/.cache,
 	// where DIR is the first entry in Path (SRCLIBPATH).
 	CacheDir = os.Getenv("SRCLIBCACHE")
+
+	// CommandName holds the commands that will be used to call self when generating
+	// Makefiles and updating toolchains.
+	CommandName = "srclib"
 )
 
 func init() {
@@ -35,7 +38,7 @@ func init() {
 	}
 
 	if CacheDir == "" {
-		dirs := strings.SplitN(Path, ":", 2)
+		dirs := filepath.SplitList(Path)
 		CacheDir = filepath.Join(dirs[0], ".cache")
 	}
 }

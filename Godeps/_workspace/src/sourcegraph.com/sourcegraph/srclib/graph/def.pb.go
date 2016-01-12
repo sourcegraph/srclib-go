@@ -15,25 +15,28 @@
 		DefKey
 		Def
 		DefDoc
+		DefFormatStrings
+		QualFormatStrings
+		Doc
+		Output
+		Ref
+		RefDefKey
 */
-package graph;import "encoding/json"
+package graph
 
 import proto "github.com/gogo/protobuf/proto"
+import fmt "fmt"
 import math "math"
 
-// discarding unused import gogoproto "github.com/gogo/protobuf/gogoproto/gogo.pb"
+// discarding unused import gogoproto "github.com/gogo/protobuf/gogoproto"
+
+import sourcegraph_com_sqs_pbtypes "sourcegraph.com/sqs/pbtypes"
 
 import io "io"
-import fmt "fmt"
-import github_com_gogo_protobuf_proto "github.com/gogo/protobuf/proto"
-
-import strings "strings"
-import sort "sort"
-import strconv "strconv"
-import reflect "reflect"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
+var _ = fmt.Errorf
 var _ = math.Inf
 
 // DefKey specifies a definition, either concretely or abstractly. A concrete
@@ -48,17 +51,17 @@ var _ = math.Inf
 // the time specified by the CommitID.
 type DefKey struct {
 	// Repo is the VCS repository that defines this definition.
-	Repo string `protobuf:"bytes,1,opt,name=repo" json:"Repo,omitempty"`
+	Repo string `protobuf:"bytes,1,opt,name=repo,proto3" json:"Repo,omitempty"`
 	// CommitID is the ID of the VCS commit that this definition was defined in. The
 	// CommitID is always a full commit ID (40 hexadecimal characters for git
 	// and hg), never a branch or tag name.
-	CommitID string `protobuf:"bytes,2,opt,name=commit_id" json:"CommitID,omitempty"`
+	CommitID string `protobuf:"bytes,2,opt,name=commit_id,proto3" json:"CommitID,omitempty"`
 	// UnitType is the type name of the source unit (obtained from unit.Type(u))
 	// that this definition was defined in.
-	UnitType string `protobuf:"bytes,3,opt,name=unit_type" json:"UnitType,omitempty"`
+	UnitType string `protobuf:"bytes,3,opt,name=unit_type,proto3" json:"UnitType,omitempty"`
 	// Unit is the name of the source unit (obtained from u.Name()) that this
 	// definition was defined in.
-	Unit string `protobuf:"bytes,4,opt,name=unit" json:"Unit,omitempty"`
+	Unit string `protobuf:"bytes,4,opt,name=unit,proto3" json:"Unit,omitempty"`
 	// Path is a unique identifier for the def, relative to the source unit.
 	// It should remain stable across commits as long as the def is the
 	// "same" def. Its Elasticsearch mapping is defined separately (because
@@ -70,7 +73,7 @@ type DefKey struct {
 	// the Path, but this may not always be the case. I.e., don't rely on Path
 	// to find parents or children or any other structural propreties of the
 	// def hierarchy). See Def.TreePath instead.
-	Path string `protobuf:"bytes,5,opt,name=path" json:"Path"`
+	Path string `protobuf:"bytes,5,opt,name=path,proto3" json:"Path"`
 }
 
 func (m *DefKey) Reset()         { *m = DefKey{} }
@@ -82,40 +85,37 @@ type Def struct {
 	// DefKey is the natural unique key for a def. It is stable
 	// (subsequent runs of a grapher will emit the same defs with the same
 	// DefKeys).
-	DefKey `protobuf:"bytes,1,req,name=key,embedded=key" json:""`
+	DefKey `protobuf:"bytes,1,opt,name=key,embedded=key" json:""`
 	// Name of the definition. This need not be unique.
-	Name string `protobuf:"bytes,2,opt,name=name" json:"Name"`
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"Name"`
 	// Kind is the kind of thing this definition is. This is
 	// language-specific. Possible values include "type", "func",
 	// "var", etc.
-	Kind     string `protobuf:"bytes,3,opt,name=kind" json:"Kind,omitempty"`
-	File     string `protobuf:"bytes,4,opt,name=file" json:"File"`
-	DefStart uint32 `protobuf:"varint,5,opt,name=start" json:"DefStart"`
-	DefEnd   uint32 `protobuf:"varint,6,opt,name=end" json:"DefEnd"`
+	Kind     string `protobuf:"bytes,3,opt,name=kind,proto3" json:"Kind,omitempty"`
+	File     string `protobuf:"bytes,4,opt,name=file,proto3" json:"File"`
+	DefStart uint32 `protobuf:"varint,5,opt,name=start,proto3" json:"DefStart"`
+	DefEnd   uint32 `protobuf:"varint,6,opt,name=end,proto3" json:"DefEnd"`
 	// Exported is whether this def is part of a source unit's
 	// public API. For example, in Java a "public" field is
 	// Exported.
-	Exported bool `protobuf:"varint,7,opt,name=exported" json:"Exported,omitempty"`
+	Exported bool `protobuf:"varint,7,opt,name=exported,proto3" json:"Exported,omitempty"`
 	// Local is whether this def is local to a function or some
 	// other inner scope. Local defs do *not* have module,
 	// package, or file scope. For example, in Java a function's
 	// args are Local, but fields with "private" scope are not
 	// Local.
-	Local bool `protobuf:"varint,8,opt,name=local" json:"Local,omitempty"`
+	Local bool `protobuf:"varint,8,opt,name=local,proto3" json:"Local,omitempty"`
 	// Test is whether this def is defined in test code (as opposed to main
 	// code). For example, definitions in Go *_test.go files have Test = true.
-	Test bool `protobuf:"varint,9,opt,name=test" json:"Test,omitempty"`
+	Test bool `protobuf:"varint,9,opt,name=test,proto3" json:"Test,omitempty"`
 	// Data contains additional language- and toolchain-specific information
 	// about the def. Data is used to construct function signatures,
 	// import/require statements, language-specific type descriptions, etc.
-	//
-	// To use json.RawMessage:
-	// optional bytes data = 10 [(gogoproto.nullable) = false, (gogoproto.customtype) = "encoding/json.RawMessage", (gogoproto.jsontag) = "Data,omitempty"];
-	Data json.RawMessage `protobuf:"bytes,10,opt,name=data" json:"Data,omitempty"`
+	Data sourcegraph_com_sqs_pbtypes.RawMessage `protobuf:"bytes,10,opt,name=data,proto3,casttype=sourcegraph.com/sqs/pbtypes.RawMessage" json:"Data,omitempty"`
 	// Docs are docstrings for this Def. This field is not set in the
 	// Defs produced by graphers; they should emit docs in the
 	// separate Docs field on the graph.Output struct.
-	Docs []DefDoc `protobuf:"bytes,11,rep,name=docs" json:"Docs,omitempty"`
+	Docs []*DefDoc `protobuf:"bytes,11,rep,name=docs" json:"Docs,omitempty"`
 	// TreePath is a structurally significant path descriptor for a def. For
 	// many languages, it may be identical or similar to DefKey.Path.
 	// However, it has the following constraints, which allow it to define a
@@ -128,7 +128,7 @@ type Def struct {
 	// Any prefix of a tree-path that terminates in a def name must be a valid
 	// tree-path for some def.
 	// The following regex captures the children of a tree-path X: X(/-[^/]*)*(/[^/-][^/]*)
-	TreePath string `protobuf:"bytes,17,opt,name=tree_path" json:"TreePath,omitempty"`
+	TreePath string `protobuf:"bytes,17,opt,name=tree_path,proto3" json:"TreePath,omitempty"`
 }
 
 func (m *Def) Reset()         { *m = Def{} }
@@ -140,602 +140,43 @@ type DefDoc struct {
 	// Format is the the MIME-type that the documentation is stored
 	// in. Valid formats include 'text/html', 'text/plain',
 	// 'text/x-markdown', text/x-rst'.
-	Format string `protobuf:"bytes,1,req,name=format" json:"Format"`
+	Format string `protobuf:"bytes,1,opt,name=format,proto3" json:"Format"`
 	// Data is the actual documentation text.
-	Data string `protobuf:"bytes,2,opt,name=data" json:"Data"`
+	Data string `protobuf:"bytes,2,opt,name=data,proto3" json:"Data"`
 }
 
 func (m *DefDoc) Reset()         { *m = DefDoc{} }
 func (m *DefDoc) String() string { return proto.CompactTextString(m) }
 func (*DefDoc) ProtoMessage()    {}
 
-func init() {
-}
-func (m *DefKey) Unmarshal(data []byte) error {
-	l := len(data)
-	index := 0
-	for index < l {
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if index >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := data[index]
-			index++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Repo", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			postIndex := index + int(stringLen)
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Repo = string(data[index:postIndex])
-			index = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CommitID", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			postIndex := index + int(stringLen)
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.CommitID = string(data[index:postIndex])
-			index = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field UnitType", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			postIndex := index + int(stringLen)
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.UnitType = string(data[index:postIndex])
-			index = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Unit", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			postIndex := index + int(stringLen)
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Unit = string(data[index:postIndex])
-			index = postIndex
-		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Path", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			postIndex := index + int(stringLen)
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Path = string(data[index:postIndex])
-			index = postIndex
-		default:
-			var sizeOfWire int
-			for {
-				sizeOfWire++
-				wire >>= 7
-				if wire == 0 {
-					break
-				}
-			}
-			index -= sizeOfWire
-			skippy, err := github_com_gogo_protobuf_proto.Skip(data[index:])
-			if err != nil {
-				return err
-			}
-			if (index + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			index += skippy
-		}
-	}
-	return nil
-}
-func (m *Def) Unmarshal(data []byte) error {
-	l := len(data)
-	index := 0
-	for index < l {
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if index >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := data[index]
-			index++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DefKey", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			postIndex := index + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.DefKey.Unmarshal(data[index:postIndex]); err != nil {
-				return err
-			}
-			index = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			postIndex := index + int(stringLen)
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Name = string(data[index:postIndex])
-			index = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Kind", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			postIndex := index + int(stringLen)
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Kind = string(data[index:postIndex])
-			index = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field File", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			postIndex := index + int(stringLen)
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.File = string(data[index:postIndex])
-			index = postIndex
-		case 5:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DefStart", wireType)
-			}
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				m.DefStart |= (uint32(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 6:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DefEnd", wireType)
-			}
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				m.DefEnd |= (uint32(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 7:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Exported", wireType)
-			}
-			var v int
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				v |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.Exported = bool(v != 0)
-		case 8:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Local", wireType)
-			}
-			var v int
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				v |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.Local = bool(v != 0)
-		case 9:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Test", wireType)
-			}
-			var v int
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				v |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.Test = bool(v != 0)
-		case 10:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Data", wireType)
-			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				byteLen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			postIndex := index + byteLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Data = append([]byte{}, data[index:postIndex]...)
-			index = postIndex
-		case 11:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Docs", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			postIndex := index + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Docs = append(m.Docs, DefDoc{})
-			m.Docs[len(m.Docs)-1].Unmarshal(data[index:postIndex])
-			index = postIndex
-		case 17:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TreePath", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			postIndex := index + int(stringLen)
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.TreePath = string(data[index:postIndex])
-			index = postIndex
-		default:
-			var sizeOfWire int
-			for {
-				sizeOfWire++
-				wire >>= 7
-				if wire == 0 {
-					break
-				}
-			}
-			index -= sizeOfWire
-			skippy, err := github_com_gogo_protobuf_proto.Skip(data[index:])
-			if err != nil {
-				return err
-			}
-			if (index + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			index += skippy
-		}
-	}
-	return nil
-}
-func (m *DefDoc) Unmarshal(data []byte) error {
-	l := len(data)
-	index := 0
-	for index < l {
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if index >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := data[index]
-			index++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Format", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			postIndex := index + int(stringLen)
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Format = string(data[index:postIndex])
-			index = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Data", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				stringLen |= (uint64(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			postIndex := index + int(stringLen)
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Data = string(data[index:postIndex])
-			index = postIndex
-		default:
-			var sizeOfWire int
-			for {
-				sizeOfWire++
-				wire >>= 7
-				if wire == 0 {
-					break
-				}
-			}
-			index -= sizeOfWire
-			skippy, err := github_com_gogo_protobuf_proto.Skip(data[index:])
-			if err != nil {
-				return err
-			}
-			if (index + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			index += skippy
-		}
-	}
-	return nil
-}
-func (m *DefKey) Size() (n int) {
-	var l int
-	_ = l
-	l = len(m.Repo)
-	n += 1 + l + sovDef(uint64(l))
-	l = len(m.CommitID)
-	n += 1 + l + sovDef(uint64(l))
-	l = len(m.UnitType)
-	n += 1 + l + sovDef(uint64(l))
-	l = len(m.Unit)
-	n += 1 + l + sovDef(uint64(l))
-	l = len(m.Path)
-	n += 1 + l + sovDef(uint64(l))
-	return n
+// DefFormatStrings contains the various def format strings.
+type DefFormatStrings struct {
+	Name                 QualFormatStrings `protobuf:"bytes,1,opt,name=name" json:"name"`
+	Type                 QualFormatStrings `protobuf:"bytes,2,opt,name=type" json:"type"`
+	NameAndTypeSeparator string            `protobuf:"bytes,3,opt,name=name_and_type_separator,proto3" json:"name_and_type_separator,omitempty"`
+	Language             string            `protobuf:"bytes,4,opt,name=language,proto3" json:"language,omitempty"`
+	DefKeyword           string            `protobuf:"bytes,5,opt,name=def_keyword,proto3" json:"def_keyword,omitempty"`
+	Kind                 string            `protobuf:"bytes,6,opt,name=kind,proto3" json:"kind,omitempty"`
 }
 
-func (m *Def) Size() (n int) {
-	var l int
-	_ = l
-	l = m.DefKey.Size()
-	n += 1 + l + sovDef(uint64(l))
-	l = len(m.Name)
-	n += 1 + l + sovDef(uint64(l))
-	l = len(m.Kind)
-	n += 1 + l + sovDef(uint64(l))
-	l = len(m.File)
-	n += 1 + l + sovDef(uint64(l))
-	n += 1 + sovDef(uint64(m.DefStart))
-	n += 1 + sovDef(uint64(m.DefEnd))
-	n += 2
-	n += 2
-	n += 2
-	if m.Data != nil {
-		l = len(m.Data)
-		n += 1 + l + sovDef(uint64(l))
-	}
-	if len(m.Docs) > 0 {
-		for _, e := range m.Docs {
-			l = e.Size()
-			n += 1 + l + sovDef(uint64(l))
-		}
-	}
-	l = len(m.TreePath)
-	n += 2 + l + sovDef(uint64(l))
-	return n
+func (m *DefFormatStrings) Reset()         { *m = DefFormatStrings{} }
+func (m *DefFormatStrings) String() string { return proto.CompactTextString(m) }
+func (*DefFormatStrings) ProtoMessage()    {}
+
+// QualFormatStrings holds the formatted string for each Qualification for a def
+// (for either Name or Type).
+type QualFormatStrings struct {
+	Unqualified             string `protobuf:"bytes,1,opt,name=unqualified,proto3" json:"unqualified,omitempty"`
+	ScopeQualified          string `protobuf:"bytes,2,opt,name=scope_qualified,proto3" json:"scope_qualified,omitempty"`
+	DepQualified            string `protobuf:"bytes,3,opt,name=dep_qualified,proto3" json:"dep_qualified,omitempty"`
+	RepositoryWideQualified string `protobuf:"bytes,4,opt,name=repository_wide_qualified,proto3" json:"repository_wide_qualified,omitempty"`
+	LanguageWideQualified   string `protobuf:"bytes,5,opt,name=language_wide_qualified,proto3" json:"language_wide_qualified,omitempty"`
 }
 
-func (m *DefDoc) Size() (n int) {
-	var l int
-	_ = l
-	l = len(m.Format)
-	n += 1 + l + sovDef(uint64(l))
-	l = len(m.Data)
-	n += 1 + l + sovDef(uint64(l))
-	return n
-}
+func (m *QualFormatStrings) Reset()         { *m = QualFormatStrings{} }
+func (m *QualFormatStrings) String() string { return proto.CompactTextString(m) }
+func (*QualFormatStrings) ProtoMessage()    {}
 
-func sovDef(x uint64) (n int) {
-	for {
-		n++
-		x >>= 7
-		if x == 0 {
-			break
-		}
-	}
-	return n
-}
-func sozDef(x uint64) (n int) {
-	return sovDef(uint64((x << 1) ^ uint64((int64(x) >> 63))))
-}
 func (m *DefKey) Marshal() (data []byte, err error) {
 	size := m.Size()
 	data = make([]byte, size)
@@ -746,31 +187,41 @@ func (m *DefKey) Marshal() (data []byte, err error) {
 	return data[:n], nil
 }
 
-func (m *DefKey) MarshalTo(data []byte) (n int, err error) {
+func (m *DefKey) MarshalTo(data []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
 	_ = l
-	data[i] = 0xa
-	i++
-	i = encodeVarintDef(data, i, uint64(len(m.Repo)))
-	i += copy(data[i:], m.Repo)
-	data[i] = 0x12
-	i++
-	i = encodeVarintDef(data, i, uint64(len(m.CommitID)))
-	i += copy(data[i:], m.CommitID)
-	data[i] = 0x1a
-	i++
-	i = encodeVarintDef(data, i, uint64(len(m.UnitType)))
-	i += copy(data[i:], m.UnitType)
-	data[i] = 0x22
-	i++
-	i = encodeVarintDef(data, i, uint64(len(m.Unit)))
-	i += copy(data[i:], m.Unit)
-	data[i] = 0x2a
-	i++
-	i = encodeVarintDef(data, i, uint64(len(m.Path)))
-	i += copy(data[i:], m.Path)
+	if len(m.Repo) > 0 {
+		data[i] = 0xa
+		i++
+		i = encodeVarintDef(data, i, uint64(len(m.Repo)))
+		i += copy(data[i:], m.Repo)
+	}
+	if len(m.CommitID) > 0 {
+		data[i] = 0x12
+		i++
+		i = encodeVarintDef(data, i, uint64(len(m.CommitID)))
+		i += copy(data[i:], m.CommitID)
+	}
+	if len(m.UnitType) > 0 {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintDef(data, i, uint64(len(m.UnitType)))
+		i += copy(data[i:], m.UnitType)
+	}
+	if len(m.Unit) > 0 {
+		data[i] = 0x22
+		i++
+		i = encodeVarintDef(data, i, uint64(len(m.Unit)))
+		i += copy(data[i:], m.Unit)
+	}
+	if len(m.Path) > 0 {
+		data[i] = 0x2a
+		i++
+		i = encodeVarintDef(data, i, uint64(len(m.Path)))
+		i += copy(data[i:], m.Path)
+	}
 	return i, nil
 }
 
@@ -784,7 +235,7 @@ func (m *Def) Marshal() (data []byte, err error) {
 	return data[:n], nil
 }
 
-func (m *Def) MarshalTo(data []byte) (n int, err error) {
+func (m *Def) MarshalTo(data []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
@@ -797,53 +248,71 @@ func (m *Def) MarshalTo(data []byte) (n int, err error) {
 		return 0, err
 	}
 	i += n1
-	data[i] = 0x12
-	i++
-	i = encodeVarintDef(data, i, uint64(len(m.Name)))
-	i += copy(data[i:], m.Name)
-	data[i] = 0x1a
-	i++
-	i = encodeVarintDef(data, i, uint64(len(m.Kind)))
-	i += copy(data[i:], m.Kind)
-	data[i] = 0x22
-	i++
-	i = encodeVarintDef(data, i, uint64(len(m.File)))
-	i += copy(data[i:], m.File)
-	data[i] = 0x28
-	i++
-	i = encodeVarintDef(data, i, uint64(m.DefStart))
-	data[i] = 0x30
-	i++
-	i = encodeVarintDef(data, i, uint64(m.DefEnd))
-	data[i] = 0x38
-	i++
-	if m.Exported {
-		data[i] = 1
-	} else {
-		data[i] = 0
-	}
-	i++
-	data[i] = 0x40
-	i++
-	if m.Local {
-		data[i] = 1
-	} else {
-		data[i] = 0
-	}
-	i++
-	data[i] = 0x48
-	i++
-	if m.Test {
-		data[i] = 1
-	} else {
-		data[i] = 0
-	}
-	i++
-	if m.Data != nil {
-		data[i] = 0x52
+	if len(m.Name) > 0 {
+		data[i] = 0x12
 		i++
-		i = encodeVarintDef(data, i, uint64(len(m.Data)))
-		i += copy(data[i:], m.Data)
+		i = encodeVarintDef(data, i, uint64(len(m.Name)))
+		i += copy(data[i:], m.Name)
+	}
+	if len(m.Kind) > 0 {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintDef(data, i, uint64(len(m.Kind)))
+		i += copy(data[i:], m.Kind)
+	}
+	if len(m.File) > 0 {
+		data[i] = 0x22
+		i++
+		i = encodeVarintDef(data, i, uint64(len(m.File)))
+		i += copy(data[i:], m.File)
+	}
+	if m.DefStart != 0 {
+		data[i] = 0x28
+		i++
+		i = encodeVarintDef(data, i, uint64(m.DefStart))
+	}
+	if m.DefEnd != 0 {
+		data[i] = 0x30
+		i++
+		i = encodeVarintDef(data, i, uint64(m.DefEnd))
+	}
+	if m.Exported {
+		data[i] = 0x38
+		i++
+		if m.Exported {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.Local {
+		data[i] = 0x40
+		i++
+		if m.Local {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.Test {
+		data[i] = 0x48
+		i++
+		if m.Test {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
+	if m.Data != nil {
+		if len(m.Data) > 0 {
+			data[i] = 0x52
+			i++
+			i = encodeVarintDef(data, i, uint64(len(m.Data)))
+			i += copy(data[i:], m.Data)
+		}
 	}
 	if len(m.Docs) > 0 {
 		for _, msg := range m.Docs {
@@ -857,12 +326,14 @@ func (m *Def) MarshalTo(data []byte) (n int, err error) {
 			i += n
 		}
 	}
-	data[i] = 0x8a
-	i++
-	data[i] = 0x1
-	i++
-	i = encodeVarintDef(data, i, uint64(len(m.TreePath)))
-	i += copy(data[i:], m.TreePath)
+	if len(m.TreePath) > 0 {
+		data[i] = 0x8a
+		i++
+		data[i] = 0x1
+		i++
+		i = encodeVarintDef(data, i, uint64(len(m.TreePath)))
+		i += copy(data[i:], m.TreePath)
+	}
 	return i, nil
 }
 
@@ -876,19 +347,129 @@ func (m *DefDoc) Marshal() (data []byte, err error) {
 	return data[:n], nil
 }
 
-func (m *DefDoc) MarshalTo(data []byte) (n int, err error) {
+func (m *DefDoc) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Format) > 0 {
+		data[i] = 0xa
+		i++
+		i = encodeVarintDef(data, i, uint64(len(m.Format)))
+		i += copy(data[i:], m.Format)
+	}
+	if len(m.Data) > 0 {
+		data[i] = 0x12
+		i++
+		i = encodeVarintDef(data, i, uint64(len(m.Data)))
+		i += copy(data[i:], m.Data)
+	}
+	return i, nil
+}
+
+func (m *DefFormatStrings) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *DefFormatStrings) MarshalTo(data []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
 	_ = l
 	data[i] = 0xa
 	i++
-	i = encodeVarintDef(data, i, uint64(len(m.Format)))
-	i += copy(data[i:], m.Format)
+	i = encodeVarintDef(data, i, uint64(m.Name.Size()))
+	n2, err := m.Name.MarshalTo(data[i:])
+	if err != nil {
+		return 0, err
+	}
+	i += n2
 	data[i] = 0x12
 	i++
-	i = encodeVarintDef(data, i, uint64(len(m.Data)))
-	i += copy(data[i:], m.Data)
+	i = encodeVarintDef(data, i, uint64(m.Type.Size()))
+	n3, err := m.Type.MarshalTo(data[i:])
+	if err != nil {
+		return 0, err
+	}
+	i += n3
+	if len(m.NameAndTypeSeparator) > 0 {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintDef(data, i, uint64(len(m.NameAndTypeSeparator)))
+		i += copy(data[i:], m.NameAndTypeSeparator)
+	}
+	if len(m.Language) > 0 {
+		data[i] = 0x22
+		i++
+		i = encodeVarintDef(data, i, uint64(len(m.Language)))
+		i += copy(data[i:], m.Language)
+	}
+	if len(m.DefKeyword) > 0 {
+		data[i] = 0x2a
+		i++
+		i = encodeVarintDef(data, i, uint64(len(m.DefKeyword)))
+		i += copy(data[i:], m.DefKeyword)
+	}
+	if len(m.Kind) > 0 {
+		data[i] = 0x32
+		i++
+		i = encodeVarintDef(data, i, uint64(len(m.Kind)))
+		i += copy(data[i:], m.Kind)
+	}
+	return i, nil
+}
+
+func (m *QualFormatStrings) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *QualFormatStrings) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Unqualified) > 0 {
+		data[i] = 0xa
+		i++
+		i = encodeVarintDef(data, i, uint64(len(m.Unqualified)))
+		i += copy(data[i:], m.Unqualified)
+	}
+	if len(m.ScopeQualified) > 0 {
+		data[i] = 0x12
+		i++
+		i = encodeVarintDef(data, i, uint64(len(m.ScopeQualified)))
+		i += copy(data[i:], m.ScopeQualified)
+	}
+	if len(m.DepQualified) > 0 {
+		data[i] = 0x1a
+		i++
+		i = encodeVarintDef(data, i, uint64(len(m.DepQualified)))
+		i += copy(data[i:], m.DepQualified)
+	}
+	if len(m.RepositoryWideQualified) > 0 {
+		data[i] = 0x22
+		i++
+		i = encodeVarintDef(data, i, uint64(len(m.RepositoryWideQualified)))
+		i += copy(data[i:], m.RepositoryWideQualified)
+	}
+	if len(m.LanguageWideQualified) > 0 {
+		data[i] = 0x2a
+		i++
+		i = encodeVarintDef(data, i, uint64(len(m.LanguageWideQualified)))
+		i += copy(data[i:], m.LanguageWideQualified)
+	}
 	return i, nil
 }
 
@@ -919,68 +500,1340 @@ func encodeVarintDef(data []byte, offset int, v uint64) int {
 	data[offset] = uint8(v)
 	return offset + 1
 }
-func (this *DefKey) GoString() string {
-	if this == nil {
-		return "nil"
+func (m *DefKey) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.Repo)
+	if l > 0 {
+		n += 1 + l + sovDef(uint64(l))
 	}
-	s := strings.Join([]string{`&graph.DefKey{` +
-		`Repo:` + fmt.Sprintf("%#v", this.Repo),
-		`CommitID:` + fmt.Sprintf("%#v", this.CommitID),
-		`UnitType:` + fmt.Sprintf("%#v", this.UnitType),
-		`Unit:` + fmt.Sprintf("%#v", this.Unit),
-		`Path:` + fmt.Sprintf("%#v", this.Path) + `}`}, ", ")
-	return s
+	l = len(m.CommitID)
+	if l > 0 {
+		n += 1 + l + sovDef(uint64(l))
+	}
+	l = len(m.UnitType)
+	if l > 0 {
+		n += 1 + l + sovDef(uint64(l))
+	}
+	l = len(m.Unit)
+	if l > 0 {
+		n += 1 + l + sovDef(uint64(l))
+	}
+	l = len(m.Path)
+	if l > 0 {
+		n += 1 + l + sovDef(uint64(l))
+	}
+	return n
 }
-func (this *Def) GoString() string {
-	if this == nil {
-		return "nil"
+
+func (m *Def) Size() (n int) {
+	var l int
+	_ = l
+	l = m.DefKey.Size()
+	n += 1 + l + sovDef(uint64(l))
+	l = len(m.Name)
+	if l > 0 {
+		n += 1 + l + sovDef(uint64(l))
 	}
-	s := strings.Join([]string{`&graph.Def{` +
-		`DefKey:` + strings.Replace(this.DefKey.GoString(), `&`, ``, 1),
-		`Name:` + fmt.Sprintf("%#v", this.Name),
-		`Kind:` + fmt.Sprintf("%#v", this.Kind),
-		`File:` + fmt.Sprintf("%#v", this.File),
-		`DefStart:` + fmt.Sprintf("%#v", this.DefStart),
-		`DefEnd:` + fmt.Sprintf("%#v", this.DefEnd),
-		`Exported:` + fmt.Sprintf("%#v", this.Exported),
-		`Local:` + fmt.Sprintf("%#v", this.Local),
-		`Test:` + fmt.Sprintf("%#v", this.Test),
-		`Data:` + fmt.Sprintf("%#v", this.Data),
-		`Docs:` + strings.Replace(fmt.Sprintf("%#v", this.Docs), `&`, ``, 1),
-		`TreePath:` + fmt.Sprintf("%#v", this.TreePath) + `}`}, ", ")
-	return s
+	l = len(m.Kind)
+	if l > 0 {
+		n += 1 + l + sovDef(uint64(l))
+	}
+	l = len(m.File)
+	if l > 0 {
+		n += 1 + l + sovDef(uint64(l))
+	}
+	if m.DefStart != 0 {
+		n += 1 + sovDef(uint64(m.DefStart))
+	}
+	if m.DefEnd != 0 {
+		n += 1 + sovDef(uint64(m.DefEnd))
+	}
+	if m.Exported {
+		n += 2
+	}
+	if m.Local {
+		n += 2
+	}
+	if m.Test {
+		n += 2
+	}
+	if m.Data != nil {
+		l = len(m.Data)
+		if l > 0 {
+			n += 1 + l + sovDef(uint64(l))
+		}
+	}
+	if len(m.Docs) > 0 {
+		for _, e := range m.Docs {
+			l = e.Size()
+			n += 1 + l + sovDef(uint64(l))
+		}
+	}
+	l = len(m.TreePath)
+	if l > 0 {
+		n += 2 + l + sovDef(uint64(l))
+	}
+	return n
 }
-func (this *DefDoc) GoString() string {
-	if this == nil {
-		return "nil"
+
+func (m *DefDoc) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.Format)
+	if l > 0 {
+		n += 1 + l + sovDef(uint64(l))
 	}
-	s := strings.Join([]string{`&graph.DefDoc{` +
-		`Format:` + fmt.Sprintf("%#v", this.Format),
-		`Data:` + fmt.Sprintf("%#v", this.Data) + `}`}, ", ")
-	return s
+	l = len(m.Data)
+	if l > 0 {
+		n += 1 + l + sovDef(uint64(l))
+	}
+	return n
 }
-func valueToGoStringDef(v interface{}, typ string) string {
-	rv := reflect.ValueOf(v)
-	if rv.IsNil() {
-		return "nil"
+
+func (m *DefFormatStrings) Size() (n int) {
+	var l int
+	_ = l
+	l = m.Name.Size()
+	n += 1 + l + sovDef(uint64(l))
+	l = m.Type.Size()
+	n += 1 + l + sovDef(uint64(l))
+	l = len(m.NameAndTypeSeparator)
+	if l > 0 {
+		n += 1 + l + sovDef(uint64(l))
 	}
-	pv := reflect.Indirect(rv).Interface()
-	return fmt.Sprintf("func(v %v) *%v { return &v } ( %#v )", typ, typ, pv)
+	l = len(m.Language)
+	if l > 0 {
+		n += 1 + l + sovDef(uint64(l))
+	}
+	l = len(m.DefKeyword)
+	if l > 0 {
+		n += 1 + l + sovDef(uint64(l))
+	}
+	l = len(m.Kind)
+	if l > 0 {
+		n += 1 + l + sovDef(uint64(l))
+	}
+	return n
 }
-func extensionToGoStringDef(e map[int32]github_com_gogo_protobuf_proto.Extension) string {
-	if e == nil {
-		return "nil"
+
+func (m *QualFormatStrings) Size() (n int) {
+	var l int
+	_ = l
+	l = len(m.Unqualified)
+	if l > 0 {
+		n += 1 + l + sovDef(uint64(l))
 	}
-	s := "map[int32]proto.Extension{"
-	keys := make([]int, 0, len(e))
-	for k := range e {
-		keys = append(keys, int(k))
+	l = len(m.ScopeQualified)
+	if l > 0 {
+		n += 1 + l + sovDef(uint64(l))
 	}
-	sort.Ints(keys)
-	ss := []string{}
-	for _, k := range keys {
-		ss = append(ss, strconv.Itoa(k)+": "+e[int32(k)].GoString())
+	l = len(m.DepQualified)
+	if l > 0 {
+		n += 1 + l + sovDef(uint64(l))
 	}
-	s += strings.Join(ss, ",") + "}"
-	return s
+	l = len(m.RepositoryWideQualified)
+	if l > 0 {
+		n += 1 + l + sovDef(uint64(l))
+	}
+	l = len(m.LanguageWideQualified)
+	if l > 0 {
+		n += 1 + l + sovDef(uint64(l))
+	}
+	return n
 }
+
+func sovDef(x uint64) (n int) {
+	for {
+		n++
+		x >>= 7
+		if x == 0 {
+			break
+		}
+	}
+	return n
+}
+func sozDef(x uint64) (n int) {
+	return sovDef(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *DefKey) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowDef
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: DefKey: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: DefKey: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Repo", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Repo = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CommitID", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.CommitID = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UnitType", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.UnitType = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Unit", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Unit = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Path", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Path = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipDef(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthDef
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Def) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowDef
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Def: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Def: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DefKey", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.DefKey.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Name = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Kind", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Kind = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field File", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.File = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DefStart", wireType)
+			}
+			m.DefStart = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.DefStart |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 6:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DefEnd", wireType)
+			}
+			m.DefEnd = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				m.DefEnd |= (uint32(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Exported", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				v |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Exported = bool(v != 0)
+		case 8:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Local", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				v |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Local = bool(v != 0)
+		case 9:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Test", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				v |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Test = bool(v != 0)
+		case 10:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Data", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Data = append([]byte{}, data[iNdEx:postIndex]...)
+			iNdEx = postIndex
+		case 11:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Docs", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Docs = append(m.Docs, &DefDoc{})
+			if err := m.Docs[len(m.Docs)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 17:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TreePath", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TreePath = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipDef(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthDef
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *DefDoc) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowDef
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: DefDoc: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: DefDoc: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Format", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Format = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Data", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Data = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipDef(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthDef
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *DefFormatStrings) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowDef
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: DefFormatStrings: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: DefFormatStrings: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Name.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Type", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Type.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NameAndTypeSeparator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.NameAndTypeSeparator = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Language", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Language = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DefKeyword", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DefKeyword = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Kind", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Kind = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipDef(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthDef
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QualFormatStrings) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowDef
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QualFormatStrings: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QualFormatStrings: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Unqualified", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Unqualified = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ScopeQualified", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ScopeQualified = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DepQualified", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DepQualified = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RepositoryWideQualified", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RepositoryWideQualified = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LanguageWideQualified", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDef
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.LanguageWideQualified = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipDef(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthDef
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func skipDef(data []byte) (n int, err error) {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return 0, ErrIntOverflowDef
+			}
+			if iNdEx >= l {
+				return 0, io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		wireType := int(wire & 0x7)
+		switch wireType {
+		case 0:
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				iNdEx++
+				if data[iNdEx-1] < 0x80 {
+					break
+				}
+			}
+			return iNdEx, nil
+		case 1:
+			iNdEx += 8
+			return iNdEx, nil
+		case 2:
+			var length int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowDef
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				length |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			iNdEx += length
+			if length < 0 {
+				return 0, ErrInvalidLengthDef
+			}
+			return iNdEx, nil
+		case 3:
+			for {
+				var innerWire uint64
+				var start int = iNdEx
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return 0, ErrIntOverflowDef
+					}
+					if iNdEx >= l {
+						return 0, io.ErrUnexpectedEOF
+					}
+					b := data[iNdEx]
+					iNdEx++
+					innerWire |= (uint64(b) & 0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				innerWireType := int(innerWire & 0x7)
+				if innerWireType == 4 {
+					break
+				}
+				next, err := skipDef(data[start:])
+				if err != nil {
+					return 0, err
+				}
+				iNdEx = start + next
+			}
+			return iNdEx, nil
+		case 4:
+			return iNdEx, nil
+		case 5:
+			iNdEx += 4
+			return iNdEx, nil
+		default:
+			return 0, fmt.Errorf("proto: illegal wireType %d", wireType)
+		}
+	}
+	panic("unreachable")
+}
+
+var (
+	ErrInvalidLengthDef = fmt.Errorf("proto: negative length found during unmarshaling")
+	ErrIntOverflowDef   = fmt.Errorf("proto: integer overflow")
+)

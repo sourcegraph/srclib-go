@@ -20,15 +20,28 @@ type DefFilter interface {
 	SelectDef(*graph.Def) bool
 }
 
-type defFilters []DefFilter
+// DefFilters wraps a list of individual def filters and has a
+// SelectDef method that returns true iff all individual def filters
+// select the def.
+type DefFilters []DefFilter
 
-func (fs defFilters) SelectDef(def *graph.Def) bool {
+func (fs DefFilters) SelectDef(def *graph.Def) bool {
 	for _, f := range fs {
 		if !f.SelectDef(def) {
 			return false
 		}
 	}
 	return true
+}
+
+func (fs DefFilters) SelectDefs(defs ...*graph.Def) []*graph.Def {
+	var sel []*graph.Def
+	for _, def := range defs {
+		if fs.SelectDef(def) {
+			sel = append(sel, def)
+		}
+	}
+	return sel
 }
 
 // A DefFilterFunc is a DefFilter that selects only those defs for
@@ -38,10 +51,6 @@ type DefFilterFunc func(*graph.Def) bool
 // SelectDef calls f(def).
 func (f DefFilterFunc) SelectDef(def *graph.Def) bool { return f(def) }
 func (f DefFilterFunc) String() string                { return "DefFilterFunc" }
-
-func defPathFilter(path string) DefFilter {
-	return DefFilterFunc(func(def *graph.Def) bool { return def.Path == path })
-}
 
 // A RefFilter filters a set of refs to only those for which SelectRef
 // returns true.
@@ -161,9 +170,6 @@ func ByUnits(units ...unit.ID2) interface {
 	ByUnitsFilter
 } {
 	for _, u := range units {
-		if u.Name == "" {
-			panic("unit.Name: empty")
-		}
 		if u.Type == "" {
 			panic("unit.Type: empty")
 		}
@@ -419,26 +425,20 @@ func (f byUnitKeyFilter) SelectUnit(unit *unit.SourceUnit) bool {
 		(unit.Type == "" || unit.Type == f.key.UnitType) && (unit.Name == "" || unit.Name == f.key.Unit)
 }
 
-// ByDefKey returns a filter by a def key. It panics if any fields on
-// the def key are not set.
+// ByDefKey returns a filter by a def key. It panics if the def path
+// is not set. If you pass a ByDefKey filter to a store that's scoped
+// to a specific repo/version/unit, then it will match all items in
+// that repo/version/unit even if the
+// key.Repo/key.CommitID/key.UnitType/key.Unit fields do not match
+// (because stores do not "know" the repo/version/unit they store data
+// for, and therefore they can't apply filter criteria for the level
+// above them).
 func ByDefKey(key graph.DefKey) interface {
 	DefFilter
 	ByReposFilter
 	ByCommitIDsFilter
 	ByUnitsFilter
 } {
-	if key.Repo == "" {
-		panic("key.Repo: empty")
-	}
-	if key.CommitID == "" {
-		panic("key.CommitID: empty")
-	}
-	if key.UnitType == "" {
-		panic("key.UnitType: empty")
-	}
-	if key.Unit == "" {
-		panic("key.Unit: empty")
-	}
 	if key.Path == "" {
 		panic("key.Path: empty")
 	}
@@ -506,7 +506,11 @@ func (f *byRefDefFilter) ByDefUnitType() string      { return f.def.DefUnitType 
 func (f *byRefDefFilter) ByDefUnit() string          { return f.def.DefUnit }
 func (f *byRefDefFilter) ByDefPath() string          { return f.def.DefPath }
 func (f *byRefDefFilter) setImpliedRepo(repo string) { f.impliedRepo = repo }
-func (f *byRefDefFilter) setImpliedUnit(u unit.ID2)  { f.impliedUnit = u }
+func (f *byRefDefFilter) withImpliedUnit(u unit.ID2) RefFilter {
+	newF := *f
+	newF.impliedUnit = u
+	return &newF
+}
 func (f *byRefDefFilter) SelectRef(ref *graph.Ref) bool {
 	return ((ref.DefRepo == "" && f.impliedRepo == f.def.DefRepo) || ref.DefRepo == f.def.DefRepo) &&
 		((ref.DefUnitType == "" && f.impliedUnit.Type == f.def.DefUnitType) || ref.DefUnitType == f.def.DefUnitType) &&
@@ -569,7 +573,11 @@ func (f *absRefFilterFunc) String() string {
 }
 func (f *absRefFilterFunc) setImpliedRepo(repo string)         { f.impliedRepo = repo }
 func (f *absRefFilterFunc) setImpliedCommitID(commitID string) { f.impliedCommitID = commitID }
-func (f *absRefFilterFunc) setImpliedUnit(u unit.ID2)          { f.impliedUnit = u }
+func (f *absRefFilterFunc) withImpliedUnit(u unit.ID2) RefFilter {
+	newF := *f
+	newF.impliedUnit = u
+	return &newF
+}
 func (f *absRefFilterFunc) SelectRef(ref *graph.Ref) bool {
 	copy := *ref
 	copy.Repo = f.impliedRepo
@@ -599,7 +607,7 @@ type impliedCommitIDSetter interface {
 	setImpliedCommitID(string)
 }
 type impliedUnitSetter interface {
-	setImpliedUnit(unit.ID2)
+	withImpliedUnit(unit.ID2) RefFilter
 }
 
 func setImpliedRepo(fs []RefFilter, repo string) {
@@ -618,12 +626,16 @@ func setImpliedCommitID(fs []RefFilter, commitID string) {
 	}
 }
 
-func setImpliedUnit(fs []RefFilter, u unit.ID2) {
-	for _, f := range fs {
-		if f, ok := f.(impliedUnitSetter); ok {
-			f.setImpliedUnit(u)
+func withImpliedUnit(fs []RefFilter, u unit.ID2) []RefFilter {
+	fCopy := make([]RefFilter, len(fs))
+	for i, f := range fs {
+		if fUnitSetter, ok := f.(impliedUnitSetter); ok {
+			fCopy[i] = fUnitSetter.withImpliedUnit(u)
+		} else {
+			fCopy[i] = f
 		}
 	}
+	return fCopy
 }
 
 // ByDefPathFilter is implemented by filters that restrict their
@@ -689,7 +701,10 @@ type ByFilesFilter interface {
 // or contain any of the listed files. It panics if any file path is
 // empty, or if the file path has not been cleaned (i.e., if file !=
 // path.Clean(file)).
-func ByFiles(files ...string) interface {
+//
+// If exact == true, then only the exact files are accepted (i.e. a directory
+// path will not include all files in that directory as it would normally).
+func ByFiles(exact bool, files ...string) interface {
 	DefFilter
 	RefFilter
 	UnitFilter
@@ -703,24 +718,29 @@ func ByFiles(files ...string) interface {
 			panic("file: not cleaned (file != path.Clean(file))")
 		}
 	}
-	return byFilesFilter(files)
+	return byFilesFilter{files: files, exact: exact}
 }
 
-type byFilesFilter []string
+type byFilesFilter struct {
+	files []string
+	exact bool
+}
 
-func (f byFilesFilter) String() string    { return fmt.Sprintf("ByFiles(%v)", ([]string)(f)) }
-func (f byFilesFilter) ByFiles() []string { return f }
+func (f byFilesFilter) String() string {
+	return fmt.Sprintf("ByFiles(%v, exact=%t)", ([]string)(f.files), f.exact)
+}
+func (f byFilesFilter) ByFiles() []string { return f.files }
 func (f byFilesFilter) SelectDef(def *graph.Def) bool {
-	for _, ff := range f {
-		if def.File == ff || strings.HasPrefix(def.File, ff+"/") {
+	for _, ff := range f.files {
+		if def.File == ff || (!f.exact && strings.HasPrefix(def.File, ff+"/")) {
 			return true
 		}
 	}
 	return false
 }
 func (f byFilesFilter) SelectRef(ref *graph.Ref) bool {
-	for _, ff := range f {
-		if ref.File == ff || strings.HasPrefix(ref.File, ff+"/") {
+	for _, ff := range f.files {
+		if ref.File == ff || (!f.exact && strings.HasPrefix(ref.File, ff+"/")) {
 			return true
 		}
 	}
@@ -728,8 +748,8 @@ func (f byFilesFilter) SelectRef(ref *graph.Ref) bool {
 }
 func (f byFilesFilter) SelectUnit(unit *unit.SourceUnit) bool {
 	for _, unitFile := range unit.Files {
-		for _, ff := range f {
-			if ff == unitFile || strings.HasPrefix(unitFile, ff+"/") {
+		for _, ff := range f.files {
+			if ff == unitFile || (!f.exact && strings.HasPrefix(unitFile, ff+"/")) {
 				return true
 			}
 		}
