@@ -8,6 +8,7 @@ import (
 	"math"
 	"sort"
 	"strings"
+	"sync"
 
 	"github.com/alecthomas/binary"
 	"github.com/smartystreets/mafsa"
@@ -18,6 +19,7 @@ import (
 type defQueryTreeIndex struct {
 	mt    *mafsaUnitTable
 	ready bool
+	sync.RWMutex
 }
 
 var _ interface {
@@ -27,7 +29,7 @@ var _ interface {
 	defTreeIndex
 } = (*defQueryTreeIndex)(nil)
 
-var c_defQueryTreeIndex_getByQuery = 0 // counter
+var c_defQueryTreeIndex_getByQuery = &counter{count: new(int64)}
 
 func (x *defQueryTreeIndex) String() string {
 	return fmt.Sprintf("defQueryTreeIndex(ready=%v)", x.ready)
@@ -35,10 +37,15 @@ func (x *defQueryTreeIndex) String() string {
 
 func (x *defQueryTreeIndex) getByQuery(q string) (map[unit.ID2]byteOffsets, bool) {
 	vlog.Printf("defQueryTreeIndex.getByQuery(%q)", q)
-	c_defQueryTreeIndex_getByQuery++
+	c_defQueryTreeIndex_getByQuery.increment()
 
 	if x.mt == nil {
 		panic("mafsaTable not built/read")
+	}
+
+	if x.mt.t == nil {
+		vlog.Println("getByQuery: x.mt.t == nil")
+		return nil, false
 	}
 
 	q = strings.ToLower(q)
@@ -86,6 +93,8 @@ func (x *defQueryTreeIndex) Covers(filters interface{}) int {
 
 // Defs implements defIndex.
 func (x *defQueryTreeIndex) Defs(f ...DefFilter) (map[unit.ID2]byteOffsets, error) {
+	x.RLock()
+	defer x.RUnlock()
 	for _, ff := range f {
 		if pf, ok := ff.(ByDefQueryFilter); ok {
 			uofmap, found := x.getByQuery(pf.ByDefQuery())
@@ -100,6 +109,8 @@ func (x *defQueryTreeIndex) Defs(f ...DefFilter) (map[unit.ID2]byteOffsets, erro
 
 // Build implements defQueryTreeIndexBuilder.
 func (x *defQueryTreeIndex) Build(xs map[unit.ID2]*defQueryIndex) (err error) {
+	x.Lock()
+	defer x.Unlock()
 	vlog.Printf("defQueryTreeIndex: building index... (%d unit indexes)", len(xs))
 
 	defer func() {
@@ -114,23 +125,23 @@ func (x *defQueryTreeIndex) Build(xs map[unit.ID2]*defQueryIndex) (err error) {
 	}
 	sort.Sort(unitID2s(units))
 
-	const maxUnits = math.MaxUint8
+	const maxUnits = math.MaxUint16
 	if len(units) > maxUnits {
 		log.Printf("Warning: the def query index supports a maximum of %d source units in a tree, but this tree has %d. Source units that exceed the limit will not be indexed for def queries.", maxUnits, len(units))
 		units = units[:maxUnits]
 	}
 
-	unitNums := make(map[unit.ID2]uint8, len(units))
+	unitNums := make(map[unit.ID2]uint16, len(units))
 	for _, u := range units {
-		unitNums[u] = uint8(len(unitNums))
+		unitNums[u] = uint16(len(unitNums))
 	}
 
 	termToUOffs := make(map[string][]unitOffsets)
 
-	var traverse func(term string, unit uint8, node *mafsa.MinTreeNode)
 	for u, qx := range xs {
 		i := 0
-		traverse = func(term string, unit uint8, node *mafsa.MinTreeNode) {
+		var traverse func(term string, unit uint16, node *mafsa.MinTreeNode)
+		traverse = func(term string, unit uint16, node *mafsa.MinTreeNode) {
 			if node == nil {
 				return
 			}
@@ -144,6 +155,11 @@ func (x *defQueryTreeIndex) Build(xs map[unit.ID2]*defQueryIndex) (err error) {
 			}
 		}
 		if qx.mt.t != nil {
+			if _, present := unitNums[u]; !present {
+				// Skip unit - it is the 65536th or above unit (and we
+				// store that index in a uint16 now :( ).
+				continue
+			}
 			traverse("", unitNums[u], qx.mt.t.Root)
 		}
 	}
@@ -190,6 +206,8 @@ func (x *defQueryTreeIndex) Build(xs map[unit.ID2]*defQueryIndex) (err error) {
 
 // Write implements persistedIndex.
 func (x *defQueryTreeIndex) Write(w io.Writer) error {
+	x.RLock()
+	defer x.RUnlock()
 	if x.mt == nil {
 		panic("no mafsaTable to write")
 	}
@@ -203,6 +221,8 @@ func (x *defQueryTreeIndex) Write(w io.Writer) error {
 
 // Read implements persistedIndex.
 func (x *defQueryTreeIndex) Read(r io.Reader) error {
+	x.Lock()
+	defer x.Unlock()
 	b, err := ioutil.ReadAll(r)
 	if err != nil {
 		return err
@@ -217,8 +237,53 @@ func (x *defQueryTreeIndex) Read(r io.Reader) error {
 	return err
 }
 
+// Fprint prints a human-readable representation of the index.
+func (x *defQueryTreeIndex) Fprint(w io.Writer) error {
+	x.RLock()
+	defer x.RUnlock()
+	if x.mt == nil {
+		panic("mafsaTable not built/read")
+	}
+
+	allTerms := make([]string, 0, len(x.mt.Values))
+	var getAllTerms func(term string, n *mafsa.MinTreeNode)
+	getAllTerms = func(term string, n *mafsa.MinTreeNode) {
+		if n.Final {
+			allTerms = append(allTerms, term)
+		}
+		for _, c := range n.OrderedEdges() {
+			getAllTerms(term+string([]rune{c}), n.Edges[c])
+		}
+	}
+
+	getAllTerms("", x.mt.t.Root)
+	fmt.Fprintln(w, "Terms")
+	for i, term := range allTerms {
+		fmt.Fprintf(w, "  %d - %q\n", i, term)
+	}
+
+	fmt.Fprintln(w)
+
+	fmt.Fprintln(w, "Unit offsets")
+	for i, uofss := range x.mt.Values {
+		fmt.Fprintf(w, "Term %q (node %d)\n", allTerms[i], i)
+		for _, uofs := range uofss {
+			fmt.Fprintf(w, "\tUnit %v\n", x.mt.Units[uofs.Unit])
+			for _, ofs := range uofs.byteOffsets {
+				fmt.Fprintf(w, "\t\t%d\n", ofs)
+			}
+		}
+	}
+
+	return nil
+}
+
 // Ready implements persistedIndex.
-func (x *defQueryTreeIndex) Ready() bool { return x.ready }
+func (x *defQueryTreeIndex) Ready() bool {
+	x.RLock()
+	defer x.RUnlock()
+	return x.ready
+}
 
 type unitID2s []unit.ID2
 
@@ -227,12 +292,6 @@ func (v unitID2s) Swap(i, j int) { v[i], v[j] = v[j], v[i] }
 func (v unitID2s) Less(i, j int) bool {
 	return v[i].Name < v[j].Name || (v[i].Name == v[j].Name && v[i].Type < v[j].Type)
 }
-
-type int64Slice []int64
-
-func (v int64Slice) Len() int           { return len(v) }
-func (v int64Slice) Swap(i, j int)      { v[i], v[j] = v[j], v[i] }
-func (v int64Slice) Less(i, j int) bool { return v[i] < v[j] }
 
 // A mafsaUnitTable like a mafsaTable but stores unitOffsets not
 // byteOffsets.

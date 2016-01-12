@@ -2,6 +2,11 @@
 
 ![Screenshot](https://raw.githubusercontent.com/sourcegraph/sourcegraph-atom/master/screenshot.png)
 
+## Disclaimer
+
+*Editor plugins are temporarily incompatible with srclib `master`. Please
+[download an older version of srclib](./compatiblebinaries.md) to use editor plugins.*
+
 ## Features
 - Jump to Definition
 - Documentation lookups
@@ -10,11 +15,32 @@
 - Search Sourcegraph.com
 
 ## Installation
+
 ### Requirements
 This plugin requries that the srclib tool is installed, as well
 as the language toolchains for the individual languages that you wish to use.
 
-Follow the [srclib installation instructions here](http://srclib.org/gettingstarted/#install-srclib).
-### Installing from Source
-Clone the `https://github.com/sourcegraph/sourcegraph-atom.git` repository into `~/.atom/packages/sourcegraph-atom/`.
-Run `apm install` in the directory. Restart atom - the plugin should now be ready to use.
+Follow the [srclib installation instructions here](../install.md#install-srclib)
+
+
+<br>
+
+### Command-line installation
+
+The recommended install method is to install it using apm:
+```
+apm install sourcegraph-atom
+```
+
+<br>
+
+### Installing using the Atom packages
+
+Install the sourcegraph-atom package in the UI:
+
+1. Open Atom, navigate to `Edit > Preferences`. In the `Settings` page, select `Install`.
+
+2. Search for package `sourcegraph-atom` and choose `install`
+
+
+<br>

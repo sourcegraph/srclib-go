@@ -8,7 +8,7 @@ import (
 	"sort"
 	"strings"
 
-	"code.google.com/p/rog-go/parallel"
+	"github.com/rogpeppe/rog-go/parallel"
 
 	"github.com/kr/fs"
 	"golang.org/x/tools/godoc/vfs"
@@ -27,7 +27,7 @@ import (
 // (buildstore.RepoBuildStore).Commit.
 func ReadCached(bdfs vfs.FileSystem) (*Tree, error) {
 	if _, err := bdfs.Lstat("."); os.IsNotExist(err) {
-		return nil, fmt.Errorf("build cache dir does not exist (did you run `src config` to create it)?")
+		return nil, fmt.Errorf("build cache dir does not exist (did you run `srclib config` to create it)?")
 	} else if err != nil {
 		return nil, err
 	}

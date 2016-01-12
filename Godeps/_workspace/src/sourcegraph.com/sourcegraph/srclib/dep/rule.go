@@ -11,6 +11,7 @@ import (
 	"sourcegraph.com/sourcegraph/srclib/plan"
 	"sourcegraph.com/sourcegraph/srclib/toolchain"
 	"sourcegraph.com/sourcegraph/srclib/unit"
+	"sourcegraph.com/sourcegraph/srclib/util"
 )
 
 const depresolveOp = "depresolve"
@@ -20,7 +21,7 @@ func init() {
 	buildstore.RegisterDataType("depresolve", []*ResolvedDep{})
 }
 
-func makeDepRules(c *config.Tree, dataDir string, existing []makex.Rule, opt plan.Options) ([]makex.Rule, error) {
+func makeDepRules(c *config.Tree, dataDir string, existing []makex.Rule) ([]makex.Rule, error) {
 	const op = depresolveOp
 	var rules []makex.Rule
 	for _, u := range c.SourceUnits {
@@ -33,7 +34,7 @@ func makeDepRules(c *config.Tree, dataDir string, existing []makex.Rule, opt pla
 			toolRef = choice
 		}
 
-		rules = append(rules, &ResolveDepsRule{dataDir, u, toolRef, opt})
+		rules = append(rules, &ResolveDepsRule{dataDir, u, toolRef})
 	}
 	return rules, nil
 }
@@ -42,20 +43,22 @@ type ResolveDepsRule struct {
 	dataDir string
 	Unit    *unit.SourceUnit
 	Tool    *srclib.ToolRef
-	opt     plan.Options
 }
 
 func (r *ResolveDepsRule) Target() string {
-	return filepath.Join(r.dataDir, plan.SourceUnitDataFilename([]*ResolvedDep{}, r.Unit))
+	return filepath.ToSlash(filepath.Join(r.dataDir, plan.SourceUnitDataFilename([]*ResolvedDep{}, r.Unit)))
 }
 
 func (r *ResolveDepsRule) Prereqs() []string {
-	return []string{filepath.Join(r.dataDir, plan.SourceUnitDataFilename(unit.SourceUnit{}, r.Unit))}
+	return []string{filepath.ToSlash(filepath.Join(r.dataDir, plan.SourceUnitDataFilename(unit.SourceUnit{}, r.Unit)))}
 }
 
 func (r *ResolveDepsRule) Recipes() []string {
+	if r.Tool == nil {
+		return nil
+	}
 	return []string{
-		fmt.Sprintf("src tool %s %q %q < $^ 1> $@", r.opt.ToolchainExecOpt, r.Tool.Toolchain, r.Tool.Subcmd),
+		fmt.Sprintf("%s tool %q %q < $^ 1> $@", util.SafeCommandName(srclib.CommandName), r.Tool.Toolchain, r.Tool.Subcmd),
 	}
 }
 

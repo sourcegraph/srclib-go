@@ -7,7 +7,7 @@ import (
 	"os"
 	"os/exec"
 
-	"code.google.com/p/rog-go/parallel"
+	"github.com/rogpeppe/rog-go/parallel"
 )
 
 // NewMaker creates a new Maker, which can build goals in a Makefile.
