@@ -122,10 +122,8 @@ func Graph(unit *unit.SourceUnit) (*graph.Output, error) {
 
 	o2 := graph.Output{}
 
-	uri := string(unit.Repo)
-
 	for _, gs := range o.Defs {
-		d, err := convertGoDef(gs, uri)
+		d, err := convertGoDef(gs)
 		if err != nil {
 			return nil, err
 		}
@@ -134,7 +132,7 @@ func Graph(unit *unit.SourceUnit) (*graph.Output, error) {
 		}
 	}
 	for _, gr := range o.Refs {
-		r, err := convertGoRef(gr, uri)
+		r, err := convertGoRef(gr)
 		if err != nil {
 			return nil, err
 		}
@@ -143,7 +141,7 @@ func Graph(unit *unit.SourceUnit) (*graph.Output, error) {
 		}
 	}
 	for _, gd := range o.Docs {
-		d, err := convertGoDoc(gd, uri)
+		d, err := convertGoDoc(gd)
 		if err != nil {
 			return nil, err
 		}
@@ -155,8 +153,8 @@ func Graph(unit *unit.SourceUnit) (*graph.Output, error) {
 	return &o2, nil
 }
 
-func convertGoDef(gs *gog.Def, repoURI string) (*graph.Def, error) {
-	resolvedTarget, err := ResolveDep(gs.DefKey.PackageImportPath, repoURI)
+func convertGoDef(gs *gog.Def) (*graph.Def, error) {
+	resolvedTarget, err := ResolveDep(gs.DefKey.PackageImportPath)
 	if err != nil {
 		return nil, err
 	}
@@ -203,8 +201,8 @@ func convertGoDef(gs *gog.Def, repoURI string) (*graph.Def, error) {
 	return def, nil
 }
 
-func convertGoRef(gr *gog.Ref, repoURI string) (*graph.Ref, error) {
-	resolvedTarget, err := ResolveDep(gr.Def.PackageImportPath, repoURI)
+func convertGoRef(gr *gog.Ref) (*graph.Ref, error) {
+	resolvedTarget, err := ResolveDep(gr.Def.PackageImportPath)
 	if err != nil {
 		return nil, err
 	}
@@ -224,10 +222,10 @@ func convertGoRef(gr *gog.Ref, repoURI string) (*graph.Ref, error) {
 	}, nil
 }
 
-func convertGoDoc(gd *gog.Doc, repoURI string) (*graph.Doc, error) {
+func convertGoDoc(gd *gog.Doc) (*graph.Doc, error) {
 	var key graph.DefKey
 	if gd.DefKey != nil {
-		resolvedTarget, err := ResolveDep(gd.PackageImportPath, repoURI)
+		resolvedTarget, err := ResolveDep(gd.PackageImportPath)
 		if err != nil {
 			return nil, err
 		}
