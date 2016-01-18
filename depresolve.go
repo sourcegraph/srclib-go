@@ -98,7 +98,7 @@ func (c *DepResolveCmd) Execute(args []string) error {
 
 		res[i] = &dep.Resolution{Raw: rawDep}
 
-		rt, err := ResolveDep(importPath, string(unit.Repo))
+		rt, err := ResolveDep(importPath)
 		if err != nil {
 			res[i].Error = err.Error()
 			continue
@@ -146,7 +146,9 @@ func (t *targetCache) Put(path string, target *dep.ResolvedTarget) {
 
 var resolveCache targetCache
 
-func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, error) {
+// ResolveDep resolves the raw dependency indicated by importPath to
+// a ResolvedTarget.
+func ResolveDep(importPath string) (*dep.ResolvedTarget, error) {
 	// Look up in cache.
 	if target := resolveCache.Get(importPath); target != nil {
 		return target, nil
@@ -163,16 +165,6 @@ func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, 
 		// their vendored code inside this repo? that's what it's
 		// doing now. The alternative is to link to the external repo
 		// that the code was vendored from.
-		return &dep.ResolvedTarget{
-			// empty ToRepoCloneURL to indicate it's from this repository
-			ToRepoCloneURL: "",
-			ToUnit:         importPath,
-			ToUnitType:     "GoPackage",
-		}, nil
-	}
-
-	// Check if this import path is in this repository.
-	if strings.HasPrefix(importPath, repoImportPath) {
 		return &dep.ResolvedTarget{
 			// empty ToRepoCloneURL to indicate it's from this repository
 			ToRepoCloneURL: "",

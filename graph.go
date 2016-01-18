@@ -329,7 +329,7 @@ func Graph(unit *unit.SourceUnit) (*graph.Output, error) {
 }
 
 func convertGoDef(gs *gog.Def, repoURI string) (*graph.Def, error) {
-	resolvedTarget, err := ResolveDep(gs.DefKey.PackageImportPath, repoURI)
+	resolvedTarget, err := ResolveDep(gs.DefKey.PackageImportPath)
 	if err != nil {
 		return nil, err
 	}
@@ -377,7 +377,7 @@ func convertGoDef(gs *gog.Def, repoURI string) (*graph.Def, error) {
 }
 
 func convertGoRef(gr *gog.Ref, repoURI string) (*graph.Ref, error) {
-	resolvedTarget, err := ResolveDep(gr.Def.PackageImportPath, repoURI)
+	resolvedTarget, err := ResolveDep(gr.Def.PackageImportPath)
 	if err != nil {
 		return nil, err
 	}
@@ -400,7 +400,7 @@ func convertGoRef(gr *gog.Ref, repoURI string) (*graph.Ref, error) {
 func convertGoDoc(gd *gog.Doc, repoURI string) (*graph.Doc, error) {
 	var key graph.DefKey
 	if gd.DefKey != nil {
-		resolvedTarget, err := ResolveDep(gd.PackageImportPath, repoURI)
+		resolvedTarget, err := ResolveDep(gd.PackageImportPath)
 		if err != nil {
 			return nil, err
 		}
