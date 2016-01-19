@@ -15,11 +15,6 @@
 			"Rev": "7a102f78cf1ffc540dff33c75d3397ac6a0558e7"
 		},
 		{
-			"ImportPath": "github.com/fsouza/go-dockerclient",
-			"Comment": "0.2.1-178-g4bf6d2f",
-			"Rev": "4bf6d2fbdef2be37a2c72851a4fd87b7f1e3e79c"
-		},
-		{
 			"ImportPath": "github.com/gogo/protobuf/proto",
 			"Rev": "ad31557573d621eccf54a8abb7b1fcab8977d648"
 		},
@@ -31,6 +26,10 @@
 		{
 			"ImportPath": "github.com/kr/fs",
 			"Rev": "2788f0dbd16903de03cb8186e5c7d97b69ad387b"
+		},
+		{
+			"ImportPath": "github.com/rogpeppe/rog-go/parallel",
+			"Rev": "f57ad5e24ab7813942c045f86eda1066eb969e98"
 		},
 		{
 			"ImportPath": "golang.org/x/tools/go/ast/astutil",
