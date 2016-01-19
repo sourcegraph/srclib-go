@@ -1,0 +1,72 @@
+{
+  "Defs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go15vendor/bye",
+      "Path": ".",
+      "Name": "bye",
+      "Kind": "package",
+      "File": "bye",
+      "DefStart": 0,
+      "DefEnd": 0,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgName": "bye",
+        "TypeString": "",
+        "Kind": "package",
+        "PackageImportPath": "github.com/sgtest/go15vendor/bye"
+      },
+      "TreePath": "."
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go15vendor/bye",
+      "Path": "GetBye",
+      "Name": "GetBye",
+      "Kind": "func",
+      "File": "bye/bye.go",
+      "DefStart": 13,
+      "DefEnd": 51,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgScope": true,
+        "PkgName": "bye",
+        "TypeString": "func() string",
+        "UnderlyingTypeString": "func() string",
+        "Kind": "func",
+        "PackageImportPath": "github.com/sgtest/go15vendor/bye"
+      },
+      "TreePath": "./GetBye"
+    }
+  ],
+  "Refs": [
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go15vendor/bye",
+      "DefPath": ".",
+      "File": "bye/bye.go",
+      "Start": 8,
+      "End": 11
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go15vendor/bye",
+      "DefPath": "GetBye",
+      "Def": true,
+      "File": "bye/bye.go",
+      "Start": 18,
+      "End": 24
+    },
+    {
+      "DefRepo": "github.com/golang/go",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "builtin",
+      "DefPath": "string",
+      "File": "bye/bye.go",
+      "Start": 27,
+      "End": 33
+    }
+  ]
+}

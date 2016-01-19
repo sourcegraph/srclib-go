@@ -5,7 +5,7 @@
       "ToRepoCloneURL": "https://github.com/golang/go",
       "ToUnit": "fmt",
       "ToUnitType": "GoPackage",
-      "ToVersionString": "go1.5.1",
+      "ToVersionString": "go1.5.3",
       "ToRevSpec": ""
     }
   },
@@ -15,7 +15,7 @@
       "ToRepoCloneURL": "https://github.com/golang/go",
       "ToUnit": "strings",
       "ToUnitType": "GoPackage",
-      "ToVersionString": "go1.5.1",
+      "ToVersionString": "go1.5.3",
       "ToRevSpec": ""
     }
   }
