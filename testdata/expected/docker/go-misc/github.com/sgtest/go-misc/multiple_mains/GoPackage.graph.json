@@ -1,0 +1,159 @@
+{
+  "Defs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/multiple_mains",
+      "Path": ".",
+      "Name": "main",
+      "Kind": "package",
+      "File": "multiple_mains",
+      "DefStart": 0,
+      "DefEnd": 0,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgName": "main",
+        "TypeString": "",
+        "Kind": "package",
+        "PackageImportPath": "github.com/sgtest/go-misc/multiple_mains"
+      },
+      "TreePath": "."
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/multiple_mains",
+      "Path": "main1.go/main",
+      "Name": "main",
+      "Kind": "func",
+      "File": "multiple_mains/main1.go",
+      "DefStart": 78,
+      "DefEnd": 114,
+      "Data": {
+        "PkgScope": true,
+        "PkgName": "main",
+        "TypeString": "func()",
+        "UnderlyingTypeString": "func()",
+        "Kind": "func",
+        "PackageImportPath": "github.com/sgtest/go-misc/multiple_mains"
+      },
+      "TreePath": "./main1/main"
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/multiple_mains",
+      "Path": "main1.go/main/x",
+      "Name": "x",
+      "Kind": "var",
+      "File": "multiple_mains/main1.go",
+      "DefStart": 97,
+      "DefEnd": 105,
+      "Local": true,
+      "Data": {
+        "PkgName": "main",
+        "TypeString": "string",
+        "UnderlyingTypeString": "string",
+        "Kind": "var",
+        "PackageImportPath": "github.com/sgtest/go-misc/multiple_mains"
+      },
+      "TreePath": "./main1/main/x"
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/multiple_mains",
+      "Path": "main2.go/main/x",
+      "Name": "x",
+      "Kind": "var",
+      "File": "multiple_mains/main2.go",
+      "DefStart": 97,
+      "DefEnd": 105,
+      "Local": true,
+      "Data": {
+        "PkgName": "main",
+        "TypeString": "string",
+        "UnderlyingTypeString": "string",
+        "Kind": "var",
+        "PackageImportPath": "github.com/sgtest/go-misc/multiple_mains"
+      },
+      "TreePath": "./main2/main/x"
+    }
+  ],
+  "Refs": [
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/multiple_mains",
+      "DefPath": ".",
+      "File": "multiple_mains/main1.go",
+      "Start": 8,
+      "End": 12
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/multiple_mains",
+      "DefPath": ".",
+      "File": "multiple_mains/main2.go",
+      "Start": 8,
+      "End": 12
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/multiple_mains",
+      "DefPath": "main1.go/main/x",
+      "File": "multiple_mains/main1.go",
+      "Start": 111,
+      "End": 112
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/multiple_mains",
+      "DefPath": "main1.go/main/x",
+      "Def": true,
+      "File": "multiple_mains/main1.go",
+      "Start": 97,
+      "End": 98
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/multiple_mains",
+      "DefPath": "main1.go/main",
+      "Def": true,
+      "File": "multiple_mains/main1.go",
+      "Start": 83,
+      "End": 87
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/multiple_mains",
+      "DefPath": "main2.go/main/x",
+      "File": "multiple_mains/main2.go",
+      "Start": 111,
+      "End": 112
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/multiple_mains",
+      "DefPath": "main2.go/main/x",
+      "Def": true,
+      "File": "multiple_mains/main2.go",
+      "Start": 97,
+      "End": 98
+    },
+    {
+      "DefRepo": "github.com/golang/go",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "builtin",
+      "DefPath": "string",
+      "File": "multiple_mains/main1.go",
+      "Start": 99,
+      "End": 105
+    },
+    {
+      "DefRepo": "github.com/golang/go",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "builtin",
+      "DefPath": "string",
+      "File": "multiple_mains/main2.go",
+      "Start": 99,
+      "End": 105
+    }
+  ]
+}

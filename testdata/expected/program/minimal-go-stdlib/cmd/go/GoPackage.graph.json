@@ -1,0 +1,139 @@
+{
+  "Defs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "cmd/go",
+      "Path": ".",
+      "Name": "main",
+      "Kind": "package",
+      "File": "src/cmd/go",
+      "DefStart": 0,
+      "DefEnd": 0,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgName": "main",
+        "TypeString": "",
+        "Kind": "package",
+        "PackageImportPath": "cmd/go"
+      },
+      "TreePath": "."
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "cmd/go",
+      "Path": "main.go/main",
+      "Name": "main",
+      "Kind": "func",
+      "File": "src/cmd/go/main.go",
+      "DefStart": 31,
+      "DefEnd": 313,
+      "Data": {
+        "PkgScope": true,
+        "PkgName": "main",
+        "TypeString": "func()",
+        "UnderlyingTypeString": "func()",
+        "Kind": "func",
+        "PackageImportPath": "cmd/go"
+      },
+      "TreePath": "./main/main"
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "cmd/go",
+      "Path": "main.go/main/v",
+      "Name": "v",
+      "Kind": "var",
+      "File": "src/cmd/go/main.go",
+      "DefStart": 284,
+      "DefEnd": 304,
+      "Local": true,
+      "Data": {
+        "PkgName": "main",
+        "TypeString": "dummy1.MyType",
+        "UnderlyingTypeString": "int",
+        "Kind": "var",
+        "PackageImportPath": "cmd/go"
+      },
+      "TreePath": "./main/main/v"
+    }
+  ],
+  "Refs": [
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "cmd/go",
+      "DefPath": ".",
+      "File": "src/cmd/go/main.go",
+      "Start": 8,
+      "End": 12
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy0",
+      "DefPath": ".",
+      "File": "src/cmd/go/main.go",
+      "Start": 21,
+      "End": 29
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy0",
+      "DefPath": ".",
+      "File": "src/cmd/go/main.go",
+      "Start": 289,
+      "End": 295
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy0",
+      "DefPath": "MyFunc",
+      "File": "src/cmd/go/main.go",
+      "Start": 296,
+      "End": 302
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "cmd/go",
+      "DefPath": "main.go/main/v",
+      "Def": true,
+      "File": "src/cmd/go/main.go",
+      "Start": 284,
+      "End": 285
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "cmd/go",
+      "DefPath": "main.go/main/v",
+      "File": "src/cmd/go/main.go",
+      "Start": 310,
+      "End": 311
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "cmd/go",
+      "DefPath": "main.go/main",
+      "Def": true,
+      "File": "src/cmd/go/main.go",
+      "Start": 36,
+      "End": 40
+    }
+  ],
+  "Docs": [
+    {
+      "Path": "",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\nTest that we can refer to any pkg defined in the stdlib repo, not just\npkgs from a predefined list. This tests that if the stdlib adds pkgs or\ndefinitions, we\u0026#39;ll analyze them instead of just analyzing the code in\nGOROOT.\n\u003c/p\u003e\n",
+      "File": "src/cmd/go/main.go",
+      "Start": 46,
+      "End": 281
+    },
+    {
+      "Path": "",
+      "Format": "text/plain",
+      "Data": "Test that we can refer to any pkg defined in the stdlib repo, not just\npkgs from a predefined list. This tests that if the stdlib adds pkgs or\ndefinitions, we'll analyze them instead of just analyzing the code in\nGOROOT.\n",
+      "File": "src/cmd/go/main.go",
+      "Start": 46,
+      "End": 281
+    }
+  ]
+}

@@ -1,0 +1,204 @@
+{
+  "Defs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "dummy0",
+      "Path": ".",
+      "Name": "dummy0",
+      "Kind": "package",
+      "File": "src/dummy0",
+      "DefStart": 0,
+      "DefEnd": 0,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgName": "dummy0",
+        "TypeString": "",
+        "Kind": "package",
+        "PackageImportPath": "dummy0"
+      },
+      "TreePath": "."
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "dummy0",
+      "Path": "MyFunc",
+      "Name": "MyFunc",
+      "Kind": "func",
+      "File": "src/dummy0/dummy0.go",
+      "DefStart": 356,
+      "DefEnd": 517,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgScope": true,
+        "PkgName": "dummy0",
+        "TypeString": "func() dummy1.MyType",
+        "UnderlyingTypeString": "func() dummy1.MyType",
+        "Kind": "func",
+        "PackageImportPath": "dummy0"
+      },
+      "TreePath": "./MyFunc"
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "dummy0",
+      "Path": "v",
+      "Name": "v",
+      "Kind": "var",
+      "File": "src/dummy0/dummy0_test.go",
+      "DefStart": 37,
+      "DefEnd": 52,
+      "Test": true,
+      "Data": {
+        "PkgScope": true,
+        "PkgName": "dummy0",
+        "TypeString": "dummy1.MyType",
+        "UnderlyingTypeString": "int",
+        "Kind": "var",
+        "PackageImportPath": "dummy0"
+      },
+      "TreePath": "./v"
+    }
+  ],
+  "Refs": [
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy0",
+      "DefPath": ".",
+      "File": "src/dummy0/dummy0.go",
+      "Start": 8,
+      "End": 14
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy0",
+      "DefPath": ".",
+      "File": "src/dummy0/dummy0_test.go",
+      "Start": 8,
+      "End": 14
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy1",
+      "DefPath": ".",
+      "File": "src/dummy0/dummy0.go",
+      "Start": 26,
+      "End": 34
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy1",
+      "DefPath": ".",
+      "File": "src/dummy0/dummy0.go",
+      "Start": 370,
+      "End": 376
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy1",
+      "DefPath": ".",
+      "File": "src/dummy0/dummy0.go",
+      "Start": 497,
+      "End": 503
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy1",
+      "DefPath": ".",
+      "File": "src/dummy0/dummy0_test.go",
+      "Start": 23,
+      "End": 31
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy1",
+      "DefPath": ".",
+      "File": "src/dummy0/dummy0_test.go",
+      "Start": 39,
+      "End": 45
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "fmt",
+      "DefPath": ".",
+      "File": "src/dummy0/dummy0.go",
+      "Start": 36,
+      "End": 41
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "fmt",
+      "DefPath": ".",
+      "File": "src/dummy0/dummy0.go",
+      "Start": 464,
+      "End": 467
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "fmt",
+      "DefPath": "FakePrintf",
+      "File": "src/dummy0/dummy0.go",
+      "Start": 468,
+      "End": 478
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy0",
+      "DefPath": "MyFunc",
+      "Def": true,
+      "File": "src/dummy0/dummy0.go",
+      "Start": 361,
+      "End": 367
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy1",
+      "DefPath": "MyType",
+      "File": "src/dummy0/dummy0.go",
+      "Start": 377,
+      "End": 383
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy1",
+      "DefPath": "MyType",
+      "File": "src/dummy0/dummy0.go",
+      "Start": 504,
+      "End": 510
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy1",
+      "DefPath": "MyType",
+      "File": "src/dummy0/dummy0_test.go",
+      "Start": 46,
+      "End": 52
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy0",
+      "DefPath": "v",
+      "Def": true,
+      "File": "src/dummy0/dummy0_test.go",
+      "Start": 37,
+      "End": 38
+    }
+  ],
+  "Docs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "dummy0",
+      "Path": "MyFunc",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\nMyFunc documentation should be found.\n\u003c/p\u003e\n"
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "dummy0",
+      "Path": "MyFunc",
+      "Format": "text/plain",
+      "Data": "MyFunc documentation should be found.\n"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "Raw": "golang.org/x/net/ipv6",
+    "Target": {
+      "ToRepoCloneURL": "https://github.com/golang/net",
+      "ToUnit": "golang.org/x/net/ipv6",
+      "ToUnitType": "GoPackage",
+      "ToVersionString": "",
+      "ToRevSpec": ""
+    }
+  },
+  {
+    "Raw": "golang.org/x/tools/go/types",
+    "Target": {
+      "ToRepoCloneURL": "https://github.com/golang/tools",
+      "ToUnit": "golang.org/x/tools/go/types",
+      "ToUnitType": "GoPackage",
+      "ToVersionString": "",
+      "ToRevSpec": ""
+    }
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "Raw": "mycompany.example.com/foo",
+    "Target": {
+      "ToRepoCloneURL": "",
+      "ToUnit": "mycompany.example.com/foo",
+      "ToUnitType": "GoPackage",
+      "ToVersionString": "",
+      "ToRevSpec": ""
+    }
+  },
+  {
+    "Raw": "othercompany.example.com/otherpkg",
+    "Target": {
+      "ToRepoCloneURL": "",
+      "ToUnit": "othercompany.example.com/otherpkg",
+      "ToUnitType": "GoPackage",
+      "ToVersionString": "",
+      "ToRevSpec": ""
+    }
+  }
+]

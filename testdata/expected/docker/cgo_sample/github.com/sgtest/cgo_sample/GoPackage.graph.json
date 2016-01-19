@@ -1,0 +1,164 @@
+{
+  "Defs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/cgo_sample",
+      "Path": ".",
+      "Name": "cgo_sample",
+      "Kind": "package",
+      "File": ".",
+      "DefStart": 0,
+      "DefEnd": 0,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgName": "cgo_sample",
+        "TypeString": "",
+        "Kind": "package",
+        "PackageImportPath": "github.com/sgtest/cgo_sample"
+      },
+      "TreePath": "."
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/cgo_sample",
+      "Path": "Bar",
+      "Name": "Bar",
+      "Kind": "func",
+      "File": "bar.go",
+      "DefStart": 255,
+      "DefEnd": 268,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgScope": true,
+        "PkgName": "cgo_sample",
+        "TypeString": "func()",
+        "UnderlyingTypeString": "func()",
+        "Kind": "func",
+        "PackageImportPath": "github.com/sgtest/cgo_sample"
+      },
+      "TreePath": "./Bar"
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/cgo_sample",
+      "Path": "Foo",
+      "Name": "Foo",
+      "Kind": "func",
+      "File": "foo.go",
+      "DefStart": 45,
+      "DefEnd": 110,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgScope": true,
+        "PkgName": "cgo_sample",
+        "TypeString": "func()",
+        "UnderlyingTypeString": "func()",
+        "Kind": "func",
+        "PackageImportPath": "github.com/sgtest/cgo_sample"
+      },
+      "TreePath": "./Foo"
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/cgo_sample",
+      "Path": "Foo/s",
+      "Name": "s",
+      "Kind": "var",
+      "File": "foo.go",
+      "DefStart": 59,
+      "DefEnd": 92,
+      "Local": true,
+      "Data": {
+        "PkgName": "cgo_sample",
+        "TypeString": "invalid type",
+        "UnderlyingTypeString": "invalid type",
+        "Kind": "var",
+        "PackageImportPath": "github.com/sgtest/cgo_sample"
+      },
+      "TreePath": "./Foo/s"
+    }
+  ],
+  "Refs": [
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/cgo_sample",
+      "DefPath": ".",
+      "File": "bar.go",
+      "Start": 8,
+      "End": 18
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/cgo_sample",
+      "DefPath": ".",
+      "File": "foo.go",
+      "Start": 8,
+      "End": 18
+    },
+    {
+      "DefRepo": "github.com/golang/go",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "fmt",
+      "DefPath": ".",
+      "File": "foo.go",
+      "Start": 38,
+      "End": 43
+    },
+    {
+      "DefRepo": "github.com/golang/go",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "fmt",
+      "DefPath": ".",
+      "File": "foo.go",
+      "Start": 94,
+      "End": 97
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/cgo_sample",
+      "DefPath": "Bar",
+      "Def": true,
+      "File": "bar.go",
+      "Start": 260,
+      "End": 263
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/cgo_sample",
+      "DefPath": "Foo/s",
+      "File": "foo.go",
+      "Start": 106,
+      "End": 107
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/cgo_sample",
+      "DefPath": "Foo/s",
+      "Def": true,
+      "File": "foo.go",
+      "Start": 59,
+      "End": 60
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/cgo_sample",
+      "DefPath": "Foo",
+      "Def": true,
+      "File": "foo.go",
+      "Start": 50,
+      "End": 53
+    },
+    {
+      "DefRepo": "github.com/golang/go",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "fmt",
+      "DefPath": "Println",
+      "File": "foo.go",
+      "Start": 98,
+      "End": 105
+    }
+  ]
+}
