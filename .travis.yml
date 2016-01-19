@@ -13,9 +13,9 @@ before_install:
   - export GOBIN=$HOME/gopath/bin
 
 install:
-  - go get github.com/sourcegraph/srclib/cmd/srclib
-  - cd $HOME/gopath/src/sourcegraph.com/sourcegraph/srclib && git checkout 2.0
-  - go install github.com/sourcegraph/srclib/cmd/srclib
+  - go get -d sourcegraph.com/sourcegraph/srclib/cmd/srclib
+  - cd $HOME/gopath/src/sourcegraph.com/sourcegraph/srclib && git checkout 2.0 && cd -
+  - go install sourcegraph.com/sourcegraph/srclib/cmd/srclib
   - mkdir -p $HOME/.srclib/sourcegraph.com/sourcegraph
   - ln -s $HOME/gopath/src/sourcegraph.com/sourcegraph/srclib-go $HOME/.srclib/sourcegraph.com/sourcegraph/srclib-go
   - make
