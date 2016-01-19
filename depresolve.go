@@ -115,7 +115,12 @@ func (c *DepResolveCmd) Execute(args []string) error {
 		outData = out2
 	}
 
-	if err := json.NewEncoder(os.Stdout).Encode(outData); err != nil {
+	outBytes, err := json.MarshalIndent(outData, "", "  ")
+	if err != nil {
+		return err
+	}
+	_, err = os.Stdout.Write(outBytes)
+	if err != nil {
 		return err
 	}
 	return nil
