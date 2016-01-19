@@ -6,9 +6,10 @@ import (
 
 	"sourcegraph.com/sourcegraph/srclib-go/gog/definfo"
 	"sourcegraph.com/sourcegraph/srclib/graph"
+	"sourcegraph.com/sqs/pbtypes"
 )
 
-func defInfo(si DefData) json.RawMessage {
+func defInfo(si DefData) pbtypes.RawMessage {
 	b, err := json.Marshal(si)
 	if err != nil {
 		panic(err)
@@ -26,7 +27,7 @@ func TestDefFormatter(t *testing.T) {
 			// unqualified
 			def: &graph.Def{
 				Name: "name",
-				Data: json.RawMessage(`{}`),
+				Data: pbtypes.RawMessage(`{}`),
 			},
 			wantNames: map[graph.Qualification]string{graph.Unqualified: "name"},
 		},

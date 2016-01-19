@@ -13,9 +13,9 @@ before_install:
   - export GOBIN=$HOME/gopath/bin
 
 install:
-  - go get github.com/tools/godep
-  - godep get github.com/sourcegraph/srclib/cmd/srclib
-  - srclib toolchain add sourcegraph.com/sourcegraph/srclib-go
+  - go get github.com/sourcegraph/srclib/cmd/srclib
+  - mkdir -p $HOME/.srclib/sourcegraph.com/sourcegraph
+  - ln -s $HOME/gopath/src/sourcegraph.com/sourcegraph/srclib-go $HOME/.srclib/sourcegraph.com/sourcegraph/srclib-go
   - make
 
 # TODO(sqs): add `go test`
