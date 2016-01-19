@@ -35,7 +35,7 @@ func TestPaths(t *testing.T) {
 		// a persistent issue).
 		{`func init() { x:=0;_=x};func init() { x:=0;_=x}`, []defPath{{"foo", "init$sources[0]28/x"}, {"foo", "init$sources[0]52/x"}}, nil},
 
-		{`func a() { const x = false; _ = x}; const x`, []defPath{{"foo", "a/x"}, {"foo", "x"}}, nil},
+		{`func a() { const x = false; _ = x}; const x = 1`, []defPath{{"foo", "a/x"}, {"foo", "x"}}, nil},
 	}
 
 	for _, c := range cases {
