@@ -13,12 +13,8 @@ before_install:
   - export GOBIN=$HOME/gopath/bin
 
 install:
-  - wget -NO /tmp/srclib.zip 'https://api.equinox.io/1/Applications/ap_BQxVz1iWMxmjQnbVGd85V58qz6/Updates/Asset/srclib-0.0.42.zip?os=linux&arch=amd64&channel=stable'
-  - unzip /tmp/srclib*.zip -d $HOME/gopath/bin
-  - mv $HOME/gopath/bin/srclib-* $HOME/gopath/bin/srclib
-  # TODO(keegancsmith) update srclib so that srclib test executes srclib
-  - ln -s $HOME/gopath/bin/srclib $HOME/gopath/bin/src
-  - chmod +x $HOME/gopath/bin/src*
+  - go get github.com/tools/godep
+  - godep get github.com/sourcegraph/srclib/cmd/srclib
   - srclib toolchain add sourcegraph.com/sourcegraph/srclib-go
   - make
 

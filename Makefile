@@ -25,4 +25,4 @@ srctest:
 # testdata dir
 	git submodule update --init
 	GOPATH=${PWD}/.test go get -d golang.org/x/net/ipv6 golang.org/x/tools/go/types
-	GOPATH=${PWD}/.test src test -m program
+	GOPATH=${PWD}/testdata/case:${PWD}/.test srclib test
