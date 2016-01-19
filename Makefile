@@ -13,11 +13,9 @@ ${SRCLIB_GO_EXE}: $(shell /usr/bin/find . -type f -and -name '*.go' -not -path '
 	.bin/godep go build -o ${SRCLIB_GO_EXE}
 
 test: gotest srctest
-	.bin/godep go test ./...
-	src test -m program
 
 gotest:
-	.bin/godep go test ./...
+	.bin/godep go test ./golang_def ./gog
 
 srctest:
 # go1.5 excludes repos whose ImportPath would include testdata. Since all the
