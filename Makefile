@@ -1,5 +1,21 @@
+SGX_OS_NAME := $(shell uname -o 2>/dev/null || uname -s)
+
+ifeq "$(SGX_OS_NAME)" "Cygwin"
+	CMD := cmd /C
+else
+	ifeq "$(SGX_OS_NAME)" "Msys"
+		CMD := cmd //C
+	else
+	ifneq (,$(findstring MINGW, $(SGX_OS_NAME)))
+		CMD := cmd //C
+	endif
+	endif
+endif
+
 ifeq ($(OS),Windows_NT)
 	SRCLIB_GO_EXE := .bin/srclib-go.exe
+	PWD := $(shell $(CMD) "echo %cd%")
+	PWD := $(subst \,/,$(PWD))
 else
 	SRCLIB_GO_EXE := .bin/srclib-go
 endif
@@ -9,7 +25,7 @@ endif
 install: ${SRCLIB_GO_EXE}
 
 ${SRCLIB_GO_EXE}: $(shell /usr/bin/find . -type f -and -name '*.go' -not -path './Godeps/*')
-	GOBIN=$(CURDIR)/.bin go get github.com/tools/godep
+	GOBIN=$(PWD)/.bin go get github.com/tools/godep
 	.bin/godep go build -o ${SRCLIB_GO_EXE}
 
 test: gotest srctest
