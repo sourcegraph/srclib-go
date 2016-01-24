@@ -1,11 +1,12 @@
 package toolchain
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"sort"
-	"strings"
 
 	"github.com/kr/fs"
 	"sourcegraph.com/sourcegraph/srclib"
@@ -14,24 +15,37 @@ import (
 // Lookup finds a toolchain by path in the SRCLIBPATH. For each DIR in
 // SRCLIBPATH, it checks for the existence of DIR/PATH/Srclibtoolchain.
 func Lookup(path string) (*Info, error) {
-	if noToolchains {
-		return nil, nil
-	}
-
 	path = filepath.Clean(path)
 
-	matches, err := lookInPaths(filepath.Join(path, ConfigFilename), srclib.Path)
+	dir, err := Dir(path)
 	if err != nil {
 		return nil, err
 	}
 
-	if len(matches) == 0 {
-		return nil, os.ErrNotExist
+	// Ensure it exists.
+	fi, err := os.Stat(dir)
+	if err != nil {
+		return nil, err
+	}
+	if !fi.Mode().IsDir() {
+		return nil, &os.PathError{Op: "toolchain.Lookup", Path: dir, Err: errors.New("not a directory")}
+	}
+
+	return newInfo(path, dir, ConfigFilename)
+}
+
+func lookupToolchain(toolchainPath string) (string, error) {
+	matches, err := lookInPaths(filepath.Join(toolchainPath, ConfigFilename), srclib.Path)
+	if err != nil {
+		return "", err
 	}
 	if len(matches) > 1 {
-		return nil, fmt.Errorf("shadowed toolchain path %q (toolchains: %v)", path, matches)
+		return "", fmt.Errorf("shadowed toolchain path %q (toolchains: %v)", toolchainPath, matches)
 	}
-	return newInfo(path, filepath.Dir(matches[0]), ConfigFilename)
+	if len(matches) == 0 {
+		return "", &os.PathError{Op: "lookupToolchain", Path: toolchainPath, Err: os.ErrNotExist}
+	}
+	return filepath.Dir(matches[0]), nil
 }
 
 // List finds all toolchains in the SRCLIBPATH.
@@ -40,14 +54,10 @@ func Lookup(path string) (*Info, error) {
 // dir (with a DIR/Srclibtoolchain file), then none of DIR's
 // subdirectories are searched for toolchains.
 func List() ([]*Info, error) {
-	if noToolchains {
-		return nil, nil
-	}
-
 	var found []*Info
 	seen := map[string]string{}
 
-	dirs := strings.Split(srclib.Path, ":")
+	dirs := filepath.SplitList(srclib.Path)
 
 	// maps symlinked trees to their original path
 	origDirs := map[string]string{}
@@ -59,7 +69,10 @@ func List() ([]*Info, error) {
 		}
 		w := fs.Walk(dir)
 		for w.Step() {
-			if w.Err() != nil {
+			if err := w.Err(); err != nil {
+				if w.Path() == dir && os.IsNotExist(err) {
+					return nil, nil
+				}
 				return nil, w.Err()
 			}
 			fi := w.Stat()
@@ -68,12 +81,31 @@ func List() ([]*Info, error) {
 			if path != dir && (name[0] == '.' || name[0] == '_') {
 				w.SkipDir()
 			} else if fi.Mode()&os.ModeSymlink != 0 {
-				// traverse symlinks but refer to symlinked trees' toolchains using
-				// the path to them through the original entry in SRCLIBPATH
-				dirs = append(dirs, path+"/")
-				origDirs[path+"/"] = dir
+				// Check if symlink points to a directory.
+				if sfi, err := os.Stat(path); err == nil {
+					if !sfi.IsDir() {
+						continue
+					}
+				} else if os.IsNotExist(err) {
+					continue
+				} else {
+					return nil, err
+				}
+
+				targetPath, err := os.Readlink(path)
+				if err != nil {
+					return nil, err
+				}
+
+				if _, traversed := origDirs[targetPath]; !traversed {
+					// traverse symlinks but refer to symlinked trees' toolchains using
+					// the path to them through the original entry in SRCLIBPATH
+					dirs = append(dirs, targetPath)
+					origDirs[targetPath], _ = filepath.Rel(dir, path)
+				}
 			} else if fi.Mode().IsDir() {
 				// Check for Srclibtoolchain file in this dir.
+
 				if _, err := os.Stat(filepath.Join(path, ConfigFilename)); os.IsNotExist(err) {
 					continue
 				} else if err != nil {
@@ -83,14 +115,17 @@ func List() ([]*Info, error) {
 				// Found a Srclibtoolchain file.
 				path = filepath.Clean(path)
 
-				var base string
+				var toolchainPath string
 				if orig, present := origDirs[dir]; present {
-					base = orig
+					toolchainPath, _ = filepath.Rel(dir, path)
+					if toolchainPath == "." {
+						toolchainPath = ""
+					}
+					toolchainPath = orig + toolchainPath
 				} else {
-					base = dir
+					toolchainPath, _ = filepath.Rel(dir, path)
 				}
-
-				toolchainPath, _ := filepath.Rel(base, path)
+				toolchainPath = filepath.ToSlash(toolchainPath)
 
 				if otherDir, seen := seen[toolchainPath]; seen {
 					return nil, fmt.Errorf("saw 2 toolchains at path %s in dirs %s and %s", toolchainPath, otherDir, path)
@@ -114,20 +149,20 @@ func List() ([]*Info, error) {
 }
 
 func newInfo(toolchainPath, dir, configFile string) (*Info, error) {
-	dockerfile := "Dockerfile"
-	if _, err := os.Stat(filepath.Join(dir, dockerfile)); os.IsNotExist(err) {
-		dockerfile = ""
-	} else if err != nil {
-		return nil, err
+	prog := filepath.Join(".bin", filepath.Base(toolchainPath))
+	if runtime.GOOS == "windows" {
+		prog = winExe(dir, prog)
 	}
 
-	prog := filepath.Join(".bin", filepath.Base(toolchainPath))
-	if fi, err := os.Stat(filepath.Join(dir, prog)); os.IsNotExist(err) {
-		prog = ""
-	} else if err != nil {
-		return nil, err
-	} else if !(fi.Mode().Perm()&0111 > 0) {
-		return nil, fmt.Errorf("installed toolchain program %q is not executable (+x)", prog)
+	if runtime.GOOS != "windows" {
+		fi, err := os.Stat(filepath.Join(dir, prog))
+		if os.IsNotExist(err) {
+			prog = ""
+		} else {
+			if fi.Mode().Perm()&0111 == 0 {
+				return nil, fmt.Errorf("installed toolchain program %q is not executable (+x)", prog)
+			}
+		}
 	}
 
 	return &Info{
@@ -135,7 +170,6 @@ func newInfo(toolchainPath, dir, configFile string) (*Info, error) {
 		Dir:        dir,
 		ConfigFile: configFile,
 		Program:    prog,
-		Dockerfile: dockerfile,
 	}, nil
 }
 
@@ -144,11 +178,11 @@ func newInfo(toolchainPath, dir, configFile string) (*Info, error) {
 func lookInPaths(pattern string, paths string) ([]string, error) {
 	var found []string
 	seen := map[string]struct{}{}
-	for _, dir := range strings.Split(paths, ":") {
+	for _, dir := range filepath.SplitList(paths) {
 		if dir == "" {
 			dir = "."
 		}
-		matches, err := filepath.Glob(dir + "/" + pattern)
+		matches, err := filepath.Glob(filepath.Join(dir, pattern))
 		if err != nil {
 			return nil, err
 		}
@@ -162,4 +196,21 @@ func lookInPaths(pattern string, paths string) ([]string, error) {
 	}
 	sort.Strings(found)
 	return found, nil
+}
+
+// searches for matching Windows executable (.exe, .bat, .cmd)
+func winExe(dir string, program string) string {
+	candidate := program + ".exe"
+	if _, err := os.Stat(filepath.Join(dir, candidate)); err == nil {
+		return candidate
+	}
+	candidate = program + ".bat"
+	if _, err := os.Stat(filepath.Join(dir, candidate)); err == nil {
+		return candidate
+	}
+	candidate = program + ".cmd"
+	if _, err := os.Stat(filepath.Join(dir, candidate)); err == nil {
+		return candidate
+	}
+	return ""
 }

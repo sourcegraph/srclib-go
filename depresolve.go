@@ -11,7 +11,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/MarkMcCaskey/gddo/gosrc"
+	"github.com/golang/gddo/gosrc"
 
 	"sourcegraph.com/sourcegraph/srclib/dep"
 	"sourcegraph.com/sourcegraph/srclib/unit"
@@ -59,7 +59,7 @@ func (c *DepResolveCmd) Execute(args []string) error {
 
 		res[i] = &dep.Resolution{Raw: rawDep}
 
-		rt, err := ResolveDep(importPath, string(unit.Repo))
+		rt, err := ResolveDep(importPath)
 		if err != nil {
 			res[i].Error = err.Error()
 			continue
@@ -103,7 +103,7 @@ func (t *targetCache) Put(path string, target *dep.ResolvedTarget) {
 
 var resolveCache targetCache
 
-func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, error) {
+func ResolveDep(importPath string) (*dep.ResolvedTarget, error) {
 	// Look up in cache.
 	if target := resolveCache.Get(importPath); target != nil {
 		return target, nil
@@ -115,21 +115,11 @@ func ResolveDep(importPath string, repoImportPath string) (*dep.ResolvedTarget, 
 	}
 
 	// Check if this import path is in this tree.
-	if pkg, err := buildContext.Import(importPath, "", build.FindOnly); err == nil && (pathHasPrefix(pkg.Dir, cwd) || (virtualCWD != "" && pathHasPrefix(pkg.Dir, virtualCWD)) || (dockerCWD != "" && pathHasPrefix(pkg.Dir, dockerCWD)) || isInEffectiveConfigGOPATH(pkg.Dir)) {
+	if pkg, err := buildContext.Import(importPath, "", build.FindOnly); err == nil && (pathHasPrefix(pkg.Dir, cwd) || isInEffectiveConfigGOPATH(pkg.Dir)) {
 		// TODO(sqs): do we want to link refs to vendored deps to
 		// their vendored code inside this repo? that's what it's
 		// doing now. The alternative is to link to the external repo
 		// that the code was vendored from.
-		return &dep.ResolvedTarget{
-			// empty ToRepoCloneURL to indicate it's from this repository
-			ToRepoCloneURL: "",
-			ToUnit:         importPath,
-			ToUnitType:     "GoPackage",
-		}, nil
-	}
-
-	// Check if this import path is in this repository.
-	if strings.HasPrefix(importPath, repoImportPath) {
 		return &dep.ResolvedTarget{
 			// empty ToRepoCloneURL to indicate it's from this repository
 			ToRepoCloneURL: "",

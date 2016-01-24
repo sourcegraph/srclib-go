@@ -3,7 +3,7 @@ package store
 import (
 	"sync"
 
-	"code.google.com/p/rog-go/parallel"
+	"github.com/rogpeppe/rog-go/parallel"
 	"sourcegraph.com/sourcegraph/srclib/graph"
 )
 
@@ -62,35 +62,7 @@ func (s unitStores) Defs(fs ...DefFilter) ([]*graph.Def, error) {
 		}
 
 		par.Do(func() error {
-			// If the filters list includes any unitDefOffsetsFilter, then
-			// clone and transform that filter into a defOffsetsFilter
-			// that only includes offsets to fetch from the source unit of
-			// the store. (This is necessary because the store doesn't
-			// know which unit it holds data for, so it doesn't know which
-			// offsets to look up given just a unitDefOffsetsFilter
-			// map[unit.ID2]byteOffsets map.)
-			fs2 := fs
-			for i, f := range fs {
-				switch f := f.(type) {
-				case unitDefOffsetsFilter:
-					fs2 = make([]DefFilter, len(fs))
-					for j := range fs {
-						if j == i {
-							// Transform unitDefOffsetsFilter to
-							// defOffsetsFilter for the current source
-							// unit.
-							fs2[j] = defOffsetsFilter(f[u])
-						} else {
-							// Copy existing filter if it's of any other
-							// type. (Assumes the filters list contains no
-							// more than 1 unitDefOffsetsFilters.)
-							fs2[j] = fs[j]
-						}
-					}
-				}
-			}
-
-			defs, err := us.Defs(fs2...)
+			defs, err := us.Defs(filtersForUnit(u, fs).([]DefFilter)...)
 			if err != nil && !isStoreNotExist(err) {
 				return err
 			}
@@ -108,7 +80,7 @@ func (s unitStores) Defs(fs ...DefFilter) ([]*graph.Def, error) {
 	return allDefs, err
 }
 
-var c_unitStores_Refs_last_numUnitsQueried = 0
+var c_unitStores_Refs_last_numUnitsQueried = &counter{count: new(int64)}
 
 func (s unitStores) Refs(f ...RefFilter) ([]*graph.Ref, error) {
 	uss, err := openUnitStores(s.opener, f)
@@ -116,32 +88,50 @@ func (s unitStores) Refs(f ...RefFilter) ([]*graph.Ref, error) {
 		return nil, err
 	}
 
-	c_unitStores_Refs_last_numUnitsQueried = 0
-	var allRefs []*graph.Ref
+	c_unitStores_Refs_last_numUnitsQueried.set(0)
+	var (
+		allRefsMu sync.Mutex
+		allRefs   []*graph.Ref
+	)
+	par := parallel.NewRun(storeFetchPar)
 	for u, us := range uss {
 		if us == nil {
 			continue
 		}
+		u, us := u, us
 
-		c_unitStores_Refs_last_numUnitsQueried++
-		setImpliedUnit(f, u)
-		refs, err := us.Refs(f...)
-		if err != nil && !isStoreNotExist(err) {
-			return nil, err
-		}
-		for _, ref := range refs {
-			ref.UnitType = u.Type
-			ref.Unit = u.Name
-			if ref.DefUnitType == "" {
-				ref.DefUnitType = u.Type
+		c_unitStores_Refs_last_numUnitsQueried.increment()
+
+		par.Do(func() error {
+			if _, moreOK := LimitRemaining(f); !moreOK {
+				return nil
 			}
-			if ref.DefUnit == "" {
-				ref.DefUnit = u.Name
+			fCopy := filtersForUnit(u, f).([]RefFilter)
+			fCopy = withImpliedUnit(fCopy, u)
+
+			refs, err := us.Refs(fCopy...)
+			if err != nil && !isStoreNotExist(err) {
+				return err
 			}
-		}
-		allRefs = append(allRefs, refs...)
+			for _, ref := range refs {
+				ref.UnitType = u.Type
+				ref.Unit = u.Name
+				if ref.DefUnitType == "" {
+					ref.DefUnitType = u.Type
+				}
+				if ref.DefUnit == "" {
+					ref.DefUnit = u.Name
+				}
+			}
+
+			allRefsMu.Lock()
+			allRefs = append(allRefs, refs...)
+			allRefsMu.Unlock()
+			return nil
+		})
 	}
-	return allRefs, nil
+	err = par.Wait()
+	return allRefs, err
 }
 
 func cleanForImport(data *graph.Output, repo, unitType, unit string) {

@@ -1,0 +1,25 @@
+syntax = "proto3";
+package unit;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+option (gogoproto.goproto_getters_all) = false;
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+
+// A RepoSourceUnit is the "concrete" form of SourceUnit that includes
+// information about which repository (and commit) the source unit
+// exists in. In general, type SourceUnit is used during analysis of a
+// single source unit and type RepoSourceUnit is used afterwards
+// (either in cross-source-unit analysis, such as cross-reference
+// resolution, or in after-the-fact DB/API queries).
+message RepoSourceUnit {
+	string repo = 1;
+	string commit_id = 2 [(gogoproto.customname) = "CommitID"];
+	string unit_type = 3;
+	string unit = 4;
+
+	// Data is the JSON of the underlying SourceUnit.
+	bytes data = 5;
+}

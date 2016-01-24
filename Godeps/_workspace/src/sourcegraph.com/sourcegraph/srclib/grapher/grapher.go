@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
-	"strings"
 
 	"github.com/sqs/fileset"
 
@@ -76,9 +75,6 @@ func ensureOffsetsAreByteOffsets(dir string, output *graph.Output) {
 	for _, d := range output.Docs {
 		fix(d.File, &d.Start, &d.End)
 	}
-	for _, a := range output.Anns {
-		fix(a.File, &a.Start, &a.End)
-	}
 }
 
 func sortedOutput(o *graph.Output) *graph.Output {
@@ -90,19 +86,25 @@ func sortedOutput(o *graph.Output) *graph.Output {
 }
 
 // NormalizeData sorts data and performs other postprocessing.
-func NormalizeData(currentRepoURI, unitType, dir string, o *graph.Output) error {
+func NormalizeData(unitType, dir string, o *graph.Output) error {
 	for _, ref := range o.Refs {
 		if ref.DefRepo != "" {
-			ref.DefRepo = graph.MakeURI(string(ref.DefRepo))
-		} else {
-			ref.DefRepo = currentRepoURI
+			uri, err := graph.TryMakeURI(string(ref.DefRepo))
+			if err != nil {
+				return err
+			}
+			ref.DefRepo = uri
 		}
-		if ref.Repo == "" {
-			ref.Repo = currentRepoURI
+		if ref.Repo != "" {
+			uri, err := graph.TryMakeURI(string(ref.Repo))
+			if err != nil {
+				return err
+			}
+			ref.Repo = uri
 		}
 	}
 
-	if unitType != "GoPackage" && unitType != "Dockerfile" && !strings.HasPrefix(unitType, "Java") {
+	if unitType != "GoPackage" && unitType != "Dockerfile" && unitType != "NugetPackage" {
 		ensureOffsetsAreByteOffsets(dir, o)
 	}
 

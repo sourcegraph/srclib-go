@@ -2,15 +2,17 @@ package store
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"os"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
-	"code.google.com/p/rog-go/parallel"
+	"github.com/rogpeppe/rog-go/parallel"
 
 	"github.com/kr/fs"
 	"golang.org/x/tools/godoc/vfs"
@@ -37,11 +39,11 @@ type fsMultiRepoStore struct {
 	repoStores
 }
 
-var _ MultiRepoStoreImporter = (*fsMultiRepoStore)(nil)
+var _ MultiRepoStoreImporterIndexer = (*fsMultiRepoStore)(nil)
 
 // NewFSMultiRepoStore creates a new repository store (that can be
 // imported into) that is backed by files on a filesystem.
-func NewFSMultiRepoStore(fs rwvfs.WalkableFileSystem, conf *FSMultiRepoStoreConf) MultiRepoStoreImporter {
+func NewFSMultiRepoStore(fs rwvfs.WalkableFileSystem, conf *FSMultiRepoStoreConf) MultiRepoStoreImporterIndexer {
 	if conf == nil {
 		conf = &FSMultiRepoStoreConf{}
 	}
@@ -147,7 +149,7 @@ func (s *fsMultiRepoStore) Repos(f ...RepoFilter) ([]string, error) {
 
 func (s *fsMultiRepoStore) openRepoStore(repo string) RepoStore {
 	subpath := s.fs.Join(s.RepoToPath(repo)...)
-	return NewFSRepoStore(rwvfs.Sub(s.fs, subpath))
+	return NewFSRepoStore(rwvfs.Walkable(rwvfs.Sub(s.fs, subpath)))
 }
 
 func (s *fsMultiRepoStore) openAllRepoStores() (map[string]RepoStore, error) {
@@ -188,7 +190,7 @@ func (s *fsMultiRepoStore) String() string { return "fsMultiRepoStore" }
 
 // A fsRepoStore is a RepoStore that stores data on a VFS.
 type fsRepoStore struct {
-	fs rwvfs.FileSystem
+	fs rwvfs.WalkableFileSystem
 	treeStores
 }
 
@@ -197,7 +199,7 @@ const SrclibStoreDir = ".srclib-store"
 
 // NewFSRepoStore creates a new repository store (that can be
 // imported into) that is backed by files on a filesystem.
-func NewFSRepoStore(fs rwvfs.FileSystem) RepoStoreImporter {
+func NewFSRepoStore(fs rwvfs.WalkableFileSystem) RepoStoreImporter {
 	setCreateParentDirs(fs)
 	rs := &fsRepoStore{fs: fs}
 	rs.treeStores = treeStores{rs}
@@ -205,14 +207,14 @@ func NewFSRepoStore(fs rwvfs.FileSystem) RepoStoreImporter {
 }
 
 func (s *fsRepoStore) Versions(f ...VersionFilter) ([]*Version, error) {
-	versionDirs, err := s.versionDirs()
+	allVersions, err := s.listAllVersions()
 	if err != nil {
 		return nil, err
 	}
 
 	var versions []*Version
-	for _, dir := range versionDirs {
-		version := &Version{CommitID: path.Base(dir)}
+	for _, v := range allVersions {
+		version := &Version{CommitID: path.Base(v)}
 		if versionFilters(f).SelectVersion(version) {
 			versions = append(versions, version)
 		}
@@ -220,8 +222,19 @@ func (s *fsRepoStore) Versions(f ...VersionFilter) ([]*Version, error) {
 	return versions, nil
 }
 
-func (s *fsRepoStore) versionDirs() ([]string, error) {
-	entries, err := s.fs.ReadDir(".")
+const (
+	versionsDir = "__versions"
+
+	// We can remove version migration in a few months (from 2015 Dec
+	// 10).
+	enableMigrateVersions = true
+)
+
+func (s *fsRepoStore) listAllVersions() ([]string, error) {
+	entries, err := s.fs.ReadDir(versionsDir)
+	if (os.IsNotExist(err) || (err == nil && len(entries) == 0)) && enableMigrateVersions {
+		return s.migrateVersions()
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -232,12 +245,85 @@ func (s *fsRepoStore) versionDirs() ([]string, error) {
 	return dirs, nil
 }
 
+// migrateVersions is a temporary function that migrates versions from
+// being encoded as the dir names under the root, to being encoded as
+// the names of empty files in a __versions dir.
+//
+// migrateVersions returns the list of versions so that listing them
+// does not require another operation.
+func (s *fsRepoStore) migrateVersions() ([]string, error) {
+	versions, err := s.listAllVersions_old()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := s.fs.Mkdir(versionsDir); err != nil && !os.IsExist(err) {
+		return nil, err
+	}
+
+	writeEmptyVersionFile := func(version string) error {
+		f, err := s.fs.Create(s.fs.Join(versionsDir, version))
+		if err != nil {
+			return err
+		}
+		f.Write(nil)
+		return f.Close()
+	}
+	for _, v := range versions {
+		if err := writeEmptyVersionFile(v); err != nil {
+			return nil, fmt.Errorf("during versions migration: %s (migration could not be rolled back, versions list will be incomplete!)", err)
+		}
+	}
+
+	return versions, nil
+}
+
+// listAllVersions_old is the old way of listing versions, where the
+// versions were the names of directories. When the storage backend
+// was S3 or Google Cloud Storage, this translated into listing key
+// prefixes, which is an extremely slow operation. This method is kept
+// around to aid in migration.
+func (s *fsRepoStore) listAllVersions_old() ([]string, error) {
+	entries, err := s.fs.ReadDir(".")
+	if err != nil {
+		return nil, err
+	}
+	dirs := make([]string, 0, len(entries))
+	for _, e := range entries {
+		if e.Name() == versionsDir {
+			continue
+		}
+		dirs = append(dirs, e.Name())
+	}
+	return dirs, nil
+}
+
 func (s *fsRepoStore) Import(commitID string, unit *unit.SourceUnit, data graph.Output) error {
 	if unit != nil {
 		cleanForImport(&data, "", unit.Type, unit.Name)
 	}
 	ts := s.newTreeStore(commitID)
-	return ts.Import(unit, data)
+	if err := ts.Import(unit, data); err != nil {
+		return err
+	}
+
+	if err := s.createVersion(commitID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *fsRepoStore) createVersion(commitID string) error {
+	if err := s.fs.Mkdir(versionsDir); err != nil && !os.IsExist(err) {
+		return err
+	}
+	f, err := s.fs.Create(s.fs.Join(versionsDir, commitID))
+	if err != nil {
+		return err
+	}
+	f.Write(nil)
+	return f.Close()
 }
 
 func (s *fsRepoStore) Index(commitID string) error {
@@ -254,7 +340,8 @@ func (s *fsRepoStore) treeStoreFS(commitID string) rwvfs.FileSystem {
 func (s *fsRepoStore) newTreeStore(commitID string) TreeStoreImporter {
 	fs := s.treeStoreFS(commitID)
 	if useIndexedStore {
-		return newIndexedTreeStore(fs)
+		cacheKey := fs.String()
+		return newIndexedTreeStore(fs, cacheKey)
 	}
 	return newFSTreeStore(fs)
 }
@@ -264,13 +351,13 @@ func (s *fsRepoStore) openTreeStore(commitID string) TreeStore {
 }
 
 func (s *fsRepoStore) openAllTreeStores() (map[string]TreeStore, error) {
-	versionDirs, err := s.versionDirs()
+	versions, err := s.listAllVersions()
 	if err != nil {
 		return nil, err
 	}
 
-	tss := make(map[string]TreeStore, len(versionDirs))
-	for _, dir := range versionDirs {
+	tss := make(map[string]TreeStore, len(versions))
+	for _, dir := range versions {
 		commitID := path.Base(dir)
 		tss[commitID] = s.openTreeStore(commitID)
 	}
@@ -293,7 +380,7 @@ func newFSTreeStore(fs rwvfs.FileSystem) *fsTreeStore {
 	return ts
 }
 
-var c_fsTreeStore_unitsOpened = 0 // counter
+var c_fsTreeStore_unitsOpened = &counter{count: new(int64)}
 
 func (s *fsTreeStore) Units(f ...UnitFilter) ([]*unit.SourceUnit, error) {
 	var unitFilenames []string
@@ -317,7 +404,7 @@ func (s *fsTreeStore) Units(f ...UnitFilter) ([]*unit.SourceUnit, error) {
 
 	var units []*unit.SourceUnit
 	for _, filename := range unitFilenames {
-		c_fsTreeStore_unitsOpened++
+		c_fsTreeStore_unitsOpened.increment()
 		unit, err := s.openUnitFile(filename)
 		if err != nil {
 			return nil, err
@@ -358,7 +445,7 @@ func (s *fsTreeStore) unitFilenames() ([]string, error) {
 		}
 		fi := w.Stat()
 		if fi.Mode().IsRegular() && strings.HasSuffix(fi.Name(), unitFileSuffix) {
-			files = append(files, w.Path())
+			files = append(files, filepath.ToSlash(w.Path()))
 		}
 	}
 	return files, nil
@@ -405,9 +492,9 @@ func (s *fsTreeStore) openUnitStore(u unit.ID2) UnitStore {
 	filename := s.unitFilename(u.Type, u.Name)
 	dir := strings.TrimSuffix(filename, unitFileSuffix)
 	if useIndexedStore {
-		return newIndexedUnitStore(rwvfs.Sub(s.fs, dir))
+		return newIndexedUnitStore(rwvfs.Sub(s.fs, dir), u.String())
 	}
-	return &fsUnitStore{fs: rwvfs.Sub(s.fs, dir)}
+	return &fsUnitStore{fs: rwvfs.Sub(s.fs, dir), label: u.String()}
 }
 
 func (s *fsTreeStore) openAllUnitStores() (map[unit.ID2]UnitStore, error) {
@@ -442,6 +529,8 @@ type fsUnitStore struct {
 	// written to and read from. The store may create multiple files
 	// and arbitrary directory trees in fs (for indexes, etc.).
 	fs rwvfs.FileSystem
+
+	label string // a human-readable label (included in String() output)
 }
 
 const (
@@ -454,7 +543,7 @@ func (s *fsUnitStore) Defs(fs ...DefFilter) (defs []*graph.Def, err error) {
 		return s.defsAtOffsets(byteOffsets(f), fs)
 	}
 
-	vlog.Printf("fsUnitStore: reading defs with filters %v...", fs)
+	vlog.Printf("%s: reading defs with filters %v...", s, fs)
 	f, err := s.fs.Open(unitDefsFilename)
 	if err != nil {
 		return nil, err
@@ -474,7 +563,7 @@ func (s *fsUnitStore) Defs(fs ...DefFilter) (defs []*graph.Def, err error) {
 		} else if err != nil {
 			return nil, err
 		}
-		if defFilters(fs).SelectDef(def) {
+		if DefFilters(fs).SelectDef(def) {
 			defs = append(defs, def)
 		}
 	}
@@ -484,14 +573,14 @@ func (s *fsUnitStore) Defs(fs ...DefFilter) (defs []*graph.Def, err error) {
 			break
 		}
 	}
-	vlog.Printf("fsUnitStore: read %v defs with filters %v.", len(defs), fs)
+	vlog.Printf("%s: read %v defs with filters %v.", s, len(defs), fs)
 	return defs, nil
 }
 
 // defsAtOffsets reads the defs at the given serialized byte offsets
 // from the def data file and returns them in arbitrary order.
 func (s *fsUnitStore) defsAtOffsets(ofs byteOffsets, fs []DefFilter) (defs []*graph.Def, err error) {
-	vlog.Printf("fsUnitStore: reading defs at %d offsets with filters %v...", len(ofs), fs)
+	vlog.Printf("%s: reading defs at %d offsets with filters %v...", s, len(ofs), fs)
 	f, err := openFetcherOrOpen(s.fs, unitDefsFilename)
 	if err != nil {
 		return nil, err
@@ -503,7 +592,7 @@ func (s *fsUnitStore) defsAtOffsets(ofs byteOffsets, fs []DefFilter) (defs []*gr
 		}
 	}()
 
-	ffs := defFilters(fs)
+	ffs := DefFilters(fs)
 
 	p := parFetches(s.fs, fs)
 	if p == 0 {
@@ -543,14 +632,14 @@ func (s *fsUnitStore) defsAtOffsets(ofs byteOffsets, fs []DefFilter) (defs []*gr
 		return defs, err
 	}
 	sort.Sort(graph.Defs(defs))
-	vlog.Printf("fsUnitStore: read %v defs at %d offsets with filters %v.", len(defs), len(ofs), fs)
+	vlog.Printf("%s: read %v defs at %d offsets with filters %v.", s, len(defs), len(ofs), fs)
 	return defs, nil
 }
 
 // readDefs reads all defs from the def data file and returns them
 // along with their serialized byte offsets.
 func (s *fsUnitStore) readDefs() (defs []*graph.Def, ofs byteOffsets, err error) {
-	vlog.Printf("fsUnitStore: reading defs and byte offsets...")
+	vlog.Printf("%s: reading defs and byte offsets...", s)
 	f, err := s.fs.Open(unitDefsFilename)
 	if err != nil {
 		return nil, nil, err
@@ -578,12 +667,12 @@ func (s *fsUnitStore) readDefs() (defs []*graph.Def, ofs byteOffsets, err error)
 
 		n += o
 	}
-	vlog.Printf("fsUnitStore: read %d defs and byte ranges.", len(defs))
+	vlog.Printf("%s: read %d defs and byte ranges.", s, len(defs))
 	return defs, ofs, nil
 }
 
 func (s *fsUnitStore) Refs(fs ...RefFilter) (refs []*graph.Ref, err error) {
-	vlog.Printf("fsUnitStore: reading refs with filters %v...", fs)
+	vlog.Printf("%s: reading refs with filters %v...", s, fs)
 	f, err := s.fs.Open(unitRefsFilename)
 	if err != nil {
 		return nil, err
@@ -607,14 +696,14 @@ func (s *fsUnitStore) Refs(fs ...RefFilter) (refs []*graph.Ref, err error) {
 			refs = append(refs, &ref)
 		}
 	}
-	vlog.Printf("fsUnitStore: read %d refs with filters %v.", len(refs), fs)
+	vlog.Printf("%s: read %d refs with filters %v.", s, len(refs), fs)
 	return refs, nil
 }
 
 // refsAtByteRanges reads the refs at the given serialized byte ranges
 // from the ref data file and returns them in arbitrary order.
 func (s *fsUnitStore) refsAtByteRanges(brs []byteRanges, fs []RefFilter) (refs []*graph.Ref, err error) {
-	vlog.Printf("fsUnitStore: reading refs at %d byte ranges with filters %v...", len(brs), fs)
+	vlog.Printf("%s: reading refs at %d byte ranges with filters %v...", s, len(brs), fs)
 	f, err := openFetcherOrOpen(s.fs, unitRefsFilename)
 	if err != nil {
 		return nil, err
@@ -678,14 +767,14 @@ func (s *fsUnitStore) refsAtByteRanges(brs []byteRanges, fs []RefFilter) (refs [
 		return refs, err
 	}
 	sort.Sort(refsByFileStartEnd(refs))
-	vlog.Printf("fsUnitStore: read %d refs at %d byte ranges with filters %v.", len(refs), len(brs), fs)
+	vlog.Printf("%s: read %d refs at %d byte ranges with filters %v.", s, len(refs), len(brs), fs)
 	return refs, nil
 }
 
 // refsAtOffsets reads the refs at the given serialized byte offsets
 // from the ref data file and returns them in arbitrary order.
 func (s *fsUnitStore) refsAtOffsets(ofs byteOffsets, fs []RefFilter) (refs []*graph.Ref, err error) {
-	vlog.Printf("fsUnitStore: reading refs at %d offsets with filters %v...", len(ofs), fs)
+	vlog.Printf("%s: reading refs at %d offsets with filters %v...", s, len(ofs), fs)
 	f, err := openFetcherOrOpen(s.fs, unitRefsFilename)
 	if err != nil {
 		return nil, err
@@ -737,7 +826,7 @@ func (s *fsUnitStore) refsAtOffsets(ofs byteOffsets, fs []RefFilter) (refs []*gr
 		return refs, err
 	}
 	sort.Sort(refsByFileStartEnd(refs))
-	vlog.Printf("fsUnitStore: read %v refs at %d offsets with filters %v.", len(refs), len(ofs), fs)
+	vlog.Printf("%s: read %v refs at %d offsets with filters %v.", s, len(refs), len(ofs), fs)
 	return refs, nil
 }
 
@@ -841,7 +930,7 @@ func (s *fsUnitStore) readRefs() (refs []*graph.Ref, fbrs fileByteRanges, ofs by
 		}
 		fbrs[lastFile] = append(fbrs[lastFile], o-lastFileRefStartOffset)
 	}
-	vlog.Printf("fsUnitStore: read %d refs and byte ranges.", len(refs))
+	vlog.Printf("%s: read %d refs and byte ranges.", s, len(refs))
 	return refs, fbrs, ofs, nil
 
 }
@@ -861,7 +950,7 @@ func (s *fsUnitStore) Import(data graph.Output) error {
 // serialized byte offset where each def's serialized representation
 // begins (which is used during index construction).
 func (s *fsUnitStore) writeDefs(defs []*graph.Def) (ofs byteOffsets, err error) {
-	vlog.Printf("fsUnitStore: writing %d defs...", len(defs))
+	vlog.Printf("%s: writing %d defs...", s, len(defs))
 	f, err := s.fs.Create(unitDefsFilename)
 	if err != nil {
 		return nil, err
@@ -888,13 +977,13 @@ func (s *fsUnitStore) writeDefs(defs []*graph.Def) (ofs byteOffsets, err error) 
 	if err := bw.Flush(); err != nil {
 		return nil, err
 	}
-	vlog.Printf("fsUnitStore: done writing %d defs.", len(defs))
+	vlog.Printf("%s: done writing %d defs.", s, len(defs))
 	return ofs, nil
 }
 
 // writeDefs writes the ref data file.
 func (s *fsUnitStore) writeRefs(refs []*graph.Ref) (fbr fileByteRanges, ofs byteOffsets, err error) {
-	vlog.Printf("fsUnitStore: writing %d refs...", len(refs))
+	vlog.Printf("%s: writing %d refs...", s, len(refs))
 	f, err := s.fs.Create(unitRefsFilename)
 	if err != nil {
 		return nil, ofs, err
@@ -912,7 +1001,7 @@ func (s *fsUnitStore) writeRefs(refs []*graph.Ref) (fbr fileByteRanges, ofs byte
 	t0 := time.Now()
 	sort.Sort(refsByFileStartEnd(refs))
 	if d := time.Since(t0); d > time.Millisecond*200 {
-		vlog.Printf("fsUnitStore: sorting %d refs took %s.", len(refs), d)
+		vlog.Printf("%s: sorting %d refs took %s.", s, len(refs), d)
 	}
 
 	bw := bufio.NewWriter(f)
@@ -948,24 +1037,14 @@ func (s *fsUnitStore) writeRefs(refs []*graph.Ref) (fbr fileByteRanges, ofs byte
 	if err := bw.Flush(); err != nil {
 		return nil, ofs, err
 	}
-	vlog.Printf("fsUnitStore: done writing %d refs.", len(refs))
+	vlog.Printf("%s: done writing %d refs.", s, len(refs))
 	return fbr, ofs, nil
 }
 
-func (s *fsUnitStore) String() string { return "fsUnitStore" }
+func (s *fsUnitStore) String() string { return fmt.Sprintf("fsUnitStore(%v)", s.label) }
 
 // countingWriter wraps an io.Writer, counting the number of bytes
 // written.
-type countingWriter struct {
-	io.Writer
-	n int64
-}
-
-func (cr *countingWriter) Write(p []byte) (n int, err error) {
-	n, err = cr.Writer.Write(p)
-	cr.n += int64(n)
-	return
-}
 
 func setCreateParentDirs(fs rwvfs.FileSystem) {
 	type createParents interface {

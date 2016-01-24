@@ -9,9 +9,8 @@ import (
 
 	"sourcegraph.com/sourcegraph/srclib/store/phtable"
 	"sourcegraph.com/sourcegraph/srclib/unit"
+	"sourcegraph.com/sourcegraph/srclib/util"
 )
-
-// NOTE(sqs): There is a lot of duplication here with defFilesIndex.
 
 // unitFilesIndex makes it fast to determine which source units
 // contain a file (or files in a dir).
@@ -27,7 +26,7 @@ var _ interface {
 	unitIndex
 } = (*unitFilesIndex)(nil)
 
-var c_unitFilesIndex_getByPath = 0 // counter
+var c_unitFilesIndex_getByPath = &counter{count: new(int64)}
 
 func (x *unitFilesIndex) String() string { return fmt.Sprintf("unitFilesIndex(ready=%v)", x.ready) }
 
@@ -37,7 +36,7 @@ func (x *unitFilesIndex) String() string { return fmt.Sprintf("unitFilesIndex(re
 // are returned.
 func (x *unitFilesIndex) getByPath(path string) ([]unit.ID2, bool, error) {
 	vlog.Printf("unitFilesIndex.getByPath(%s)", path)
-	c_unitFilesIndex_getByPath++
+	c_unitFilesIndex_getByPath.increment()
 
 	if x.phtable == nil {
 		panic("phtable not built/read")
@@ -130,7 +129,7 @@ type filesToUnits map[string][]unit.ID2
 func (v filesToUnits) add(file string, u unit.ID2) {
 	file = path.Clean(file)
 	v[file] = append(v[file], u)
-	for _, dir := range ancestorDirsExceptRoot(file) {
+	for _, dir := range util.AncestorDirs(file, false) {
 		v.addIfNotExists(dir, u)
 	}
 }
@@ -144,25 +143,6 @@ func (v filesToUnits) addIfNotExists(dir string, u unit.ID2) {
 		}
 	}
 	v[dir] = append(v[dir], u)
-}
-
-// ancestorDirsExceptRoot returns a list of p's ancestor directories
-// excluding the root ("." or "/").
-func ancestorDirsExceptRoot(p string) []string {
-	if p == "" {
-		return nil
-	}
-	if len(p) == 1 && (p[0] == '.' || p[0] == '/') {
-		return nil
-	}
-
-	var dirs []string
-	for i, c := range p {
-		if c == '/' {
-			dirs = append(dirs, p[:i])
-		}
-	}
-	return dirs
 }
 
 // Write implements persistedIndex.
