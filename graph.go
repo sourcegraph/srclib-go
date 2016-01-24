@@ -4,13 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"go/build"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"golang.org/x/tools/go/loader"
@@ -72,117 +70,6 @@ func (c *GraphCmd) Execute(args []string) error {
 		return err
 	}
 
-	if os.Getenv("IN_DOCKER_CONTAINER") != "" || os.Getenv("SRCLIB_FETCH_DEPS") != "" {
-		buildPkg, err := UnitDataAsBuildPackage(unit)
-		if err != nil {
-			return err
-		}
-
-		// Make a new primary GOPATH.
-		mainGOPATHDir, err := ioutil.TempDir("", "gopath")
-		if err != nil {
-			return err
-		}
-		defer os.RemoveAll(mainGOPATHDir)
-		if buildContext.GOPATH == "" {
-			buildContext.GOPATH = mainGOPATHDir
-		} else {
-			buildContext.GOPATH = mainGOPATHDir + string(filepath.ListSeparator) + buildContext.GOPATH
-		}
-
-		// Set up GOPATH so it has this repo.
-		log.Printf("Setting up a new GOPATH at %s", mainGOPATHDir)
-		dir := filepath.Join(mainGOPATHDir, "src", string(unit.Repo))
-		if err := os.MkdirAll(filepath.Dir(dir), 0700); err != nil {
-			return err
-		}
-		log.Printf("Creating symlink to oldname %q at newname %q.", cwd, dir)
-		if err := os.Symlink(cwd, dir); err != nil {
-			return err
-		}
-
-		if config.GOPATH != "" {
-			var srcDirs []string
-			srcDirs = append(srcDirs, config.VendorDirs...)
-			for _, dir := range filepath.SplitList(buildContext.GOPATH) {
-				// For every GOPATH that was in the Srcfile (or autodetected),
-				// move it to a writable dir. (/src is not writable.)
-				if dir == mainGOPATHDir || dir == os.Getenv("GOPATH") {
-					continue
-				}
-				srcDirs = append(srcDirs, filepath.Join(dir, "src"))
-			}
-			writeableGOPATHs := make([]string, len(srcDirs))
-			for i, oldSrcDir := range srcDirs {
-				oldBaseDir := filepath.Base(filepath.Dir(oldSrcDir))
-				newGOPATH, err := ioutil.TempDir("", "gopath-"+strconv.Itoa(i)+"-"+oldBaseDir)
-				if err != nil {
-					return err
-				}
-				defer os.RemoveAll(newGOPATH)
-				newSrcDir := filepath.Join(newGOPATH, "src")
-				log.Printf("Creating symlink for non-primary GOPATH to oldname %q at newname %q.", oldSrcDir, newSrcDir)
-				if err := os.MkdirAll(filepath.Dir(newSrcDir), 0700); err != nil {
-					return err
-				}
-				if err := os.Symlink(oldSrcDir, newSrcDir); err != nil {
-					return err
-				}
-				writeableGOPATHs[i] = newGOPATH
-				effectiveConfigGOPATHs = append(effectiveConfigGOPATHs, newSrcDir)
-			}
-			if len(writeableGOPATHs) > 0 {
-				buildContext.GOPATH = strings.Join(writeableGOPATHs, string(filepath.ListSeparator))
-			}
-		}
-
-		log.Printf("Changing directory to %q.", dir)
-		if err := os.Chdir(dir); err != nil {
-			return err
-		}
-		dockerCWD = cwd
-
-		if config.GOROOT == "" {
-			cwd = dir
-		}
-
-		// Get and install deps. But don't get deps that:
-		//
-		// * are in this repo; if we call `go get` on this repo, we will either try to check out a different
-		//   version or fail with 'stale checkout?' because the .dockerignore doesn't copy the .git dir.
-		// * are "C" as in `import "C"` for cgo
-		// * have no slashes in their import path (which occurs when graphing the Go stdlib, for pkgs like "fmt");
-		//   we'll just assume that these packages are never remote and do not need `go get`ting.
-		var externalDeps []string
-		isInRepo := func(importPath string) bool { return strings.HasPrefix(importPath, string(unit.Repo)) }
-		isCImport := func(importPath string) bool { return importPath == "C" }
-		isStdLib := func(importPath string) bool {
-			return strings.Count(filepath.Clean(importPath), string(filepath.Separator)) <= 0
-		}
-		for _, dep := range unit.Dependencies {
-			importPath := dep.(string)
-			if !isInRepo(importPath) && !isCImport(importPath) && !isStdLib(importPath) {
-				externalDeps = append(externalDeps, importPath)
-			}
-		}
-		deps := append([]string{"." + string(filepath.Separator) + buildPkg.Dir}, externalDeps...)
-		for _, dep := range deps {
-			cmd := exec.Command(goBinaryName, "get", "-d", "-t", "-v", dep)
-			cmd.Args = append(cmd.Args)
-			cmd.Env = config.env()
-			cmd.Stdout, cmd.Stderr = os.Stderr, os.Stderr
-			log.Printf("%v (env vars: %v).", cmd.Args, cmd.Env)
-			if err := cmd.Run(); err != nil {
-				if allowErrorsInGoGet {
-					log.Printf("%v failed: %s (continuing)", cmd.Args, err)
-				} else {
-					return err
-				}
-			}
-		}
-		log.Printf("Finished downloading dependencies.")
-	}
-
 	out, err := Graph(unit)
 	if err != nil {
 		return err
@@ -219,20 +106,6 @@ func relPath(base, path string) string {
 	if err != nil {
 		log.Fatalf("Failed to make path %q relative to %q: %s", path, base, err)
 	}
-
-	// TODO(sqs): hack
-	if strings.HasPrefix(rp, filepath.Join("..", "..", "..")+string(filepath.Separator)) && dockerCWD != "" {
-		rp, err = filepath.Rel(dockerCWD, path)
-		if err != nil {
-			log.Fatalf("Failed to make path %q relative to %q: %s", path, cwd, err)
-		}
-	}
-
-	// TODO(sqs): hack
-	if prefix := filepath.Join("..", "tmp", "gopath-"); strings.HasPrefix(rp, prefix) {
-		rp = rp[len(prefix)+2:]
-	}
-
 	return filepath.ToSlash(rp)
 }
 
@@ -249,10 +122,8 @@ func Graph(unit *unit.SourceUnit) (*graph.Output, error) {
 
 	o2 := graph.Output{}
 
-	uri := string(unit.Repo)
-
 	for _, gs := range o.Defs {
-		d, err := convertGoDef(gs, uri)
+		d, err := convertGoDef(gs)
 		if err != nil {
 			return nil, err
 		}
@@ -261,7 +132,7 @@ func Graph(unit *unit.SourceUnit) (*graph.Output, error) {
 		}
 	}
 	for _, gr := range o.Refs {
-		r, err := convertGoRef(gr, uri)
+		r, err := convertGoRef(gr)
 		if err != nil {
 			return nil, err
 		}
@@ -270,7 +141,7 @@ func Graph(unit *unit.SourceUnit) (*graph.Output, error) {
 		}
 	}
 	for _, gd := range o.Docs {
-		d, err := convertGoDoc(gd, uri)
+		d, err := convertGoDoc(gd)
 		if err != nil {
 			return nil, err
 		}
@@ -282,8 +153,8 @@ func Graph(unit *unit.SourceUnit) (*graph.Output, error) {
 	return &o2, nil
 }
 
-func convertGoDef(gs *gog.Def, repoURI string) (*graph.Def, error) {
-	resolvedTarget, err := ResolveDep(gs.DefKey.PackageImportPath, repoURI)
+func convertGoDef(gs *gog.Def) (*graph.Def, error) {
+	resolvedTarget, err := ResolveDep(gs.DefKey.PackageImportPath)
 	if err != nil {
 		return nil, err
 	}
@@ -330,8 +201,8 @@ func convertGoDef(gs *gog.Def, repoURI string) (*graph.Def, error) {
 	return def, nil
 }
 
-func convertGoRef(gr *gog.Ref, repoURI string) (*graph.Ref, error) {
-	resolvedTarget, err := ResolveDep(gr.Def.PackageImportPath, repoURI)
+func convertGoRef(gr *gog.Ref) (*graph.Ref, error) {
+	resolvedTarget, err := ResolveDep(gr.Def.PackageImportPath)
 	if err != nil {
 		return nil, err
 	}
@@ -351,10 +222,10 @@ func convertGoRef(gr *gog.Ref, repoURI string) (*graph.Ref, error) {
 	}, nil
 }
 
-func convertGoDoc(gd *gog.Doc, repoURI string) (*graph.Doc, error) {
+func convertGoDoc(gd *gog.Doc) (*graph.Doc, error) {
 	var key graph.DefKey
 	if gd.DefKey != nil {
-		resolvedTarget, err := ResolveDep(gd.PackageImportPath, repoURI)
+		resolvedTarget, err := ResolveDep(gd.PackageImportPath)
 		if err != nil {
 			return nil, err
 		}
@@ -434,6 +305,7 @@ func doGraph(pkg *build.Package) (*gog.Output, error) {
 
 	prog, err := loaderConfig.Load()
 	if err != nil {
+		log.Println("XXX", err)
 		return nil, err
 	}
 

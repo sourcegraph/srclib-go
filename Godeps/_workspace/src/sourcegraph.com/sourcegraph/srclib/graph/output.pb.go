@@ -5,210 +5,30 @@
 package graph
 
 import proto "github.com/gogo/protobuf/proto"
+import fmt "fmt"
 import math "math"
 
-// discarding unused import gogoproto "github.com/gogo/protobuf/gogoproto/gogo.pb"
-
-
+// discarding unused import gogoproto "github.com/gogo/protobuf/gogoproto"
 import ann "sourcegraph.com/sourcegraph/srclib/ann"
 
 import io "io"
-import fmt "fmt"
-import github_com_gogo_protobuf_proto "github.com/gogo/protobuf/proto"
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
+var _ = fmt.Errorf
 var _ = math.Inf
 
 type Output struct {
-	Defs []*Def                                        `protobuf:"bytes,1,rep,name=defs" json:"Defs,omitempty"`
-	Refs []*Ref                                        `protobuf:"bytes,2,rep,name=refs" json:"Refs,omitempty"`
-	Docs []*Doc                                        `protobuf:"bytes,3,rep,name=docs" json:"Docs,omitempty"`
-	Anns []*ann.Ann `protobuf:"bytes,4,rep,name=anns,customtype=sourcegraph.com/sourcegraph/srclib/ann.Ann" json:"Anns,omitempty"`
+	Defs []*Def     `protobuf:"bytes,1,rep,name=defs" json:"Defs,omitempty"`
+	Refs []*Ref     `protobuf:"bytes,2,rep,name=refs" json:"Refs,omitempty"`
+	Docs []*Doc     `protobuf:"bytes,3,rep,name=docs" json:"Docs,omitempty"`
+	Anns []*ann.Ann `protobuf:"bytes,4,rep,name=anns" json:"Anns,omitempty"`
 }
 
 func (m *Output) Reset()         { *m = Output{} }
 func (m *Output) String() string { return proto.CompactTextString(m) }
 func (*Output) ProtoMessage()    {}
 
-func init() {
-}
-func (m *Output) Unmarshal(data []byte) error {
-	l := len(data)
-	index := 0
-	for index < l {
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if index >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := data[index]
-			index++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Defs", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			postIndex := index + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Defs = append(m.Defs, &Def{})
-			m.Defs[len(m.Defs)-1].Unmarshal(data[index:postIndex])
-			index = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Refs", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			postIndex := index + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Refs = append(m.Refs, &Ref{})
-			m.Refs[len(m.Refs)-1].Unmarshal(data[index:postIndex])
-			index = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Docs", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			postIndex := index + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Docs = append(m.Docs, &Doc{})
-			m.Docs[len(m.Docs)-1].Unmarshal(data[index:postIndex])
-			index = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Anns", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if index >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[index]
-				index++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			postIndex := index + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Anns = append(m.Anns, &ann.Ann{})
-			m.Anns[len(m.Anns)-1].Unmarshal(data[index:postIndex])
-			index = postIndex
-		default:
-			var sizeOfWire int
-			for {
-				sizeOfWire++
-				wire >>= 7
-				if wire == 0 {
-					break
-				}
-			}
-			index -= sizeOfWire
-			skippy, err := github_com_gogo_protobuf_proto.Skip(data[index:])
-			if err != nil {
-				return err
-			}
-			if (index + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			index += skippy
-		}
-	}
-	return nil
-}
-func (m *Output) Size() (n int) {
-	var l int
-	_ = l
-	if len(m.Defs) > 0 {
-		for _, e := range m.Defs {
-			l = e.Size()
-			n += 1 + l + sovOutput(uint64(l))
-		}
-	}
-	if len(m.Refs) > 0 {
-		for _, e := range m.Refs {
-			l = e.Size()
-			n += 1 + l + sovOutput(uint64(l))
-		}
-	}
-	if len(m.Docs) > 0 {
-		for _, e := range m.Docs {
-			l = e.Size()
-			n += 1 + l + sovOutput(uint64(l))
-		}
-	}
-	if len(m.Anns) > 0 {
-		for _, e := range m.Anns {
-			l = e.Size()
-			n += 1 + l + sovOutput(uint64(l))
-		}
-	}
-	return n
-}
-
-func sovOutput(x uint64) (n int) {
-	for {
-		n++
-		x >>= 7
-		if x == 0 {
-			break
-		}
-	}
-	return n
-}
-func sozOutput(x uint64) (n int) {
-	return sovOutput(uint64((x << 1) ^ uint64((int64(x) >> 63))))
-}
 func (m *Output) Marshal() (data []byte, err error) {
 	size := m.Size()
 	data = make([]byte, size)
@@ -219,7 +39,7 @@ func (m *Output) Marshal() (data []byte, err error) {
 	return data[:n], nil
 }
 
-func (m *Output) MarshalTo(data []byte) (n int, err error) {
+func (m *Output) MarshalTo(data []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
@@ -302,3 +122,324 @@ func encodeVarintOutput(data []byte, offset int, v uint64) int {
 	data[offset] = uint8(v)
 	return offset + 1
 }
+func (m *Output) Size() (n int) {
+	var l int
+	_ = l
+	if len(m.Defs) > 0 {
+		for _, e := range m.Defs {
+			l = e.Size()
+			n += 1 + l + sovOutput(uint64(l))
+		}
+	}
+	if len(m.Refs) > 0 {
+		for _, e := range m.Refs {
+			l = e.Size()
+			n += 1 + l + sovOutput(uint64(l))
+		}
+	}
+	if len(m.Docs) > 0 {
+		for _, e := range m.Docs {
+			l = e.Size()
+			n += 1 + l + sovOutput(uint64(l))
+		}
+	}
+	if len(m.Anns) > 0 {
+		for _, e := range m.Anns {
+			l = e.Size()
+			n += 1 + l + sovOutput(uint64(l))
+		}
+	}
+	return n
+}
+
+func sovOutput(x uint64) (n int) {
+	for {
+		n++
+		x >>= 7
+		if x == 0 {
+			break
+		}
+	}
+	return n
+}
+func sozOutput(x uint64) (n int) {
+	return sovOutput(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *Output) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowOutput
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Output: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Output: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Defs", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowOutput
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthOutput
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Defs = append(m.Defs, &Def{})
+			if err := m.Defs[len(m.Defs)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Refs", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowOutput
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthOutput
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Refs = append(m.Refs, &Ref{})
+			if err := m.Refs[len(m.Refs)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Docs", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowOutput
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthOutput
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Docs = append(m.Docs, &Doc{})
+			if err := m.Docs[len(m.Docs)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Anns", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowOutput
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthOutput
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Anns = append(m.Anns, &ann.Ann{})
+			if err := m.Anns[len(m.Anns)-1].Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipOutput(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthOutput
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func skipOutput(data []byte) (n int, err error) {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return 0, ErrIntOverflowOutput
+			}
+			if iNdEx >= l {
+				return 0, io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		wireType := int(wire & 0x7)
+		switch wireType {
+		case 0:
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowOutput
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				iNdEx++
+				if data[iNdEx-1] < 0x80 {
+					break
+				}
+			}
+			return iNdEx, nil
+		case 1:
+			iNdEx += 8
+			return iNdEx, nil
+		case 2:
+			var length int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return 0, ErrIntOverflowOutput
+				}
+				if iNdEx >= l {
+					return 0, io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				length |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			iNdEx += length
+			if length < 0 {
+				return 0, ErrInvalidLengthOutput
+			}
+			return iNdEx, nil
+		case 3:
+			for {
+				var innerWire uint64
+				var start int = iNdEx
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return 0, ErrIntOverflowOutput
+					}
+					if iNdEx >= l {
+						return 0, io.ErrUnexpectedEOF
+					}
+					b := data[iNdEx]
+					iNdEx++
+					innerWire |= (uint64(b) & 0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				innerWireType := int(innerWire & 0x7)
+				if innerWireType == 4 {
+					break
+				}
+				next, err := skipOutput(data[start:])
+				if err != nil {
+					return 0, err
+				}
+				iNdEx = start + next
+			}
+			return iNdEx, nil
+		case 4:
+			return iNdEx, nil
+		case 5:
+			iNdEx += 4
+			return iNdEx, nil
+		default:
+			return 0, fmt.Errorf("proto: illegal wireType %d", wireType)
+		}
+	}
+	panic("unreachable")
+}
+
+var (
+	ErrInvalidLengthOutput = fmt.Errorf("proto: negative length found during unmarshaling")
+	ErrIntOverflowOutput   = fmt.Errorf("proto: integer overflow")
+)

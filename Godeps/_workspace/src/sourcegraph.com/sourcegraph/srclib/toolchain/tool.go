@@ -1,15 +1,6 @@
 package toolchain
 
-import (
-	"encoding/json"
-	"fmt"
-	"io"
-	"log"
-	"os"
-	"os/exec"
-
-	"sourcegraph.com/sourcegraph/srclib"
-)
+import "sourcegraph.com/sourcegraph/srclib"
 
 // ToolInfo describes a tool in a toolchain.
 type ToolInfo struct {
@@ -58,93 +49,4 @@ func ListTools(op string) ([]*srclib.ToolRef, error) {
 		}
 	}
 	return tools, nil
-}
-
-// OpenTool opens a tool in toolchain (which is a toolchain path) named subcmd.
-// The mode parameter controls how the toolchain is opened.
-func OpenTool(toolchain, subcmd string, mode Mode) (Tool, error) {
-	tc, err := Open(toolchain, mode)
-	if err != nil {
-		return nil, fmt.Errorf("failed to open tool (%s %s): %s", toolchain, subcmd, err)
-	}
-
-	return &tool{tc, subcmd}, nil
-}
-
-// A Tool is a subcommand of a Toolchain that performs an single operation, such
-// as one type of analysis on a source unit.
-type Tool interface {
-	// Command returns an *exec.Cmd suitable for running this tool.
-	Command() (*exec.Cmd, error)
-
-	// Run executes this tool with args (sending the JSON-serialization of input
-	// on stdin, if input is non-nil) and parses the JSON response into resp.
-	Run(arg []string, input, resp interface{}) error
-}
-
-type tool struct {
-	tc     Toolchain
-	subcmd string
-}
-
-func (t *tool) Command() (*exec.Cmd, error) {
-	// make command
-	cmd, err := t.tc.Command()
-	if err != nil {
-		return nil, err
-	}
-	cmd.Args = append(cmd.Args, t.subcmd)
-	return cmd, nil
-}
-
-// TODO(sqs): is it possible for an early return to leave the subprocess running?
-func (t *tool) Run(arg []string, input, resp interface{}) error {
-	cmd, err := t.Command()
-	if err != nil {
-		return err
-	}
-	cmd.Args = append(cmd.Args, arg...)
-	cmd.Stderr = os.Stderr
-
-	log.Printf("Running: %v", cmd.Args)
-
-	var stdin io.WriteCloser
-	if input != nil {
-		data, err := json.Marshal(input)
-		if err != nil {
-			return err
-		}
-		log.Printf("  --> with input %s", data)
-
-		stdin, err = cmd.StdinPipe()
-		if err != nil {
-			return err
-		}
-	}
-
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		return err
-	}
-	if err := cmd.Start(); err != nil {
-		return err
-	}
-
-	if input != nil {
-		if err := json.NewEncoder(stdin).Encode(input); err != nil {
-			return err
-		}
-		if err := stdin.Close(); err != nil {
-			return err
-		}
-	}
-
-	if err := json.NewDecoder(stdout).Decode(resp); err != nil {
-		return err
-	}
-	if err := cmd.Wait(); err != nil {
-		return err
-	}
-
-	return nil
 }
