@@ -14,8 +14,9 @@ endif
 
 ifeq ($(OS),Windows_NT)
 	SRCLIB_GO_EXE := .bin/srclib-go.exe
-	PWD := $(shell $(CMD) "echo %cd%")
-	PWD := $(subst \,/,$(PWD))
+	CURDIR := $(shell $(CMD) "echo %cd%")
+	CURDIR := $(subst \,/,$(CURDIR))
+	PWD := $(CURDIR)
 else
 	SRCLIB_GO_EXE := .bin/srclib-go
 endif
@@ -25,7 +26,7 @@ endif
 install: ${SRCLIB_GO_EXE}
 
 ${SRCLIB_GO_EXE}: $(shell /usr/bin/find . -type f -and -name '*.go' -not -path './Godeps/*')
-	GOBIN=$(PWD)/.bin go get github.com/tools/godep
+	GOBIN=$(CURDIR)/.bin go get github.com/tools/godep
 	.bin/godep go build -o ${SRCLIB_GO_EXE}
 
 test: gotest srctest
