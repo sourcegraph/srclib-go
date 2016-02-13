@@ -186,7 +186,7 @@ func attrValue(attrs []xml.Attr, name string) string {
 	return ""
 }
 
-func fetchMeta(client *http.Client, importPath string) (scheme string, im *importMeta, sm *sourceMeta, redir bool, err error) {
+func fetchMeta(client *http.Client, importPath string) (string, *importMeta, *sourceMeta, error) {
 	uri := importPath
 	if !strings.Contains(uri, "/") {
 		// Add slash for root of domain.
@@ -195,7 +195,7 @@ func fetchMeta(client *http.Client, importPath string) (scheme string, im *impor
 	uri = uri + "?go-get=1"
 
 	c := httpClient{client: client}
-	scheme = "https"
+	scheme := "https"
 	resp, err := c.get(scheme + "://" + uri)
 	if err != nil || resp.StatusCode != 200 {
 		if err == nil {
@@ -204,17 +204,18 @@ func fetchMeta(client *http.Client, importPath string) (scheme string, im *impor
 		scheme = "http"
 		resp, err = c.get(scheme + "://" + uri)
 		if err != nil {
-			return scheme, nil, nil, false, err
+			return scheme, nil, nil, err
 		}
 	}
 	defer resp.Body.Close()
-	im, sm, redir, err = parseMeta(scheme, importPath, resp.Body)
-	return scheme, im, sm, redir, err
+	im, sm, err := parseMeta(scheme, importPath, resp.Body)
+	return scheme, im, sm, err
 }
 
-var refreshToGodocPat = regexp.MustCompile(`(?i)^\d+; url=https?://godoc\.org/`)
+func parseMeta(scheme, importPath string, r io.Reader) (*importMeta, *sourceMeta, error) {
+	var im *importMeta
+	var sm *sourceMeta
 
-func parseMeta(scheme, importPath string, r io.Reader) (im *importMeta, sm *sourceMeta, redir bool, err error) {
 	errorMessage := "go-import meta tag not found"
 
 	d := xml.NewDecoder(r)
@@ -235,11 +236,6 @@ metaScan:
 				break metaScan
 			}
 			if !strings.EqualFold(t.Name.Local, "meta") {
-				continue metaScan
-			}
-			if strings.EqualFold(attrValue(t.Attr, "http-equiv"), "refresh") {
-				// Check for http-equiv refresh back to godoc.org.
-				redir = refreshToGodocPat.MatchString(attrValue(t.Attr, "content"))
 				continue metaScan
 			}
 			nameAttr := attrValue(t.Attr, "name")
@@ -291,12 +287,12 @@ metaScan:
 		}
 	}
 	if im == nil {
-		return nil, nil, redir, NotFoundError{Message: fmt.Sprintf("%s at %s://%s", errorMessage, scheme, importPath)}
+		return nil, nil, NotFoundError{Message: fmt.Sprintf("%s at %s://%s", errorMessage, scheme, importPath)}
 	}
 	if sm != nil && sm.projectRoot != im.projectRoot {
 		sm = nil
 	}
-	return im, sm, redir, nil
+	return im, sm, nil
 }
 
 // getVCSDirFn is called by getDynamic to fetch source using VCS commands. The
@@ -308,14 +304,14 @@ var getVCSDirFn = func(client *http.Client, m map[string]string, etag string) (*
 
 // getDynamic gets a directory from a service that is not statically known.
 func getDynamic(client *http.Client, importPath, etag string) (*Directory, error) {
-	metaProto, im, sm, redir, err := fetchMeta(client, importPath)
+	metaProto, im, sm, err := fetchMeta(client, importPath)
 	if err != nil {
 		return nil, err
 	}
 
 	if im.projectRoot != importPath {
 		var imRoot *importMeta
-		metaProto, imRoot, _, redir, err = fetchMeta(client, im.projectRoot)
+		metaProto, imRoot, _, err = fetchMeta(client, im.projectRoot)
 		if err != nil {
 			return nil, err
 		}
@@ -354,9 +350,7 @@ func getDynamic(client *http.Client, importPath, etag string) (*Directory, error
 	dir.ProjectRoot = im.projectRoot
 	dir.ResolvedPath = resolvedPath
 	dir.ProjectName = path.Base(im.projectRoot)
-	if !redir {
-		dir.ProjectURL = metaProto + "://" + im.projectRoot
-	}
+	dir.ProjectURL = metaProto + "://" + im.projectRoot
 
 	if sm == nil {
 		return dir, nil

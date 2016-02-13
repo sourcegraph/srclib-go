@@ -44,10 +44,8 @@ func printDir(path string) {
 		gosrc.SetLocalDevMode(*local)
 	}
 	dir, err := gosrc.Get(http.DefaultClient, path, *etag)
-	if e, ok := err.(gosrc.NotFoundError); ok && e.Redirect != "" {
-		log.Fatalf("redirect to %s", e.Redirect)
-	} else if err != nil {
-		log.Fatalf("%+v", err)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	fmt.Println("ImportPath    ", dir.ImportPath)

@@ -6,12 +6,17 @@
 	],
 	"Deps": [
 		{
+			"ImportPath": "code.google.com/p/rog-go/parallel",
+			"Comment": "null-250",
+			"Rev": "'e7ca3a2567b8ad482fef7b1aa1a258aa00c82772'"
+		},
+		{
 			"ImportPath": "github.com/gogo/protobuf/proto",
 			"Rev": "ad31557573d621eccf54a8abb7b1fcab8977d648"
 		},
 		{
 			"ImportPath": "github.com/golang/gddo/gosrc",
-			"Rev": "a465ad1c7286378af1241b264bf1898a57dd71ae"
+			"Rev": "4523d2f070c74ef847157e9aa14137376df63964"
 		},
 		{
 			"ImportPath": "github.com/jessevdk/go-flags",
