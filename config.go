@@ -8,8 +8,9 @@ import (
 	"path/filepath"
 	"strings"
 
+	"go/types"
+
 	"golang.org/x/tools/go/loader"
-	"golang.org/x/tools/go/types"
 )
 
 var (
