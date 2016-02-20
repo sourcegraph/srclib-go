@@ -118,7 +118,7 @@ func (c *srcfileConfig) apply() error {
 	// KLUDGE: determine whether we're in the stdlib and if so, set GOROOT to "." before applying config.
 	// This is necessary for the stdlib unit names to be correct.
 	cloneURL, _ := exec.Command("git", "config", "--get", "remote.origin.url").CombinedOutput()
-	if strings.TrimSpace(string(cloneURL)) == "https://github.com/golang/go" && c.GOROOT == "" {
+	if strings.HasSuffix(strings.TrimSpace(string(cloneURL)), "github.com/golang/go") && c.GOROOT == "" {
 		c.GOROOT = "."
 	}
 
