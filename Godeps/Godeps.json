@@ -6,12 +6,17 @@
 	],
 	"Deps": [
 		{
+			"ImportPath": "code.google.com/p/rog-go/parallel",
+			"Comment": "null-250",
+			"Rev": "'e7ca3a2567b8ad482fef7b1aa1a258aa00c82772'"
+		},
+		{
 			"ImportPath": "github.com/gogo/protobuf/proto",
 			"Rev": "ad31557573d621eccf54a8abb7b1fcab8977d648"
 		},
 		{
 			"ImportPath": "github.com/golang/gddo/gosrc",
-			"Rev": "a465ad1c7286378af1241b264bf1898a57dd71ae"
+			"Rev": "4523d2f070c74ef847157e9aa14137376df63964"
 		},
 		{
 			"ImportPath": "github.com/jessevdk/go-flags",
@@ -28,31 +33,31 @@
 		},
 		{
 			"ImportPath": "golang.org/x/tools/go/ast/astutil",
-			"Rev": "d6e83e534da905609e21e4086a0fbaed33f88d07"
+			"Rev": "c887be1b2ebd11663d4bf2fbca508c449172339e"
 		},
 		{
 			"ImportPath": "golang.org/x/tools/go/buildutil",
-			"Rev": "d6e83e534da905609e21e4086a0fbaed33f88d07"
+			"Rev": "c887be1b2ebd11663d4bf2fbca508c449172339e"
 		},
 		{
 			"ImportPath": "golang.org/x/tools/go/exact",
-			"Rev": "d6e83e534da905609e21e4086a0fbaed33f88d07"
+			"Rev": "c887be1b2ebd11663d4bf2fbca508c449172339e"
 		},
 		{
 			"ImportPath": "golang.org/x/tools/go/gcimporter",
-			"Rev": "d6e83e534da905609e21e4086a0fbaed33f88d07"
+			"Rev": "c887be1b2ebd11663d4bf2fbca508c449172339e"
 		},
 		{
 			"ImportPath": "golang.org/x/tools/go/loader",
-			"Rev": "d6e83e534da905609e21e4086a0fbaed33f88d07"
+			"Rev": "c887be1b2ebd11663d4bf2fbca508c449172339e"
 		},
 		{
 			"ImportPath": "golang.org/x/tools/go/types",
-			"Rev": "d6e83e534da905609e21e4086a0fbaed33f88d07"
+			"Rev": "c887be1b2ebd11663d4bf2fbca508c449172339e"
 		},
 		{
 			"ImportPath": "golang.org/x/tools/godoc/vfs",
-			"Rev": "d6e83e534da905609e21e4086a0fbaed33f88d07"
+			"Rev": "c887be1b2ebd11663d4bf2fbca508c449172339e"
 		},
 		{
 			"ImportPath": "sourcegraph.com/sourcegraph/makex",
