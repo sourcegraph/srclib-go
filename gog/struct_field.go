@@ -1,8 +1,9 @@
 package gog
 
 import (
+	"go/types"
+
 	"golang.org/x/tools/go/loader"
-	"golang.org/x/tools/go/types"
 )
 
 type structField struct {

@@ -14,8 +14,9 @@ import (
 	"path/filepath"
 	"sort"
 
+	"go/types"
+
 	"golang.org/x/tools/go/loader"
-	"golang.org/x/tools/go/types"
 )
 
 type Doc struct {
