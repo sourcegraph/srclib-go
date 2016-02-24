@@ -117,8 +117,8 @@ func unmarshalTypedConfig(cfg map[string]interface{}) error {
 func (c *srcfileConfig) apply() error {
 	// KLUDGE: determine whether we're in the stdlib and if so, set GOROOT to "." before applying config.
 	// This is necessary for the stdlib unit names to be correct.
-	cloneURL, _ := exec.Command("git", "config", "--get", "remote.origin.url").CombinedOutput()
-	if strings.HasSuffix(strings.TrimSpace(string(cloneURL)), "github.com/golang/go") && c.GOROOT == "" {
+	cloneURL, err := exec.Command("git", "config", "--get", "remote.origin.url").Output()
+	if err == nil && strings.HasSuffix(strings.TrimSpace(string(cloneURL)), "github.com/golang/go") && c.GOROOT == "" {
 		c.GOROOT = "."
 	}
 
