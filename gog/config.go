@@ -3,8 +3,9 @@ package gog
 import (
 	"go/build"
 
+	"go/types"
+
 	"golang.org/x/tools/go/loader"
-	"golang.org/x/tools/go/types"
 )
 
 var Default = loader.Config{

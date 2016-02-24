@@ -50,10 +50,6 @@ func AllPackages(ctxt *build.Context) []string {
 // which must be concurrency-safe.
 //
 func ForEachPackage(ctxt *build.Context, found func(importPath string, err error)) {
-	// We use a counting semaphore to limit
-	// the number of parallel calls to ReadDir.
-	sema := make(chan bool, 20)
-
 	ch := make(chan item)
 
 	var wg sync.WaitGroup
@@ -61,7 +57,7 @@ func ForEachPackage(ctxt *build.Context, found func(importPath string, err error
 		root := root
 		wg.Add(1)
 		go func() {
-			allPackages(ctxt, sema, root, ch)
+			allPackages(ctxt, root, ch)
 			wg.Done()
 		}()
 	}
@@ -81,7 +77,11 @@ type item struct {
 	err        error // (optional)
 }
 
-func allPackages(ctxt *build.Context, sema chan bool, root string, ch chan<- item) {
+// We use a process-wide counting semaphore to limit
+// the number of parallel calls to ReadDir.
+var ioLimit = make(chan bool, 20)
+
+func allPackages(ctxt *build.Context, root string, ch chan<- item) {
 	root = filepath.Clean(root) + string(os.PathSeparator)
 
 	var wg sync.WaitGroup
@@ -102,9 +102,9 @@ func allPackages(ctxt *build.Context, sema chan bool, root string, ch chan<- ite
 			return
 		}
 
-		sema <- true
+		ioLimit <- true
 		files, err := ReadDir(ctxt, dir)
-		<-sema
+		<-ioLimit
 		if pkg != "" || err != nil {
 			ch <- item{pkg, err}
 		}
@@ -122,4 +122,74 @@ func allPackages(ctxt *build.Context, sema chan bool, root string, ch chan<- ite
 
 	walkDir(root)
 	wg.Wait()
+}
+
+// ExpandPatterns returns the set of packages matched by patterns,
+// which may have the following forms:
+//
+//		golang.org/x/tools/cmd/guru     # a single package
+//		golang.org/x/tools/...          # all packages beneath dir
+//		...                             # the entire workspace.
+//
+// Order is significant: a pattern preceded by '-' removes matching
+// packages from the set.  For example, these patterns match all encoding
+// packages except encoding/xml:
+//
+// 	encoding/... -encoding/xml
+//
+func ExpandPatterns(ctxt *build.Context, patterns []string) map[string]bool {
+	// TODO(adonovan): support other features of 'go list':
+	// - "std"/"cmd"/"all" meta-packages
+	// - "..." not at the end of a pattern
+	// - relative patterns using "./" or "../" prefix
+
+	pkgs := make(map[string]bool)
+	doPkg := func(pkg string, neg bool) {
+		if neg {
+			delete(pkgs, pkg)
+		} else {
+			pkgs[pkg] = true
+		}
+	}
+
+	// Scan entire workspace if wildcards are present.
+	// TODO(adonovan): opt: scan only the necessary subtrees of the workspace.
+	var all []string
+	for _, arg := range patterns {
+		if strings.HasSuffix(arg, "...") {
+			all = AllPackages(ctxt)
+			break
+		}
+	}
+
+	for _, arg := range patterns {
+		if arg == "" {
+			continue
+		}
+
+		neg := arg[0] == '-'
+		if neg {
+			arg = arg[1:]
+		}
+
+		if arg == "..." {
+			// ... matches all packages
+			for _, pkg := range all {
+				doPkg(pkg, neg)
+			}
+		} else if dir := strings.TrimSuffix(arg, "/..."); dir != arg {
+			// dir/... matches all packages beneath dir
+			for _, pkg := range all {
+				if strings.HasPrefix(pkg, dir) &&
+					(len(pkg) == len(dir) || pkg[len(dir)] == '/') {
+					doPkg(pkg, neg)
+				}
+			}
+		} else {
+			// single package
+			doPkg(arg, neg)
+		}
+	}
+
+	return pkgs
 }
