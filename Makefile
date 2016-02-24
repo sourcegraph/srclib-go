@@ -30,19 +30,17 @@ ${SRCLIB_GO_EXE}: $(shell /usr/bin/find . -type f -and -name '*.go' -not -path '
 	.bin/godep go build -o ${SRCLIB_GO_EXE}
 
 test: gotest srctest
-	.bin/godep go test ./...
-	src test -m program
 
 gotest:
-	.bin/godep go test ./...
+	.bin/godep go test $(go list ./... | grep -v /Godeps/)
 
 srctest:
 # go1.5 excludes repos whose ImportPath would include testdata. Since all the
 # test repos are under testdata dir, we change the GOPATH to not root the
 # testdata dir
 	git submodule update --init
-	GOPATH=${PWD}/.test go get -d golang.org/x/net/ipv6
-	GOPATH=${PWD}/.test src test -m program
+	GOPATH=${PWD}/.test go get -d golang.org/x/net/ipv6 golang.org/x/tools/go/types
+	GOPATH=${PWD}/testdata/case:${PWD}/.test srclib test
 
 release:
 	docker build -t srclib/srclib-go .
