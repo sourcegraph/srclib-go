@@ -5,7 +5,17 @@
       "ToRepoCloneURL": "https://github.com/golang/go",
       "ToUnit": "fmt",
       "ToUnitType": "GoPackage",
-      "ToVersionString": "go1.5.1",
+      "ToVersionString": "go1.6",
+      "ToRevSpec": ""
+    }
+  },
+  {
+    "Raw": "github.com/sgtest/go15vendor/bye",
+    "Target": {
+      "ToRepoCloneURL": "",
+      "ToUnit": "github.com/sgtest/go15vendor/bye",
+      "ToUnitType": "GoPackage",
+      "ToVersionString": "",
       "ToRevSpec": ""
     }
   },
