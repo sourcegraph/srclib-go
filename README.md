@@ -5,18 +5,14 @@ toolchain that performs Go code analysis: type checking, documentation
 generation, jump-to-definition, dependency resolution, etc.
 
 It enables this functionality in any client application whose code analysis is
-powered by srclib, including:
-
-* [emacs-sourcegraph-mode](https://sourcegraph.com/sourcegraph/emacs-sourcegraph-mode),
-  an editor plugin for Emacs
-* [Sourcegraph.com](https://sourcegraph.com), an open-source code search engine
+powered by srclib, including [Sourcegraph.com](https://sourcegraph.com).
 
 Screenshots are below.
 
 ## Installation
 
 This toolchain is not a standalone program; it provides additional functionality
-to editor plugins and other applications that use [srclib](https://srclib.org).
+to applications that use [srclib](https://srclib.org).
 
 First,
 [install the `src` program (see srclib installation instructions)](https://sourcegraph.com/sourcegraph/srclib).
@@ -43,8 +39,7 @@ src toolchain list
 
 You should see this srclib-go toolchain in the list.
 
-Now that this toolchain is installed, any program that relies on srclib (such as
-editor plugins) will support Go.
+Now that this toolchain is installed, any program that relies on srclib will support Go.
 
 (TODO(sqs): add a tutorial link)
 
@@ -76,12 +71,6 @@ this toolchain.
 srclib-go only works with code that exists in a proper
 [GOPATH](https://golang.org/doc/code.html#GOPATH). When you run the `src`
 tool, it should use this GOPATH environment variable.
-
-If you are using an editor plugin that calls `src`, it may not inherit the
-correct GOPATH. To ensure it does use the correct GOPATH, try launching your
-editor from a shell that has GOPATH set to the desired value, or use the
-editor's internal mechanism (e.g., `setenv` in Emacs) for setting environment
-variables.
 
 ## Srcfile configuration
 
