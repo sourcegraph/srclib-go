@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// +build go1.5
+// +build !go1.5
 
 package loader
 
@@ -15,7 +15,6 @@ import (
 	"go/build"
 	"go/parser"
 	"go/token"
-	"go/types"
 	"os"
 	"sort"
 	"strings"
@@ -23,9 +22,8 @@ import (
 	"time"
 
 	"golang.org/x/tools/go/ast/astutil"
+	"golang.org/x/tools/go/types"
 )
-
-var ignoreVendor build.ImportMode
 
 const trace = false // show timing info for type-checking
 
@@ -100,10 +98,10 @@ type Config struct {
 
 	// FindPackage is called during Load to create the build.Package
 	// for a given import path from a given directory.
-	// If FindPackage is nil, (*build.Context).Import is used.
-	// A client may use this hook to adapt to a proprietary build
-	// system that does not follow the "go build" layout
-	// conventions, for example.
+	// If FindPackage is nil, a default implementation
+	// based on ctxt.Import is used.  A client may use this hook to
+	// adapt to a proprietary build system that does not follow the
+	// "go build" layout conventions, for example.
 	//
 	// It must be safe to call concurrently from multiple goroutines.
 	FindPackage func(ctxt *build.Context, fromDir, importPath string, mode build.ImportMode) (*build.Package, error)
@@ -382,7 +380,7 @@ type importer struct {
 
 	// findpkg is a memoization of FindPackage.
 	findpkgMu sync.Mutex // guards findpkg
-	findpkg   map[findpkgKey]*findpkgValue
+	findpkg   map[findpkgKey]findpkgValue
 
 	importedMu sync.Mutex             // guards imported
 	imported   map[string]*importInfo // all imported packages (incl. failures) by import path
@@ -403,9 +401,8 @@ type findpkgKey struct {
 }
 
 type findpkgValue struct {
-	ready chan struct{} // closed to broadcast readiness
-	bp    *build.Package
-	err   error
+	bp  *build.Package
+	err error
 }
 
 // importInfo tracks the success or failure of a single import.
@@ -471,7 +468,15 @@ func (conf *Config) Load() (*Program, error) {
 
 	// Install default FindPackage hook using go/build logic.
 	if conf.FindPackage == nil {
-		conf.FindPackage = (*build.Context).Import
+		conf.FindPackage = func(ctxt *build.Context, path, fromDir string, mode build.ImportMode) (*build.Package, error) {
+			ioLimit <- true
+			bp, err := ctxt.Import(path, fromDir, mode)
+			<-ioLimit
+			if _, ok := err.(*build.NoGoError); ok {
+				return bp, nil // empty directory is not an error
+			}
+			return bp, err
+		}
 	}
 
 	prog := &Program{
@@ -484,7 +489,7 @@ func (conf *Config) Load() (*Program, error) {
 	imp := importer{
 		conf:     conf,
 		prog:     prog,
-		findpkg:  make(map[findpkgKey]*findpkgValue),
+		findpkg:  make(map[findpkgKey]findpkgValue),
 		imported: make(map[string]*importInfo),
 		start:    time.Now(),
 		graph:    make(map[string]map[string]bool),
@@ -496,8 +501,7 @@ func (conf *Config) Load() (*Program, error) {
 
 	// Load the initially imported packages and their dependencies,
 	// in parallel.
-	// No vendor check on packages imported from the command line.
-	infos, importErrors := imp.importAll("", conf.Cwd, conf.ImportPkgs, ignoreVendor)
+	infos, importErrors := imp.importAll("", conf.Cwd, conf.ImportPkgs, 0)
 	for _, ie := range importErrors {
 		conf.TypeChecker.Error(ie.err) // failed to create package
 		errpkgs = append(errpkgs, ie.path)
@@ -514,8 +518,7 @@ func (conf *Config) Load() (*Program, error) {
 			continue
 		}
 
-		// No vendor check on packages imported from command line.
-		bp, err := imp.findPackage(importPath, conf.Cwd, ignoreVendor)
+		bp, err := imp.findPackage(importPath, conf.Cwd, 0)
 		if err != nil {
 			// Package not found, or can't even parse package declaration.
 			// Already reported by previous loop; ignore it.
@@ -796,32 +799,16 @@ func (imp *importer) doImport(from *PackageInfo, to string) (*types.Package, err
 // findPackage locates the package denoted by the importPath in the
 // specified directory.
 func (imp *importer) findPackage(importPath, fromDir string, mode build.ImportMode) (*build.Package, error) {
-	// We use a non-blocking duplicate-suppressing cache (gopl.io §9.7)
-	// to avoid holding the lock around FindPackage.
+	// TODO(adonovan): opt: non-blocking duplicate-suppressing cache.
+	// i.e. don't hold the lock around FindPackage.
 	key := findpkgKey{importPath, fromDir, mode}
 	imp.findpkgMu.Lock()
+	defer imp.findpkgMu.Unlock()
 	v, ok := imp.findpkg[key]
-	if ok {
-		// cache hit
-		imp.findpkgMu.Unlock()
-
-		<-v.ready // wait for entry to become ready
-	} else {
-		// Cache miss: this goroutine becomes responsible for
-		// populating the map entry and broadcasting its readiness.
-		v = &findpkgValue{ready: make(chan struct{})}
+	if !ok {
+		bp, err := imp.conf.FindPackage(imp.conf.build(), importPath, fromDir, mode)
+		v = findpkgValue{bp, err}
 		imp.findpkg[key] = v
-		imp.findpkgMu.Unlock()
-
-		ioLimit <- true
-		v.bp, v.err = imp.conf.FindPackage(imp.conf.build(), importPath, fromDir, mode)
-		<-ioLimit
-
-		if _, ok := v.err.(*build.NoGoError); ok {
-			v.err = nil // empty directory is not an error
-		}
-
-		close(v.ready) // broadcast ready condition
 	}
 	return v.bp, v.err
 }
@@ -1019,7 +1006,9 @@ func (imp *importer) newPackageInfo(path, dir string) *PackageInfo {
 	if f := imp.conf.TypeCheckFuncBodies; f != nil {
 		tc.IgnoreFuncBodies = !f(path)
 	}
-	tc.Importer = closure{imp, info}
+	tc.Import = func(_ map[string]*types.Package, to string) (*types.Package, error) {
+		return imp.doImport(info, to)
+	}
 	tc.Error = info.appendError // appendError wraps the user's Error function
 
 	info.checker = types.NewChecker(&tc, imp.conf.fset(), pkg, &info.Info)
@@ -1028,10 +1017,3 @@ func (imp *importer) newPackageInfo(path, dir string) *PackageInfo {
 	imp.progMu.Unlock()
 	return info
 }
-
-type closure struct {
-	imp  *importer
-	info *PackageInfo
-}
-
-func (c closure) Import(to string) (*types.Package, error) { return c.imp.doImport(c.info, to) }

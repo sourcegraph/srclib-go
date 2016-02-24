@@ -8,8 +8,9 @@ import (
 
 	"sourcegraph.com/sourcegraph/srclib-go/gog/definfo"
 
+	"go/types"
+
 	"golang.org/x/tools/go/loader"
-	"golang.org/x/tools/go/types"
 )
 
 type DefKey struct {
