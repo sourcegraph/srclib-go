@@ -3,7 +3,7 @@ package gog
 import (
 	"go/ast"
 
-	"golang.org/x/tools/go/types"
+	"go/types"
 )
 
 func (g *Grapher) NewRef(node ast.Node, obj types.Object) (*Ref, error) {

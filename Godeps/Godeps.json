@@ -28,31 +28,31 @@
 		},
 		{
 			"ImportPath": "golang.org/x/tools/go/ast/astutil",
-			"Rev": "d6e83e534da905609e21e4086a0fbaed33f88d07"
+			"Rev": "f7268ab39bf8b78faa0c2f9eb524b9ea85982c41"
 		},
 		{
 			"ImportPath": "golang.org/x/tools/go/buildutil",
-			"Rev": "d6e83e534da905609e21e4086a0fbaed33f88d07"
+			"Rev": "f7268ab39bf8b78faa0c2f9eb524b9ea85982c41"
 		},
 		{
 			"ImportPath": "golang.org/x/tools/go/exact",
-			"Rev": "d6e83e534da905609e21e4086a0fbaed33f88d07"
+			"Rev": "f7268ab39bf8b78faa0c2f9eb524b9ea85982c41"
 		},
 		{
 			"ImportPath": "golang.org/x/tools/go/gcimporter",
-			"Rev": "d6e83e534da905609e21e4086a0fbaed33f88d07"
+			"Rev": "f7268ab39bf8b78faa0c2f9eb524b9ea85982c41"
 		},
 		{
 			"ImportPath": "golang.org/x/tools/go/loader",
-			"Rev": "d6e83e534da905609e21e4086a0fbaed33f88d07"
+			"Rev": "f7268ab39bf8b78faa0c2f9eb524b9ea85982c41"
 		},
 		{
 			"ImportPath": "golang.org/x/tools/go/types",
-			"Rev": "d6e83e534da905609e21e4086a0fbaed33f88d07"
+			"Rev": "f7268ab39bf8b78faa0c2f9eb524b9ea85982c41"
 		},
 		{
 			"ImportPath": "golang.org/x/tools/godoc/vfs",
-			"Rev": "d6e83e534da905609e21e4086a0fbaed33f88d07"
+			"Rev": "f7268ab39bf8b78faa0c2f9eb524b9ea85982c41"
 		},
 		{
 			"ImportPath": "sourcegraph.com/sourcegraph/makex",
