@@ -41,6 +41,11 @@ func (c *ScanCmd) Execute(args []string) error {
 	// Automatically detect vendored dirs (check for vendor/src and
 	// Godeps/_workspace/src) and set up GOPATH pointing to them if
 	// they exist.
+	//
+	// Note that the `vendor` directory here is used by 3rd party vendoring
+	// tools and is NOT the `vendor` directory in the Go 1.6 official vendor
+	// specification (that `vendor` directory does not have a `src`
+	// subdirectory).
 	var setAutoGOPATH bool
 	if config.GOPATH == "" {
 		vendorDirs := []string{"vendor", "Godeps/_workspace"}
