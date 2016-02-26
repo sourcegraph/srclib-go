@@ -58,7 +58,15 @@
     },
     {
       "DefUnitType": "GoPackage",
-      "DefUnit": "github.com/sgtest/go15vendor/vendor/github.com/sourcegraph/john-test/hi",
+      "DefUnit": "github.com/sgtest/go15vendor",
+      "DefPath": ".",
+      "File": "main.go",
+      "Start": 8,
+      "End": 12
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sourcegraph/john-test/hi",
       "DefPath": ".",
       "File": "main.go",
       "Start": 136,
@@ -66,19 +74,11 @@
     },
     {
       "DefUnitType": "GoPackage",
-      "DefUnit": "github.com/sgtest/go15vendor/vendor/github.com/sourcegraph/john-test/hi",
+      "DefUnit": "github.com/sourcegraph/john-test/hi",
       "DefPath": ".",
       "File": "main.go",
       "Start": 68,
       "End": 105
-    },
-    {
-      "DefUnitType": "GoPackage",
-      "DefUnit": "github.com/sgtest/go15vendor",
-      "DefPath": ".",
-      "File": "main.go",
-      "Start": 8,
-      "End": 12
     },
     {
       "DefRepo": "github.com/golang/go",
@@ -117,7 +117,7 @@
     },
     {
       "DefUnitType": "GoPackage",
-      "DefUnit": "github.com/sgtest/go15vendor/vendor/github.com/sourcegraph/john-test/hi",
+      "DefUnit": "github.com/sourcegraph/john-test/hi",
       "DefPath": "GetHi",
       "File": "main.go",
       "Start": 139,
