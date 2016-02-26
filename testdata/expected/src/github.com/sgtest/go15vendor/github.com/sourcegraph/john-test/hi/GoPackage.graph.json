@@ -2,7 +2,7 @@
   "Defs": [
     {
       "UnitType": "GoPackage",
-      "Unit": "github.com/sgtest/go15vendor/vendor/github.com/sourcegraph/john-test/hi",
+      "Unit": "github.com/sourcegraph/john-test/hi",
       "Path": ".",
       "Name": "hi",
       "Kind": "package",
@@ -21,7 +21,7 @@
     },
     {
       "UnitType": "GoPackage",
-      "Unit": "github.com/sgtest/go15vendor/vendor/github.com/sourcegraph/john-test/hi",
+      "Unit": "github.com/sourcegraph/john-test/hi",
       "Path": "GetHi",
       "Name": "GetHi",
       "Kind": "func",
@@ -44,7 +44,7 @@
   "Refs": [
     {
       "DefUnitType": "GoPackage",
-      "DefUnit": "github.com/sgtest/go15vendor/vendor/github.com/sourcegraph/john-test/hi",
+      "DefUnit": "github.com/sourcegraph/john-test/hi",
       "DefPath": ".",
       "File": "vendor/github.com/sourcegraph/john-test/hi/hi.go",
       "Start": 8,
@@ -52,7 +52,7 @@
     },
     {
       "DefUnitType": "GoPackage",
-      "DefUnit": "github.com/sgtest/go15vendor/vendor/github.com/sourcegraph/john-test/hi",
+      "DefUnit": "github.com/sourcegraph/john-test/hi",
       "DefPath": "GetHi",
       "Def": true,
       "File": "vendor/github.com/sourcegraph/john-test/hi/hi.go",
@@ -72,7 +72,7 @@
   "Docs": [
     {
       "UnitType": "GoPackage",
-      "Unit": "github.com/sgtest/go15vendor/vendor/github.com/sourcegraph/john-test/hi",
+      "Unit": "github.com/sourcegraph/john-test/hi",
       "Path": "GetHi",
       "Format": "text/html",
       "Data": "\u003cp\u003e\nGetHi returns a string saying hi\n\u003c/p\u003e\n",
@@ -82,7 +82,7 @@
     },
     {
       "UnitType": "GoPackage",
-      "Unit": "github.com/sgtest/go15vendor/vendor/github.com/sourcegraph/john-test/hi",
+      "Unit": "github.com/sourcegraph/john-test/hi",
       "Path": "GetHi",
       "Format": "text/plain",
       "Data": "GetHi returns a string saying hi\n",
