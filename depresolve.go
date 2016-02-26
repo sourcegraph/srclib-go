@@ -114,18 +114,26 @@ func ResolveDep(importPath string) (*dep.ResolvedTarget, error) {
 		return nil, fmt.Errorf("xtest package (%s) is not yet supported", importPath)
 	}
 
-	// Check if this import path is in this tree.
-	if pkg, err := buildContext.Import(importPath, "", build.FindOnly); err == nil && (pathHasPrefix(pkg.Dir, cwd) || isInEffectiveConfigGOPATH(pkg.Dir)) {
-		// TODO(sqs): do we want to link refs to vendored deps to
-		// their vendored code inside this repo? that's what it's
-		// doing now. The alternative is to link to the external repo
-		// that the code was vendored from.
-		return &dep.ResolvedTarget{
-			// empty ToRepoCloneURL to indicate it's from this repository
-			ToRepoCloneURL: "",
-			ToUnit:         importPath,
-			ToUnitType:     "GoPackage",
-		}, nil
+	// Check if this import path is in this tree. If refs refer to vendored deps, they are linked to the vendored code
+	// inside this repository (i.e., NOT linked to the external repository from which the code was vendored).
+	if pkg, err := buildContext.Import(importPath, "", build.FindOnly); err == nil {
+		if pathHasPrefix(pkg.Dir, cwd) || isInEffectiveConfigGOPATH(pkg.Dir) {
+			if strings.Contains(importPath, "/vendor/") {
+				unvendoredImportPath := strings.SplitAfterN(importPath, "/vendor/", 2)[1]
+				return &dep.ResolvedTarget{
+					ToRepoCloneURL: "", // empty ToRepoCloneURL to indicate it's from this repository
+					ToUnit:         unvendoredImportPath,
+					ToUnitType:     "GoPackage",
+				}, nil
+			} else {
+				return &dep.ResolvedTarget{
+					ToRepoCloneURL: "", // empty ToRepoCloneURL to indicate it's from this repository
+
+					ToUnit:     importPath,
+					ToUnitType: "GoPackage",
+				}, nil
+			}
+		}
 	}
 
 	// Handle some special (and edge) cases faster for performance and corner-cases.
