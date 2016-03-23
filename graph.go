@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"go/build"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -55,11 +57,15 @@ var graphCmd GraphCmd
 var allowErrorsInGoGet = true
 
 func (c *GraphCmd) Execute(args []string) error {
+	inputBytes, err := ioutil.ReadAll(os.Stdin)
+	if err != nil {
+		return err
+	}
 	var units unit.SourceUnits
-	if err := json.NewDecoder(os.Stdin).Decode(&units); err != nil {
+	if err := json.NewDecoder(bytes.NewReader(inputBytes)).Decode(&units); err != nil {
 		// Legacy API: try parsing input as a single source unit
 		var unit *unit.SourceUnit
-		if err := json.NewDecoder(os.Stdin).Decode(&unit); err != nil {
+		if err := json.NewDecoder(bytes.NewReader(inputBytes)).Decode(&unit); err != nil {
 			return err
 		}
 		units = append(units, unit)
