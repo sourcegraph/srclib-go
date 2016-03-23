@@ -55,22 +55,29 @@ var graphCmd GraphCmd
 var allowErrorsInGoGet = true
 
 func (c *GraphCmd) Execute(args []string) error {
-	var unit *unit.SourceUnit
-	if err := json.NewDecoder(os.Stdin).Decode(&unit); err != nil {
-		return err
+	var units unit.SourceUnits
+	if err := json.NewDecoder(os.Stdin).Decode(&units); err != nil {
+		// Legacy API: try parsing input as a single source unit
+		var unit *unit.SourceUnit
+		if err := json.NewDecoder(os.Stdin).Decode(&unit); err != nil {
+			return err
+		}
+		units = append(units, unit)
 	}
 	if err := os.Stdin.Close(); err != nil {
 		return err
 	}
 
-	if err := unmarshalTypedConfig(unit.Config); err != nil {
+	// HACK: fix this. Is this required? We only seem to be setting
+	// GOROOT and GOPATH
+	if err := unmarshalTypedConfig(units[0].Config); err != nil {
 		return err
 	}
 	if err := config.apply(); err != nil {
 		return err
 	}
 
-	out, err := Graph(unit)
+	out, err := Graph(units)
 	if err != nil {
 		return err
 	}
@@ -109,13 +116,17 @@ func relPath(base, path string) string {
 	return filepath.ToSlash(rp)
 }
 
-func Graph(unit *unit.SourceUnit) (*graph.Output, error) {
-	pkg, err := UnitDataAsBuildPackage(unit)
-	if err != nil {
-		return nil, err
+func Graph(units unit.SourceUnits) (*graph.Output, error) {
+	var pkgs []*build.Package
+	for _, u := range units {
+		pkg, err := UnitDataAsBuildPackage(u)
+		if err != nil {
+			return nil, err
+		}
+		pkgs = append(pkgs, pkg)
 	}
 
-	o, err := doGraph(pkg)
+	o, err := doGraph(pkgs)
 	if err != nil {
 		return nil, err
 	}
@@ -270,37 +281,40 @@ func treePath(path string) string {
 // encountering "reasonably common" errors (such as compile errors).
 var allowErrorsInGraph = true
 
-func doGraph(pkg *build.Package) (*gog.Output, error) {
-	importPath := pkg.ImportPath
-	importUnsafe := importPath == "unsafe"
-
+func doGraph(pkgs []*build.Package) (*gog.Output, error) {
 	// Special-case: if this is a Cgo package, treat the CgoFiles as GoFiles or
 	// else the character offsets will be junk.
 	//
 	// See https://codereview.appspot.com/86140043.
 	loaderConfig.Build.CgoEnabled = false
 	build.Default = *loaderConfig.Build
-	if len(pkg.CgoFiles) > 0 {
-		var allGoFiles []string
-		allGoFiles = append(allGoFiles, pkg.GoFiles...)
-		allGoFiles = append(allGoFiles, pkg.CgoFiles...)
-		allGoFiles = append(allGoFiles, pkg.TestGoFiles...)
-		for i, f := range allGoFiles {
-			allGoFiles[i] = filepath.Join(cwd, pkg.Dir, f)
-		}
-		loaderConfig.CreateFromFilenames(pkg.ImportPath, allGoFiles...)
-	} else {
-		// Normal import
-		loaderConfig.ImportWithTests(importPath)
-	}
 
-	if importUnsafe {
-		// Special-case "unsafe" because go/loader does not let you load it
-		// directly.
-		if loaderConfig.ImportPkgs == nil {
-			loaderConfig.ImportPkgs = make(map[string]bool)
+	for _, pkg := range pkgs {
+		importPath := pkg.ImportPath
+		importUnsafe := importPath == "unsafe"
+
+		if len(pkg.CgoFiles) > 0 {
+			var allGoFiles []string
+			allGoFiles = append(allGoFiles, pkg.GoFiles...)
+			allGoFiles = append(allGoFiles, pkg.CgoFiles...)
+			allGoFiles = append(allGoFiles, pkg.TestGoFiles...)
+			for i, f := range allGoFiles {
+				allGoFiles[i] = filepath.Join(cwd, pkg.Dir, f)
+			}
+			loaderConfig.CreateFromFilenames(pkg.ImportPath, allGoFiles...)
+		} else {
+			// Normal import
+			loaderConfig.ImportWithTests(importPath)
 		}
-		loaderConfig.ImportPkgs["unsafe"] = true
+
+		if importUnsafe {
+			// Special-case "unsafe" because go/loader does not let you load it
+			// directly.
+			if loaderConfig.ImportPkgs == nil {
+				loaderConfig.ImportPkgs = make(map[string]bool)
+			}
+			loaderConfig.ImportPkgs["unsafe"] = true
+		}
 	}
 
 	prog, err := loaderConfig.Load()
@@ -311,19 +325,19 @@ func doGraph(pkg *build.Package) (*gog.Output, error) {
 
 	g := gog.New(prog)
 
-	var pkgs []*loader.PackageInfo
+	var pkgInfos []*loader.PackageInfo
 	for _, pkg := range prog.Created {
 		if strings.HasSuffix(pkg.Pkg.Name(), "_test") {
 			// ignore xtest packages
 			continue
 		}
-		pkgs = append(pkgs, pkg)
+		pkgInfos = append(pkgInfos, pkg)
 	}
 	for _, pkg := range prog.Imported {
-		pkgs = append(pkgs, pkg)
+		pkgInfos = append(pkgInfos, pkg)
 	}
 
-	for _, pkg := range pkgs {
+	for _, pkg := range pkgInfos {
 		if err := g.Graph(pkg); err != nil {
 			return nil, err
 		}
