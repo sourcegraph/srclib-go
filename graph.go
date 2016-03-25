@@ -64,11 +64,11 @@ func (c *GraphCmd) Execute(args []string) error {
 	var units unit.SourceUnits
 	if err := json.NewDecoder(bytes.NewReader(inputBytes)).Decode(&units); err != nil {
 		// Legacy API: try parsing input as a single source unit
-		var unit *unit.SourceUnit
-		if err := json.NewDecoder(bytes.NewReader(inputBytes)).Decode(&unit); err != nil {
+		var u *unit.SourceUnit
+		if err := json.NewDecoder(bytes.NewReader(inputBytes)).Decode(&u); err != nil {
 			return err
 		}
-		units = append(units, unit)
+		units = unit.SourceUnits{u}
 	}
 	if err := os.Stdin.Close(); err != nil {
 		return err
