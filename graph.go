@@ -74,6 +74,10 @@ func (c *GraphCmd) Execute(args []string) error {
 		return err
 	}
 
+	if len(units) == 0 {
+		log.Fatal("Input contains no source unit data.")
+	}
+
 	// HACK: fix this. Is this required? We only seem to be setting
 	// GOROOT and GOPATH
 	if err := unmarshalTypedConfig(units[0].Config); err != nil {
