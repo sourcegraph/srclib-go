@@ -292,7 +292,7 @@ func scan(scanDir string) ([]*unit.SourceUnit, error) {
 			Files:        files,
 			Data:         pkg,
 			Dependencies: deps,
-			Ops:          map[string]*srclib.ToolRef{"depresolve": nil, "graph": nil},
+			Ops:          map[string]*srclib.ToolRef{"depresolve": nil, "graph-all": nil},
 		})
 	}
 
