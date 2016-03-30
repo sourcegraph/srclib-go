@@ -255,12 +255,14 @@ type toolchainInstaller struct {
 type toolchainMap map[string]toolchainInstaller
 
 var stdToolchains = toolchainMap{
-	"go":         toolchainInstaller{"Go (sourcegraph.com/sourcegraph/srclib-go)", installGoToolchain},
-	"python":     toolchainInstaller{"Python (sourcegraph.com/sourcegraph/srclib-python)", installPythonToolchain},
-	"ruby":       toolchainInstaller{"Ruby (sourcegraph.com/sourcegraph/srclib-ruby)", installRubyToolchain},
-	"javascript": toolchainInstaller{"JavaScript (sourcegraph.com/sourcegraph/srclib-javascript)", installJavaScriptToolchain},
-	"java":       toolchainInstaller{"Java (sourcegraph.com/sourcegraph/srclib-java)", installJavaToolchain},
-	"basic":      toolchainInstaller{"PHP, Objective-C (sourcegraph.com/sourcegraph/srclib-basic)", installBasicToolchain},
+	"go":         toolchainInstaller{"Go (github.com/sourcegraph/srclib-go)", installGoToolchain},
+	"python":     toolchainInstaller{"Python (github.com/sourcegraph/srclib-python)", installPythonToolchain},
+	"ruby":       toolchainInstaller{"Ruby (github.com/sourcegraph/srclib-ruby)", installRubyToolchain},
+	"javascript": toolchainInstaller{"JavaScript (github.com/sourcegraph/srclib-javascript)", installJavaScriptToolchain},
+	"typescript": toolchainInstaller{"TypeScript (github.com/sourcegraph/srclib-typescript)", installTypeScriptToolchain},
+	"java":       toolchainInstaller{"Java (github.com/sourcegraph/srclib-java)", installJavaToolchain},
+	"basic":      toolchainInstaller{"PHP, Objective-C (github.com/sourcegraph/srclib-basic)", installBasicToolchain},
+	"csharp":     toolchainInstaller{"C# (github.com/sourcegraph/srclib-csharp)", installCSharpToolchain},
 }
 
 func (m toolchainMap) listKeys() string {
@@ -312,7 +314,7 @@ func installToolchains(langs []toolchainInstaller) error {
 }
 
 func installGoToolchain() error {
-	const toolchain = "sourcegraph.com/sourcegraph/srclib-go"
+	const toolchain = "github.com/sourcegraph/srclib-go"
 
 	// Identify if Go is installed already or not.
 	if _, err := exec.LookPath("go"); isExecErrNotFound(err) {
@@ -353,7 +355,7 @@ run this command again.`)
 }
 
 func installRubyToolchain() error {
-	const toolchain = "sourcegraph.com/sourcegraph/srclib-ruby"
+	const toolchain = "github.com/sourcegraph/srclib-ruby"
 
 	srclibpathDir := filepath.Join(filepath.SplitList(srclib.Path)[0], toolchain) // toolchain dir under SRCLIBPATH
 	if err := os.MkdirAll(filepath.Dir(srclibpathDir), 0700); err != nil {
@@ -385,7 +387,7 @@ func installRubyToolchain() error {
 }
 
 func installJavaScriptToolchain() error {
-	const toolchain = "sourcegraph.com/sourcegraph/srclib-javascript"
+	const toolchain = "github.com/sourcegraph/srclib-javascript"
 
 	srclibpathDir := filepath.Join(filepath.SplitList(srclib.Path)[0], toolchain) // toolchain dir under SRCLIBPATH
 
@@ -404,8 +406,37 @@ func installJavaScriptToolchain() error {
 	return nil
 }
 
+func installTypeScriptToolchain() error {
+	const toolchain = "github.com/sourcegraph/srclib-typescript"
+
+	srclibpathDir := filepath.Join(filepath.SplitList(srclib.Path)[0], toolchain) // toolchain dir under SRCLIBPATH
+
+	if _, err := exec.LookPath("node"); isExecErrNotFound(err) {
+		return errors.New("no `node` in PATH (do you have Node.js installed properly?)")
+	}
+	if _, err := exec.LookPath("npm"); isExecErrNotFound(err) {
+		return fmt.Errorf("no `npm` in PATH; TypeScript toolchain requires npm")
+	}
+
+	if _, err := exec.LookPath("tsc"); isExecErrNotFound(err) {
+		return fmt.Errorf("no `tsc` in PATH; TypeScript toolchain requires tsc")
+	}
+
+	log.Println("Downloading TypeScript toolchain in", srclibpathDir)
+	if err := cloneToolchain(srclibpathDir, toolchain); err != nil {
+		return err
+	}
+
+	log.Println("Building TypeScript toolchain program")
+	if err := execCmdInDir(srclibpathDir, "make"); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func installPythonToolchain() error {
-	const toolchain = "sourcegraph.com/sourcegraph/srclib-python"
+	const toolchain = "github.com/sourcegraph/srclib-python"
 
 	requiredCmds := map[string]string{
 		"go":         "visit https://golang.org/doc/install",
@@ -439,7 +470,7 @@ func installPythonToolchain() error {
 }
 
 func installJavaToolchain() error {
-	const toolchain = "sourcegraph.com/sourcegraph/srclib-java"
+	const toolchain = "github.com/sourcegraph/srclib-java"
 
 	reqCmds := []string{"java", "gradle"}
 	for _, cmd := range reqCmds {
@@ -471,8 +502,40 @@ Refusing to install Java toolchain because %s is not installed or is not on the 
 	return nil
 }
 
+func installCSharpToolchain() error {
+	const toolchain = "github.com/sourcegraph/srclib-csharp"
+
+	requiredCmds := map[string]string{
+		"dnx": "see http://docs.asp.net/en/latest/getting-started/installing-on-linux.html for details",
+		"dnu": "see http://docs.asp.net/en/latest/getting-started/installing-on-linux.html for details",
+	}
+	for requiredCmd, instructions := range requiredCmds {
+		if _, err := exec.LookPath(requiredCmd); isExecErrNotFound(err) {
+			return fmt.Errorf("no `%s` found in PATH; to install, %s", requiredCmd, instructions)
+		}
+	}
+
+	srclibpathDir := filepath.Join(filepath.SplitList(srclib.Path)[0], toolchain) // toolchain dir under SRCLIBPATH
+	if err := os.MkdirAll(filepath.Dir(srclibpathDir), 0700); err != nil {
+		return err
+	}
+
+	log.Println("Downloading C# toolchain in", srclibpathDir)
+	if err := cloneToolchain(srclibpathDir, toolchain); err != nil {
+		return err
+	}
+
+	nugetdir := filepath.Join(srclibpathDir, "Srclib.Nuget")
+	log.Println("Downloading toolchain dependencies in", nugetdir)
+	if err := execCmdInDir("dnu", "restore", nugetdir); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func installBasicToolchain() error {
-	const toolchain = "sourcegraph.com/sourcegraph/srclib-basic"
+	const toolchain = "github.com/sourcegraph/srclib-basic"
 
 	reqCmds := []string{"java"}
 	for _, cmd := range reqCmds {
