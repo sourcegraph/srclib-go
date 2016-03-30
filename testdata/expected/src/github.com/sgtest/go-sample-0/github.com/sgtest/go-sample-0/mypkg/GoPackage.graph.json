@@ -105,6 +105,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-sample-0/mypkg",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/go-sample-0/mypkg",
       "File": "mypkg/bar.go",
       "Start": 8,
       "End": 13
@@ -113,6 +114,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-sample-0/mypkg",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/go-sample-0/mypkg",
       "File": "mypkg/foo.go",
       "Start": 8,
       "End": 13
@@ -121,6 +123,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-sample-0/mypkg",
       "DefPath": "Foo",
+      "Unit": "github.com/sgtest/go-sample-0/mypkg",
       "File": "mypkg/bar.go",
       "Start": 70,
       "End": 73
@@ -129,6 +132,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-sample-0/mypkg",
       "DefPath": "Foo",
+      "Unit": "github.com/sgtest/go-sample-0/mypkg",
       "Def": true,
       "File": "mypkg/foo.go",
       "Start": 20,
@@ -138,6 +142,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-sample-0/mypkg",
       "DefPath": "Qux",
+      "Unit": "github.com/sgtest/go-sample-0/mypkg",
       "Def": true,
       "File": "mypkg/bar.go",
       "Start": 43,
@@ -147,6 +152,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-sample-0/mypkg",
       "DefPath": "Qux",
+      "Unit": "github.com/sgtest/go-sample-0/mypkg",
       "File": "mypkg/foo.go",
       "Start": 44,
       "End": 47
@@ -155,6 +161,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-sample-0/mypkg",
       "DefPath": "init$bar60",
+      "Unit": "github.com/sgtest/go-sample-0/mypkg",
       "Def": true,
       "File": "mypkg/bar.go",
       "Start": 60,
@@ -164,6 +171,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-sample-0/mypkg",
       "DefPath": "numcolors",
+      "Unit": "github.com/sgtest/go-sample-0/mypkg",
       "Def": true,
       "File": "mypkg/foo.go",
       "Start": 34,
@@ -174,6 +182,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "uint32",
+      "Unit": "github.com/sgtest/go-sample-0/mypkg",
       "File": "mypkg/bar.go",
       "Start": 47,
       "End": 53
@@ -188,7 +197,8 @@
       "Data": "\u003cp\u003e\nQux is a cool type.\n\u003c/p\u003e\n",
       "File": "mypkg/bar.go",
       "Start": 15,
-      "End": 37
+      "End": 37,
+      "DocUnit": "github.com/sgtest/go-sample-0/mypkg"
     },
     {
       "UnitType": "GoPackage",
@@ -198,7 +208,8 @@
       "Data": "Qux is a cool type.\n",
       "File": "mypkg/bar.go",
       "Start": 15,
-      "End": 37
+      "End": 37,
+      "DocUnit": "github.com/sgtest/go-sample-0/mypkg"
     }
   ]
 }

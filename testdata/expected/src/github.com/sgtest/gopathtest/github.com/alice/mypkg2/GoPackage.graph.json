@@ -44,6 +44,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg2",
       "DefPath": ".",
+      "Unit": "github.com/alice/mypkg2",
       "File": "vendor/src/github.com/alice/mypkg2/mypkg2.go",
       "Start": 67,
       "End": 73
@@ -52,6 +53,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": ".",
+      "Unit": "github.com/alice/mypkg2",
       "File": "vendor/src/github.com/alice/mypkg2/mypkg2.go",
       "Start": 124,
       "End": 129
@@ -60,6 +62,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": ".",
+      "Unit": "github.com/alice/mypkg2",
       "File": "vendor/src/github.com/alice/mypkg2/mypkg2.go",
       "Start": 82,
       "End": 106
@@ -68,6 +71,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": "Foo",
+      "Unit": "github.com/alice/mypkg2",
       "File": "vendor/src/github.com/alice/mypkg2/mypkg2.go",
       "Start": 130,
       "End": 133
@@ -76,6 +80,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg2",
       "DefPath": "init$mypkg2113",
+      "Unit": "github.com/alice/mypkg2",
       "Def": true,
       "File": "vendor/src/github.com/alice/mypkg2/mypkg2.go",
       "Start": 113,
@@ -88,28 +93,32 @@
       "Format": "text/html",
       "Data": "\u003cp\u003e\nPackage mypkg2 tests that it can import a vendored dep.\n\u003c/p\u003e\n",
       "File": "vendor/src/github.com/alice/mypkg2/mypkg2.go",
-      "End": 58
+      "End": 58,
+      "DocUnit": "github.com/alice/mypkg2"
     },
     {
       "Path": "",
       "Format": "text/plain",
       "Data": "Package mypkg2 tests that it can import a vendored dep.\n",
       "File": "vendor/src/github.com/alice/mypkg2/mypkg2.go",
-      "End": 58
+      "End": 58,
+      "DocUnit": "github.com/alice/mypkg2"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "github.com/alice/mypkg2",
       "Path": ".",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\nPackage mypkg2 tests that it can import a vendored dep.\n\u003c/p\u003e\n"
+      "Data": "\u003cp\u003e\nPackage mypkg2 tests that it can import a vendored dep.\n\u003c/p\u003e\n",
+      "DocUnit": "github.com/alice/mypkg2"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "github.com/alice/mypkg2",
       "Path": ".",
       "Format": "text/plain",
-      "Data": "Package mypkg2 tests that it can import a vendored dep.\n"
+      "Data": "Package mypkg2 tests that it can import a vendored dep.\n",
+      "DocUnit": "github.com/alice/mypkg2"
     }
   ]
 }

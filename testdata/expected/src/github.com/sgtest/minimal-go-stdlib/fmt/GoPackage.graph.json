@@ -65,6 +65,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": ".",
+      "Unit": "fmt",
       "File": "src/fmt/fake_fmt.go",
       "Start": 8,
       "End": 11
@@ -73,6 +74,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": "FakePrintf/s",
+      "Unit": "fmt",
       "Def": true,
       "File": "src/fmt/fake_fmt.go",
       "Start": 197,
@@ -82,6 +84,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": "FakePrintf",
+      "Unit": "fmt",
       "Def": true,
       "File": "src/fmt/fake_fmt.go",
       "Start": 186,
@@ -92,6 +95,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "string",
+      "Unit": "fmt",
       "File": "src/fmt/fake_fmt.go",
       "Start": 199,
       "End": 205
@@ -106,7 +110,8 @@
       "Data": "\u003cp\u003e\nFakePrintf is not the real printf. We\u0026#39;re testing that our analyzer looks at\nthe repository being analyzed, and not the Go stdlib, if GoBaseImportPaths is\nset.\n\u003c/p\u003e\n",
       "File": "src/fmt/fake_fmt.go",
       "Start": 13,
-      "End": 180
+      "End": 180,
+      "DocUnit": "fmt"
     },
     {
       "UnitType": "GoPackage",
@@ -116,7 +121,8 @@
       "Data": "FakePrintf is not the real printf. We're testing that our analyzer looks at\nthe repository being analyzed, and not the Go stdlib, if GoBaseImportPaths is\nset.\n",
       "File": "src/fmt/fake_fmt.go",
       "Start": 13,
-      "End": 180
+      "End": 180,
+      "DocUnit": "fmt"
     }
   ]
 }

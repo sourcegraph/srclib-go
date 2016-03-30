@@ -44,6 +44,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/gopathtest",
       "File": "gopathtest.go",
       "Start": 104,
       "End": 128
@@ -52,6 +53,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/gopathtest",
       "File": "gopathtest.go",
       "Start": 178,
       "End": 183
@@ -60,6 +62,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/gopathtest",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/gopathtest",
       "File": "gopathtest.go",
       "Start": 81,
       "End": 91
@@ -68,6 +71,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": "Foo",
+      "Unit": "github.com/sgtest/gopathtest",
       "File": "gopathtest.go",
       "Start": 184,
       "End": 187
@@ -76,6 +80,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/gopathtest",
       "DefPath": "init$gopathtest167",
+      "Unit": "github.com/sgtest/gopathtest",
       "Def": true,
       "File": "gopathtest.go",
       "Start": 167,
@@ -88,28 +93,32 @@
       "Format": "text/html",
       "Data": "\u003cp\u003e\nPackage gopathtest tests that it can access vendored deps in vendor/.\n\u003c/p\u003e\n",
       "File": "gopathtest.go",
-      "End": 72
+      "End": 72,
+      "DocUnit": "github.com/sgtest/gopathtest"
     },
     {
       "Path": "",
       "Format": "text/plain",
       "Data": "Package gopathtest tests that it can access vendored deps in vendor/.\n",
       "File": "gopathtest.go",
-      "End": 72
+      "End": 72,
+      "DocUnit": "github.com/sgtest/gopathtest"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "github.com/sgtest/gopathtest",
       "Path": ".",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\nPackage gopathtest tests that it can access vendored deps in vendor/.\n\u003c/p\u003e\n"
+      "Data": "\u003cp\u003e\nPackage gopathtest tests that it can access vendored deps in vendor/.\n\u003c/p\u003e\n",
+      "DocUnit": "github.com/sgtest/gopathtest"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "github.com/sgtest/gopathtest",
       "Path": ".",
       "Format": "text/plain",
-      "Data": "Package gopathtest tests that it can access vendored deps in vendor/.\n"
+      "Data": "Package gopathtest tests that it can access vendored deps in vendor/.\n",
+      "DocUnit": "github.com/sgtest/gopathtest"
     }
   ]
 }

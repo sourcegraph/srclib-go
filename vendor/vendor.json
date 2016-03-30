@@ -95,7 +95,7 @@
 		{
 			"checksumSHA1": "DQegZodz5GxmUbCOPySjzei4Zbw=",
 			"path": "sourcegraph.com/sourcegraph/srclib",
-			"revision": "4758dabebc5638ee41f70e7ed1d1448f6b9c4e0f",
+			"revision": "2c38b1042a946ec4531ca463bf6e65d7a356190b",
 			"revisionTime": "2016-01-07T01:13:23-08:00"
 		},
 		{
@@ -119,13 +119,13 @@
 		{
 			"checksumSHA1": "n+mL7iiHl9qXFgdsDtA/2B/vI1I=",
 			"path": "sourcegraph.com/sourcegraph/srclib/dep",
-			"revision": "4758dabebc5638ee41f70e7ed1d1448f6b9c4e0f",
+			"revision": "2c38b1042a946ec4531ca463bf6e65d7a356190b",
 			"revisionTime": "2016-01-07T01:13:23-08:00"
 		},
 		{
 			"checksumSHA1": "y1FdQWZzVB6Ssln91LjRD4AiMIM=",
 			"path": "sourcegraph.com/sourcegraph/srclib/graph",
-			"revision": "4758dabebc5638ee41f70e7ed1d1448f6b9c4e0f",
+			"revision": "2c38b1042a946ec4531ca463bf6e65d7a356190b",
 			"revisionTime": "2016-01-07T01:13:23-08:00"
 		},
 		{
@@ -143,13 +143,13 @@
 		{
 			"checksumSHA1": "Eff/+/OaGHAVErr2rEnQO1Szi5U=",
 			"path": "sourcegraph.com/sourcegraph/srclib/unit",
-			"revision": "4758dabebc5638ee41f70e7ed1d1448f6b9c4e0f",
+			"revision": "2c38b1042a946ec4531ca463bf6e65d7a356190b",
 			"revisionTime": "2016-01-07T01:13:23-08:00"
 		},
 		{
 			"checksumSHA1": "GZZtDCxhiXpKrgrO7nif2eStNIQ=",
 			"path": "sourcegraph.com/sourcegraph/srclib/util",
-			"revision": "4758dabebc5638ee41f70e7ed1d1448f6b9c4e0f",
+			"revision": "2c38b1042a946ec4531ca463bf6e65d7a356190b",
 			"revisionTime": "2016-01-07T01:13:23-08:00"
 		},
 		{

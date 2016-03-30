@@ -44,6 +44,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go15vendor/bye",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/go15vendor",
       "File": "main.go",
       "Start": 161,
       "End": 164
@@ -52,6 +53,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go15vendor/bye",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/go15vendor",
       "File": "main.go",
       "Start": 32,
       "End": 66
@@ -60,6 +62,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go15vendor",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/go15vendor",
       "File": "main.go",
       "Start": 8,
       "End": 12
@@ -68,6 +71,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sourcegraph/john-test/hi",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/go15vendor",
       "File": "main.go",
       "Start": 136,
       "End": 138
@@ -76,6 +80,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sourcegraph/john-test/hi",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/go15vendor",
       "File": "main.go",
       "Start": 68,
       "End": 105
@@ -85,6 +90,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/go15vendor",
       "File": "main.go",
       "Start": 124,
       "End": 127
@@ -94,6 +100,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/go15vendor",
       "File": "main.go",
       "Start": 149,
       "End": 152
@@ -103,6 +110,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/go15vendor",
       "File": "main.go",
       "Start": 24,
       "End": 29
@@ -111,6 +119,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go15vendor/bye",
       "DefPath": "GetBye",
+      "Unit": "github.com/sgtest/go15vendor",
       "File": "main.go",
       "Start": 165,
       "End": 171
@@ -119,6 +128,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sourcegraph/john-test/hi",
       "DefPath": "GetHi",
+      "Unit": "github.com/sgtest/go15vendor",
       "File": "main.go",
       "Start": 139,
       "End": 144
@@ -128,6 +138,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": "Println",
+      "Unit": "github.com/sgtest/go15vendor",
       "File": "main.go",
       "Start": 128,
       "End": 135
@@ -137,6 +148,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": "Println",
+      "Unit": "github.com/sgtest/go15vendor",
       "File": "main.go",
       "Start": 153,
       "End": 160
@@ -145,6 +157,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go15vendor",
       "DefPath": "main.go/main",
+      "Unit": "github.com/sgtest/go15vendor",
       "Def": true,
       "File": "main.go",
       "Start": 114,

@@ -140,7 +140,7 @@ func (g *Grapher) Graph(pkgInfo *loader.PackageInfo) error {
 
 	for node, obj := range pkgInfo.Implicits {
 		if importSpec, ok := node.(*ast.ImportSpec); ok {
-			ref, err := g.NewRef(importSpec, obj)
+			ref, err := g.NewRef(importSpec, obj, pkgInfo.Pkg.Path())
 			if err != nil {
 				return err
 			}
@@ -185,7 +185,7 @@ func (g *Grapher) Graph(pkgInfo *loader.PackageInfo) error {
 			g.addDef(def)
 		}
 
-		ref, err := g.NewRef(ident, obj)
+		ref, err := g.NewRef(ident, obj, pkgInfo.Pkg.Path())
 		if err != nil {
 			return err
 		}
@@ -215,7 +215,7 @@ func (g *Grapher) Graph(pkgInfo *loader.PackageInfo) error {
 			continue
 		}
 
-		ref, err := g.NewRef(ident, obj)
+		ref, err := g.NewRef(ident, obj, pkgInfo.Pkg.Path())
 		if err != nil {
 			return err
 		}
@@ -226,7 +226,7 @@ func (g *Grapher) Graph(pkgInfo *loader.PackageInfo) error {
 	// for each file.
 	for _, f := range pkgInfo.Files {
 		pkgObj := types.NewPkgName(f.Name.Pos(), pkgInfo.Pkg, pkgInfo.Pkg.Name(), pkgInfo.Pkg)
-		ref, err := g.NewRef(f.Name, pkgObj)
+		ref, err := g.NewRef(f.Name, pkgObj, pkgInfo.Pkg.Path())
 		if err != nil {
 			return err
 		}

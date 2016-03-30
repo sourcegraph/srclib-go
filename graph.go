@@ -231,12 +231,21 @@ func convertGoRef(gr *gog.Ref) (*graph.Ref, error) {
 		return nil, nil
 	}
 
+	resolvedRefUnit, err := ResolveDep(gr.Unit)
+	if err != nil {
+		return nil, err
+	}
+	if resolvedRefUnit == nil {
+		return nil, nil
+	}
+
 	return &graph.Ref{
 		DefRepo:     filepath.ToSlash(uriOrEmpty(resolvedTarget.ToRepoCloneURL)),
 		DefPath:     filepath.ToSlash(pathOrDot(filepath.Join(gr.Def.Path...))),
 		DefUnit:     resolvedTarget.ToUnit,
 		DefUnitType: resolvedTarget.ToUnitType,
 		Def:         gr.IsDef,
+		Unit:        resolvedRefUnit.ToUnit,
 		File:        filepath.ToSlash(gr.File),
 		Start:       gr.Span[0],
 		End:         gr.Span[1],
@@ -256,13 +265,23 @@ func convertGoDoc(gd *gog.Doc) (*graph.Doc, error) {
 			UnitType: resolvedTarget.ToUnitType,
 		}
 	}
+
+	resolvedDocUnit, err := ResolveDep(gd.Unit)
+	if err != nil {
+		return nil, err
+	}
+	if resolvedDocUnit == nil {
+		return nil, nil
+	}
+
 	return &graph.Doc{
-		DefKey: key,
-		Format: gd.Format,
-		Data:   gd.Data,
-		File:   filepath.ToSlash(gd.File),
-		Start:  gd.Span[0],
-		End:    gd.Span[1],
+		DefKey:  key,
+		Format:  gd.Format,
+		Data:    gd.Data,
+		File:    filepath.ToSlash(gd.File),
+		Start:   gd.Span[0],
+		End:     gd.Span[1],
+		DocUnit: resolvedDocUnit.ToUnit,
 	}, nil
 }
 
