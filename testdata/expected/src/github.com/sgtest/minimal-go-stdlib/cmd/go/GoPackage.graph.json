@@ -63,6 +63,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "cmd/go",
       "DefPath": ".",
+      "Unit": "cmd/go",
       "File": "src/cmd/go/main.go",
       "Start": 8,
       "End": 12
@@ -71,6 +72,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy0",
       "DefPath": ".",
+      "Unit": "cmd/go",
       "File": "src/cmd/go/main.go",
       "Start": 21,
       "End": 29
@@ -79,6 +81,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy0",
       "DefPath": ".",
+      "Unit": "cmd/go",
       "File": "src/cmd/go/main.go",
       "Start": 289,
       "End": 295
@@ -87,6 +90,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy0",
       "DefPath": "MyFunc",
+      "Unit": "cmd/go",
       "File": "src/cmd/go/main.go",
       "Start": 296,
       "End": 302
@@ -95,6 +99,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "cmd/go",
       "DefPath": "main.go/main/v",
+      "Unit": "cmd/go",
       "Def": true,
       "File": "src/cmd/go/main.go",
       "Start": 284,
@@ -104,6 +109,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "cmd/go",
       "DefPath": "main.go/main/v",
+      "Unit": "cmd/go",
       "File": "src/cmd/go/main.go",
       "Start": 310,
       "End": 311
@@ -112,6 +118,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "cmd/go",
       "DefPath": "main.go/main",
+      "Unit": "cmd/go",
       "Def": true,
       "File": "src/cmd/go/main.go",
       "Start": 36,
@@ -125,7 +132,8 @@
       "Data": "\u003cp\u003e\nTest that we can refer to any pkg defined in the stdlib repo, not just\npkgs from a predefined list. This tests that if the stdlib adds pkgs or\ndefinitions, we\u0026#39;ll analyze them instead of just analyzing the code in\nGOROOT.\n\u003c/p\u003e\n",
       "File": "src/cmd/go/main.go",
       "Start": 46,
-      "End": 281
+      "End": 281,
+      "DocUnit": "cmd/go"
     },
     {
       "Path": "",
@@ -133,7 +141,8 @@
       "Data": "Test that we can refer to any pkg defined in the stdlib repo, not just\npkgs from a predefined list. This tests that if the stdlib adds pkgs or\ndefinitions, we'll analyze them instead of just analyzing the code in\nGOROOT.\n",
       "File": "src/cmd/go/main.go",
       "Start": 46,
-      "End": 281
+      "End": 281,
+      "DocUnit": "cmd/go"
     }
   ]
 }

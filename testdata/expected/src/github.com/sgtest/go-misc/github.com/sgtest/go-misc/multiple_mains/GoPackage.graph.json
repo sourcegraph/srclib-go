@@ -82,6 +82,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/multiple_mains",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/go-misc/multiple_mains",
       "File": "multiple_mains/main1.go",
       "Start": 8,
       "End": 12
@@ -90,6 +91,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/multiple_mains",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/go-misc/multiple_mains",
       "File": "multiple_mains/main2.go",
       "Start": 8,
       "End": 12
@@ -98,6 +100,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/multiple_mains",
       "DefPath": "main1.go/main/x",
+      "Unit": "github.com/sgtest/go-misc/multiple_mains",
       "File": "multiple_mains/main1.go",
       "Start": 111,
       "End": 112
@@ -106,6 +109,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/multiple_mains",
       "DefPath": "main1.go/main/x",
+      "Unit": "github.com/sgtest/go-misc/multiple_mains",
       "Def": true,
       "File": "multiple_mains/main1.go",
       "Start": 97,
@@ -115,6 +119,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/multiple_mains",
       "DefPath": "main1.go/main",
+      "Unit": "github.com/sgtest/go-misc/multiple_mains",
       "Def": true,
       "File": "multiple_mains/main1.go",
       "Start": 83,
@@ -124,6 +129,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/multiple_mains",
       "DefPath": "main2.go/main/x",
+      "Unit": "github.com/sgtest/go-misc/multiple_mains",
       "File": "multiple_mains/main2.go",
       "Start": 111,
       "End": 112
@@ -132,6 +138,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/multiple_mains",
       "DefPath": "main2.go/main/x",
+      "Unit": "github.com/sgtest/go-misc/multiple_mains",
       "Def": true,
       "File": "multiple_mains/main2.go",
       "Start": 97,
@@ -142,6 +149,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "string",
+      "Unit": "github.com/sgtest/go-misc/multiple_mains",
       "File": "multiple_mains/main1.go",
       "Start": 99,
       "End": 105
@@ -151,6 +159,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "string",
+      "Unit": "github.com/sgtest/go-misc/multiple_mains",
       "File": "multiple_mains/main2.go",
       "Start": 99,
       "End": 105
@@ -163,7 +172,8 @@
       "Data": "\u003cp\u003e\ntwo go files in the same dir with defs with identical paths\n\u003c/p\u003e\n",
       "File": "multiple_mains/main1.go",
       "Start": 14,
-      "End": 76
+      "End": 76,
+      "DocUnit": "github.com/sgtest/go-misc/multiple_mains"
     },
     {
       "Path": "",
@@ -171,7 +181,8 @@
       "Data": "\u003cp\u003e\ntwo go files in the same dir with defs with identical paths\n\u003c/p\u003e\n",
       "File": "multiple_mains/main2.go",
       "Start": 14,
-      "End": 76
+      "End": 76,
+      "DocUnit": "github.com/sgtest/go-misc/multiple_mains"
     },
     {
       "Path": "",
@@ -179,7 +190,8 @@
       "Data": "two go files in the same dir with defs with identical paths\n",
       "File": "multiple_mains/main1.go",
       "Start": 14,
-      "End": 76
+      "End": 76,
+      "DocUnit": "github.com/sgtest/go-misc/multiple_mains"
     },
     {
       "Path": "",
@@ -187,7 +199,8 @@
       "Data": "two go files in the same dir with defs with identical paths\n",
       "File": "multiple_mains/main2.go",
       "Start": 14,
-      "End": 76
+      "End": 76,
+      "DocUnit": "github.com/sgtest/go-misc/multiple_mains"
     }
   ]
 }

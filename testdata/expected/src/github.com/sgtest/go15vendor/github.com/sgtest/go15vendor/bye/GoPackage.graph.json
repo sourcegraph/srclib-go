@@ -46,6 +46,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go15vendor/bye",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/go15vendor/bye",
       "File": "bye/bye.go",
       "Start": 8,
       "End": 11
@@ -54,6 +55,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go15vendor/bye",
       "DefPath": "GetBye",
+      "Unit": "github.com/sgtest/go15vendor/bye",
       "Def": true,
       "File": "bye/bye.go",
       "Start": 18,
@@ -64,6 +66,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "string",
+      "Unit": "github.com/sgtest/go15vendor/bye",
       "File": "bye/bye.go",
       "Start": 27,
       "End": 33

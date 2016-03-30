@@ -46,6 +46,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy1",
       "DefPath": ".",
+      "Unit": "dummy1",
       "File": "src/dummy1/dummy1.go",
       "Start": 8,
       "End": 14
@@ -54,6 +55,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy1",
       "DefPath": "MyType",
+      "Unit": "dummy1",
       "Def": true,
       "File": "src/dummy1/dummy1.go",
       "Start": 21,
@@ -64,6 +66,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "int",
+      "Unit": "dummy1",
       "File": "src/dummy1/dummy1.go",
       "Start": 28,
       "End": 31
