@@ -21,18 +21,23 @@ else
 	SRCLIB_GO_EXE := .bin/srclib-go
 endif
 
-.PHONY: install test gotest srctest release
+.PHONY: install test gotest srctest
+
+default: govendor install
 
 install: ${SRCLIB_GO_EXE}
 
-${SRCLIB_GO_EXE}: $(shell /usr/bin/find . -type f -and -name '*.go' -not -path './Godeps/*')
-	GOBIN=$(CURDIR)/.bin go get github.com/tools/godep
-	.bin/godep go build -o ${SRCLIB_GO_EXE}
+govendor:
+	go get github.com/kardianos/govendor
+	govendor sync
+
+${SRCLIB_GO_EXE}: $(shell /usr/bin/find . -type f -and -name '*.go' -not -path './vendor/*')
+	go build -o ${SRCLIB_GO_EXE}
 
 test: gotest srctest
 
 gotest:
-	.bin/godep go test $(go list ./... | grep -v /Godeps/)
+	go test $(shell go list ./... | grep -v /vendor/)
 
 srctest:
 # go1.5 excludes repos whose ImportPath would include testdata. Since all the
@@ -42,5 +47,3 @@ srctest:
 	GOPATH=${PWD}/.test go get -d golang.org/x/net/ipv6 golang.org/x/tools/go/types
 	GOPATH=${PWD}/testdata/case:${PWD}/.test srclib test
 
-release:
-	docker build -t srclib/srclib-go .
