@@ -25,6 +25,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-testonly",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/go-testonly",
       "File": "foo_test.go",
       "Start": 8,
       "End": 11

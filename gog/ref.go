@@ -6,7 +6,7 @@ import (
 	"go/types"
 )
 
-func (g *Grapher) NewRef(node ast.Node, obj types.Object) (*Ref, error) {
+func (g *Grapher) NewRef(node ast.Node, obj types.Object, pkgPath string) (*Ref, error) {
 	key, err := g.defKey(obj)
 	if err != nil {
 		return nil, err
@@ -14,6 +14,7 @@ func (g *Grapher) NewRef(node ast.Node, obj types.Object) (*Ref, error) {
 
 	pos := g.program.Fset.Position(node.Pos())
 	return &Ref{
+		Unit: pkgPath,
 		File: pos.Filename,
 		Span: makeSpan(g.program.Fset, node),
 		Def:  key,
@@ -21,6 +22,7 @@ func (g *Grapher) NewRef(node ast.Node, obj types.Object) (*Ref, error) {
 }
 
 type Ref struct {
+	Unit string
 	File string
 	Span [2]uint32
 	Def  *DefKey

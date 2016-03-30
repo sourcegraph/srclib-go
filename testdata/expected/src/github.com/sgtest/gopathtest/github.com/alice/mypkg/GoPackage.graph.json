@@ -46,6 +46,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": ".",
+      "Unit": "github.com/alice/mypkg",
       "File": "vendor/src/github.com/alice/mypkg/mypkg.go",
       "Start": 51,
       "End": 56
@@ -54,6 +55,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/alice/mypkg",
       "DefPath": "Foo",
+      "Unit": "github.com/alice/mypkg",
       "Def": true,
       "File": "vendor/src/github.com/alice/mypkg/mypkg.go",
       "Start": 63,
@@ -66,28 +68,32 @@
       "Format": "text/html",
       "Data": "\u003cp\u003e\nPackage mypkg is a vendored dependency.\n\u003c/p\u003e\n",
       "File": "vendor/src/github.com/alice/mypkg/mypkg.go",
-      "End": 42
+      "End": 42,
+      "DocUnit": "github.com/alice/mypkg"
     },
     {
       "Path": "",
       "Format": "text/plain",
       "Data": "Package mypkg is a vendored dependency.\n",
       "File": "vendor/src/github.com/alice/mypkg/mypkg.go",
-      "End": 42
+      "End": 42,
+      "DocUnit": "github.com/alice/mypkg"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "github.com/alice/mypkg",
       "Path": ".",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\nPackage mypkg is a vendored dependency.\n\u003c/p\u003e\n"
+      "Data": "\u003cp\u003e\nPackage mypkg is a vendored dependency.\n\u003c/p\u003e\n",
+      "DocUnit": "github.com/alice/mypkg"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "github.com/alice/mypkg",
       "Path": ".",
       "Format": "text/plain",
-      "Data": "Package mypkg is a vendored dependency.\n"
+      "Data": "Package mypkg is a vendored dependency.\n",
+      "DocUnit": "github.com/alice/mypkg"
     }
   ]
 }

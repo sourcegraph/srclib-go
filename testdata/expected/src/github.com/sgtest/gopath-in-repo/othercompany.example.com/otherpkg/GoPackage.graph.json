@@ -46,6 +46,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "othercompany.example.com/otherpkg",
       "DefPath": ".",
+      "Unit": "othercompany.example.com/otherpkg",
       "File": "go/src/othercompany.example.com/otherpkg/otherpkg.go",
       "Start": 8,
       "End": 16
@@ -54,6 +55,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "othercompany.example.com/otherpkg",
       "DefPath": "Other",
+      "Unit": "othercompany.example.com/otherpkg",
       "Def": true,
       "File": "go/src/othercompany.example.com/otherpkg/otherpkg.go",
       "Start": 23,

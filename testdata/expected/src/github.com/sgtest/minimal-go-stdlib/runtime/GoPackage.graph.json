@@ -25,6 +25,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "runtime",
       "DefPath": ".",
+      "Unit": "runtime",
       "File": "src/runtime/runtime.go",
       "Start": 8,
       "End": 15

@@ -46,6 +46,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "mycompany.example.com/foo",
       "DefPath": ".",
+      "Unit": "mycompany.example.com/mypkg",
       "File": "go/src/mycompany.example.com/mypkg/mypkg.go",
       "Start": 107,
       "End": 110
@@ -54,6 +55,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "mycompany.example.com/foo",
       "DefPath": ".",
+      "Unit": "mycompany.example.com/mypkg",
       "File": "go/src/mycompany.example.com/mypkg/mypkg.go",
       "Start": 25,
       "End": 52
@@ -62,6 +64,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "mycompany.example.com/mypkg",
       "DefPath": ".",
+      "Unit": "mycompany.example.com/mypkg",
       "File": "go/src/mycompany.example.com/mypkg/mypkg.go",
       "Start": 8,
       "End": 13
@@ -70,6 +73,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "othercompany.example.com/otherpkg",
       "DefPath": ".",
+      "Unit": "mycompany.example.com/mypkg",
       "File": "go/src/mycompany.example.com/mypkg/mypkg.go",
       "Start": 118,
       "End": 126
@@ -78,6 +82,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "othercompany.example.com/otherpkg",
       "DefPath": ".",
+      "Unit": "mycompany.example.com/mypkg",
       "File": "go/src/mycompany.example.com/mypkg/mypkg.go",
       "Start": 54,
       "End": 89
@@ -86,6 +91,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "mycompany.example.com/foo",
       "DefPath": "Foo",
+      "Unit": "mycompany.example.com/mypkg",
       "File": "go/src/mycompany.example.com/mypkg/mypkg.go",
       "Start": 111,
       "End": 114
@@ -94,6 +100,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "mycompany.example.com/mypkg",
       "DefPath": "Foo",
+      "Unit": "mycompany.example.com/mypkg",
       "Def": true,
       "File": "go/src/mycompany.example.com/mypkg/mypkg.go",
       "Start": 98,
@@ -103,6 +110,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "othercompany.example.com/otherpkg",
       "DefPath": "Other",
+      "Unit": "mycompany.example.com/mypkg",
       "File": "go/src/mycompany.example.com/mypkg/mypkg.go",
       "Start": 127,
       "End": 132

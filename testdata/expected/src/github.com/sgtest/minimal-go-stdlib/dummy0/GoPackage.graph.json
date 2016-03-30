@@ -66,6 +66,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy0",
       "DefPath": ".",
+      "Unit": "dummy0",
       "File": "src/dummy0/dummy0.go",
       "Start": 8,
       "End": 14
@@ -74,6 +75,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy0",
       "DefPath": ".",
+      "Unit": "dummy0",
       "File": "src/dummy0/dummy0_test.go",
       "Start": 8,
       "End": 14
@@ -82,6 +84,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy1",
       "DefPath": ".",
+      "Unit": "dummy0",
       "File": "src/dummy0/dummy0.go",
       "Start": 26,
       "End": 34
@@ -90,6 +93,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy1",
       "DefPath": ".",
+      "Unit": "dummy0",
       "File": "src/dummy0/dummy0.go",
       "Start": 370,
       "End": 376
@@ -98,6 +102,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy1",
       "DefPath": ".",
+      "Unit": "dummy0",
       "File": "src/dummy0/dummy0.go",
       "Start": 497,
       "End": 503
@@ -106,6 +111,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy1",
       "DefPath": ".",
+      "Unit": "dummy0",
       "File": "src/dummy0/dummy0_test.go",
       "Start": 23,
       "End": 31
@@ -114,6 +120,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy1",
       "DefPath": ".",
+      "Unit": "dummy0",
       "File": "src/dummy0/dummy0_test.go",
       "Start": 39,
       "End": 45
@@ -122,6 +129,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": ".",
+      "Unit": "dummy0",
       "File": "src/dummy0/dummy0.go",
       "Start": 36,
       "End": 41
@@ -130,6 +138,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": ".",
+      "Unit": "dummy0",
       "File": "src/dummy0/dummy0.go",
       "Start": 464,
       "End": 467
@@ -138,6 +147,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": "FakePrintf",
+      "Unit": "dummy0",
       "File": "src/dummy0/dummy0.go",
       "Start": 468,
       "End": 478
@@ -146,6 +156,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy0",
       "DefPath": "MyFunc",
+      "Unit": "dummy0",
       "Def": true,
       "File": "src/dummy0/dummy0.go",
       "Start": 361,
@@ -155,6 +166,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy1",
       "DefPath": "MyType",
+      "Unit": "dummy0",
       "File": "src/dummy0/dummy0.go",
       "Start": 377,
       "End": 383
@@ -163,6 +175,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy1",
       "DefPath": "MyType",
+      "Unit": "dummy0",
       "File": "src/dummy0/dummy0.go",
       "Start": 504,
       "End": 510
@@ -171,6 +184,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy1",
       "DefPath": "MyType",
+      "Unit": "dummy0",
       "File": "src/dummy0/dummy0_test.go",
       "Start": 46,
       "End": 52
@@ -179,6 +193,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy0",
       "DefPath": "v",
+      "Unit": "dummy0",
       "Def": true,
       "File": "src/dummy0/dummy0_test.go",
       "Start": 37,
@@ -192,7 +207,8 @@
       "Data": "\u003cp\u003e\nFakePrintf should refer to our fake fmt package, not the stdlib package.\n\u003c/p\u003e\n",
       "File": "src/dummy0/dummy0.go",
       "Start": 387,
-      "End": 462
+      "End": 462,
+      "DocUnit": "dummy0"
     },
     {
       "Path": "",
@@ -200,7 +216,8 @@
       "Data": "\u003cp\u003e\nRefs to dummy1.MyType test that we can refer to any pkg defined in this repo\nas a stdlib package, not just pkgs from a predefined list. This tests that if\nthe stdlib adds pkgs or definitions, we\u0026#39;ll analyze them instead of just\nanalyzing the code in GOROOT.\n\u003c/p\u003e\n",
       "File": "src/dummy0/dummy0.go",
       "Start": 45,
-      "End": 313
+      "End": 313,
+      "DocUnit": "dummy0"
     },
     {
       "Path": "",
@@ -208,7 +225,8 @@
       "Data": "FakePrintf should refer to our fake fmt package, not the stdlib package.\n",
       "File": "src/dummy0/dummy0.go",
       "Start": 387,
-      "End": 462
+      "End": 462,
+      "DocUnit": "dummy0"
     },
     {
       "Path": "",
@@ -216,7 +234,8 @@
       "Data": "Refs to dummy1.MyType test that we can refer to any pkg defined in this repo\nas a stdlib package, not just pkgs from a predefined list. This tests that if\nthe stdlib adds pkgs or definitions, we'll analyze them instead of just\nanalyzing the code in GOROOT.\n",
       "File": "src/dummy0/dummy0.go",
       "Start": 45,
-      "End": 313
+      "End": 313,
+      "DocUnit": "dummy0"
     },
     {
       "UnitType": "GoPackage",
@@ -226,7 +245,8 @@
       "Data": "\u003cp\u003e\nMyFunc documentation should be found.\n\u003c/p\u003e\n",
       "File": "src/dummy0/dummy0.go",
       "Start": 315,
-      "End": 355
+      "End": 355,
+      "DocUnit": "dummy0"
     },
     {
       "UnitType": "GoPackage",
@@ -236,7 +256,8 @@
       "Data": "MyFunc documentation should be found.\n",
       "File": "src/dummy0/dummy0.go",
       "Start": 315,
-      "End": 355
+      "End": 355,
+      "DocUnit": "dummy0"
     }
   ]
 }

@@ -46,6 +46,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sourcegraph/john-test/hi",
       "DefPath": ".",
+      "Unit": "github.com/sourcegraph/john-test/hi",
       "File": "vendor/github.com/sourcegraph/john-test/hi/hi.go",
       "Start": 8,
       "End": 10
@@ -54,6 +55,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sourcegraph/john-test/hi",
       "DefPath": "GetHi",
+      "Unit": "github.com/sourcegraph/john-test/hi",
       "Def": true,
       "File": "vendor/github.com/sourcegraph/john-test/hi/hi.go",
       "Start": 53,
@@ -64,6 +66,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "string",
+      "Unit": "github.com/sourcegraph/john-test/hi",
       "File": "vendor/github.com/sourcegraph/john-test/hi/hi.go",
       "Start": 61,
       "End": 67
@@ -78,7 +81,8 @@
       "Data": "\u003cp\u003e\nGetHi returns a string saying hi\n\u003c/p\u003e\n",
       "File": "vendor/github.com/sourcegraph/john-test/hi/hi.go",
       "Start": 12,
-      "End": 47
+      "End": 47,
+      "DocUnit": "github.com/sourcegraph/john-test/hi"
     },
     {
       "UnitType": "GoPackage",
@@ -88,7 +92,8 @@
       "Data": "GetHi returns a string saying hi\n",
       "File": "vendor/github.com/sourcegraph/john-test/hi/hi.go",
       "Start": 12,
-      "End": 47
+      "End": 47,
+      "DocUnit": "github.com/sourcegraph/john-test/hi"
     }
   ]
 }

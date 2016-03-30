@@ -20,19 +20,21 @@ var _ = math.Inf
 // Doc is documentation on a Def.
 type Doc struct {
 	// DefKey points to the Def that this documentation pertains to.
-	DefKey `protobuf:"bytes,1,opt,name=key,embedded=key" json:""`
+	DefKey `protobuf:"bytes,1,opt,name=Key,embedded=Key" json:""`
 	// Format is the the MIME-type that the documentation is stored
 	// in. Valid formats include 'text/html', 'text/plain',
 	// 'text/x-markdown', text/x-rst'.
-	Format string `protobuf:"bytes,2,opt,name=format,proto3" json:"Format"`
+	Format string `protobuf:"bytes,2,opt,name=Format,proto3" json:"Format"`
 	// Data is the actual documentation text.
-	Data string `protobuf:"bytes,3,opt,name=data,proto3" json:"Data"`
+	Data string `protobuf:"bytes,3,opt,name=Data,proto3" json:"Data"`
 	// File is the filename where this Doc exists.
-	File string `protobuf:"bytes,4,opt,name=file,proto3" json:"File,omitempty"`
+	File string `protobuf:"bytes,4,opt,name=File,proto3" json:"File,omitempty"`
 	// Start is the byte offset of this Doc's first byte in File.
-	Start uint32 `protobuf:"varint,5,opt,name=start,proto3" json:"Start,omitempty"`
+	Start uint32 `protobuf:"varint,5,opt,name=Start,proto3" json:"Start,omitempty"`
 	// End is the byte offset of this Doc's last byte in File.
-	End uint32 `protobuf:"varint,6,opt,name=end,proto3" json:"End,omitempty"`
+	End uint32 `protobuf:"varint,6,opt,name=End,proto3" json:"End,omitempty"`
+	// DocUnit is the source unit containing this Doc.
+	DocUnit string `protobuf:"bytes,7,opt,name=DocUnit,proto3" json:"DocUnit,omitempty"`
 }
 
 func (m *Doc) Reset()         { *m = Doc{} }
@@ -90,6 +92,12 @@ func (m *Doc) MarshalTo(data []byte) (int, error) {
 		i++
 		i = encodeVarintDoc(data, i, uint64(m.End))
 	}
+	if len(m.DocUnit) > 0 {
+		data[i] = 0x3a
+		i++
+		i = encodeVarintDoc(data, i, uint64(len(m.DocUnit)))
+		i += copy(data[i:], m.DocUnit)
+	}
 	return i, nil
 }
 
@@ -142,6 +150,10 @@ func (m *Doc) Size() (n int) {
 	}
 	if m.End != 0 {
 		n += 1 + sovDoc(uint64(m.End))
+	}
+	l = len(m.DocUnit)
+	if l > 0 {
+		n += 1 + l + sovDoc(uint64(l))
 	}
 	return n
 }
@@ -343,6 +355,35 @@ func (m *Doc) Unmarshal(data []byte) error {
 					break
 				}
 			}
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DocUnit", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDoc
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthDoc
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DocUnit = string(data[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipDoc(data[iNdEx:])

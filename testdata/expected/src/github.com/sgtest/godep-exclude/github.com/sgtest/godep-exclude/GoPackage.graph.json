@@ -44,6 +44,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/godep-exclude",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/godep-exclude",
       "File": "main.go",
       "Start": 8,
       "End": 12
@@ -52,6 +53,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sourcegraph/john-test/hi",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/godep-exclude",
       "File": "main.go",
       "Start": 100,
       "End": 102
@@ -60,6 +62,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sourcegraph/john-test/hi",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/godep-exclude",
       "File": "main.go",
       "Start": 32,
       "End": 69
@@ -69,6 +72,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/godep-exclude",
       "File": "main.go",
       "Start": 24,
       "End": 29
@@ -78,6 +82,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/godep-exclude",
       "File": "main.go",
       "Start": 88,
       "End": 91
@@ -86,6 +91,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sourcegraph/john-test/hi",
       "DefPath": "GetHi",
+      "Unit": "github.com/sgtest/godep-exclude",
       "File": "main.go",
       "Start": 103,
       "End": 108
@@ -95,6 +101,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "fmt",
       "DefPath": "Println",
+      "Unit": "github.com/sgtest/godep-exclude",
       "File": "main.go",
       "Start": 92,
       "End": 99
@@ -103,6 +110,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/godep-exclude",
       "DefPath": "main.go/main",
+      "Unit": "github.com/sgtest/godep-exclude",
       "Def": true,
       "File": "main.go",
       "Start": 78,

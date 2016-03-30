@@ -419,6 +419,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "File": "scope/scope.go",
       "Start": 50,
       "End": 55
@@ -428,6 +429,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "strings",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Def": true,
       "File": "scope/scope.go",
       "Start": 103,
@@ -438,6 +440,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "strings",
       "DefPath": ".",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "File": "scope/scope.go",
       "Start": 918,
       "End": 919
@@ -446,6 +449,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "A",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Def": true,
       "File": "scope/scope.go",
       "Start": 296,
@@ -456,6 +460,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "strings",
       "DefPath": "Replace",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "File": "scope/scope.go",
       "Start": 920,
       "End": 927
@@ -464,6 +469,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "T2/F/a",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Def": true,
       "File": "scope/scope.go",
       "Start": 675,
@@ -473,6 +479,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "T2/F/b",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Def": true,
       "File": "scope/scope.go",
       "Start": 686,
@@ -482,6 +489,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "T2/F",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Def": true,
       "File": "scope/scope.go",
       "Start": 673,
@@ -491,6 +499,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "T2/g",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Def": true,
       "File": "scope/scope.go",
       "Start": 758,
@@ -500,6 +509,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "T2",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Def": true,
       "File": "scope/scope.go",
       "Start": 611,
@@ -509,6 +519,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "T2",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "File": "scope/scope.go",
       "Start": 669,
       "End": 671
@@ -517,6 +528,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "T2",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "File": "scope/scope.go",
       "Start": 754,
       "End": 756
@@ -525,6 +537,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "a",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Def": true,
       "File": "scope/scope.go",
       "Start": 269,
@@ -535,6 +548,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "bool",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "File": "scope/scope.go",
       "Start": 271,
       "End": 275
@@ -544,6 +558,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "bool",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "File": "scope/scope.go",
       "Start": 298,
       "End": 302
@@ -553,6 +568,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "bool",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "File": "scope/scope.go",
       "Start": 342,
       "End": 346
@@ -561,6 +577,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "fn/$scope0/$scope0/T1/f",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Def": true,
       "File": "scope/scope.go",
       "Start": 573,
@@ -570,6 +587,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "fn/$scope0/$scope0/T1",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Def": true,
       "File": "scope/scope.go",
       "Start": 562,
@@ -579,6 +597,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "fn/$scope0/$scope0/Y",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Def": true,
       "File": "scope/scope.go",
       "Start": 508,
@@ -588,6 +607,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "fn/$scope0/$scope0/Y",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "File": "scope/scope.go",
       "Start": 520,
       "End": 521
@@ -596,6 +616,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "fn/$scope0/$scope0/y",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Def": true,
       "File": "scope/scope.go",
       "Start": 472,
@@ -605,6 +626,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "fn/$scope0/$scope0/y",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "File": "scope/scope.go",
       "Start": 485,
       "End": 486
@@ -613,6 +635,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "fn/$scope0/x",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Def": true,
       "File": "scope/scope.go",
       "Start": 435,
@@ -622,6 +645,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "fn/$scope0/x",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "File": "scope/scope.go",
       "Start": 477,
       "End": 478
@@ -630,6 +654,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "fn/T0/f",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Def": true,
       "File": "scope/scope.go",
       "Start": 402,
@@ -639,6 +664,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "fn/T0",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Def": true,
       "File": "scope/scope.go",
       "Start": 391,
@@ -648,6 +674,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "fn/b",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Def": true,
       "File": "scope/scope.go",
       "Start": 340,
@@ -657,6 +684,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "fn/b",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "File": "scope/scope.go",
       "Start": 352,
       "End": 353
@@ -665,6 +693,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "fn",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Def": true,
       "File": "scope/scope.go",
       "Start": 315,
@@ -674,6 +703,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "init$scope904",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Def": true,
       "File": "scope/scope.go",
       "Start": 904,
@@ -684,6 +714,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "int",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "File": "scope/scope.go",
       "Start": 448,
       "End": 451
@@ -693,6 +724,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "int",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "File": "scope/scope.go",
       "Start": 510,
       "End": 513
@@ -702,6 +734,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "string",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "File": "scope/scope.go",
       "Start": 404,
       "End": 410
@@ -711,6 +744,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "string",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "File": "scope/scope.go",
       "Start": 575,
       "End": 581
@@ -720,6 +754,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "string",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "File": "scope/scope.go",
       "Start": 677,
       "End": 683
@@ -729,6 +764,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "string",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "File": "scope/scope.go",
       "Start": 688,
       "End": 694
@@ -737,6 +773,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "t3/F",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Def": true,
       "File": "scope/scope.go",
       "Start": 856,
@@ -746,6 +783,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "t3/g",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Def": true,
       "File": "scope/scope.go",
       "Start": 891,
@@ -755,6 +793,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "t3",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "Def": true,
       "File": "scope/scope.go",
       "Start": 818,
@@ -764,6 +803,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "t3",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "File": "scope/scope.go",
       "Start": 852,
       "End": 854
@@ -772,6 +812,7 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/scope",
       "DefPath": "t3",
+      "Unit": "github.com/sgtest/go-misc/scope",
       "File": "scope/scope.go",
       "Start": 887,
       "End": 889
@@ -783,7 +824,8 @@
       "Format": "text/html",
       "Data": "\u003cp\u003e\nThis package tests Exported and Local.\n\u003c/p\u003e\n",
       "File": "scope/scope.go",
-      "End": 41
+      "End": 41,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "Path": "",
@@ -791,7 +833,8 @@
       "Data": "\u003cp\u003e\nComments indicate the desired scope. The default is unexported and\nnonlocal. Exported and local defs are marked as such.\n\u003c/p\u003e\n",
       "File": "scope/scope.go",
       "Start": 118,
-      "End": 244
+      "End": 244,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "Path": "",
@@ -799,7 +842,8 @@
       "Data": "\u003cp\u003e\nx: local\n\u003c/p\u003e\n",
       "File": "scope/scope.go",
       "Start": 415,
-      "End": 426
+      "End": 426,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "Path": "",
@@ -807,7 +851,8 @@
       "Data": "\u003cp\u003e\ny: local\n\u003c/p\u003e\n",
       "File": "scope/scope.go",
       "Start": 458,
-      "End": 469
+      "End": 469,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "Path": "",
@@ -815,14 +860,16 @@
       "Data": "\u003cp\u003e\nUnexported type, exported methods\n\u003c/p\u003e\n",
       "File": "scope/scope.go",
       "Start": 775,
-      "End": 811
+      "End": 811,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "Path": "",
       "Format": "text/plain",
       "Data": "This package tests Exported and Local.\n",
       "File": "scope/scope.go",
-      "End": 41
+      "End": 41,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "Path": "",
@@ -830,7 +877,8 @@
       "Data": "Comments indicate the desired scope. The default is unexported and\nnonlocal. Exported and local defs are marked as such.\n",
       "File": "scope/scope.go",
       "Start": 118,
-      "End": 244
+      "End": 244,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "Path": "",
@@ -838,7 +886,8 @@
       "Data": "x: local\n",
       "File": "scope/scope.go",
       "Start": 415,
-      "End": 426
+      "End": 426,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "Path": "",
@@ -846,7 +895,8 @@
       "Data": "y: local\n",
       "File": "scope/scope.go",
       "Start": 458,
-      "End": 469
+      "End": 469,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "Path": "",
@@ -854,7 +904,8 @@
       "Data": "Unexported type, exported methods\n",
       "File": "scope/scope.go",
       "Start": 775,
-      "End": 811
+      "End": 811,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -864,7 +915,8 @@
       "Data": "\u003cp\u003e\n_: local\n\u003c/p\u003e\n",
       "File": "scope/scope.go",
       "Start": 67,
-      "End": 78
+      "End": 78,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -874,21 +926,24 @@
       "Data": "_: local\n",
       "File": "scope/scope.go",
       "Start": 67,
-      "End": 78
+      "End": 78,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "github.com/sgtest/go-misc/scope",
       "Path": ".",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\nThis package tests Exported and Local.\n\u003c/p\u003e\n"
+      "Data": "\u003cp\u003e\nThis package tests Exported and Local.\n\u003c/p\u003e\n",
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
       "Unit": "github.com/sgtest/go-misc/scope",
       "Path": ".",
       "Format": "text/plain",
-      "Data": "This package tests Exported and Local.\n"
+      "Data": "This package tests Exported and Local.\n",
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -898,7 +953,8 @@
       "Data": "\u003cp\u003e\nA: exported\n\u003c/p\u003e\n",
       "File": "scope/scope.go",
       "Start": 277,
-      "End": 291
+      "End": 291,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -908,7 +964,8 @@
       "Data": "A: exported\n",
       "File": "scope/scope.go",
       "Start": 277,
-      "End": 291
+      "End": 291,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -918,7 +975,8 @@
       "Data": "\u003cp\u003e\nT2: exported\n\u003c/p\u003e\n",
       "File": "scope/scope.go",
       "Start": 590,
-      "End": 605
+      "End": 605,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -928,7 +986,8 @@
       "Data": "T2: exported\n",
       "File": "scope/scope.go",
       "Start": 590,
-      "End": 605
+      "End": 605,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -938,7 +997,8 @@
       "Data": "\u003cp\u003e\nF: exported\na: local\nb: local\n\u003c/p\u003e\n",
       "File": "scope/scope.go",
       "Start": 624,
-      "End": 662
+      "End": 662,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -948,7 +1008,8 @@
       "Data": "F: exported\na: local\nb: local\n",
       "File": "scope/scope.go",
       "Start": 624,
-      "End": 662
+      "End": 662,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -958,7 +1019,8 @@
       "Data": "\u003cp\u003e\ng: exported type, unexported method\n\u003c/p\u003e\n",
       "File": "scope/scope.go",
       "Start": 709,
-      "End": 747
+      "End": 747,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -968,7 +1030,8 @@
       "Data": "g: exported type, unexported method\n",
       "File": "scope/scope.go",
       "Start": 709,
-      "End": 747
+      "End": 747,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -978,7 +1041,8 @@
       "Data": "\u003cp\u003e\na: (unexported)\n\u003c/p\u003e\n",
       "File": "scope/scope.go",
       "Start": 246,
-      "End": 264
+      "End": 264,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -988,7 +1052,8 @@
       "Data": "a: (unexported)\n",
       "File": "scope/scope.go",
       "Start": 246,
-      "End": 264
+      "End": 264,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -998,7 +1063,8 @@
       "Data": "\u003cp\u003e\nfn\n\u003c/p\u003e\n",
       "File": "scope/scope.go",
       "Start": 304,
-      "End": 309
+      "End": 309,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -1008,7 +1074,8 @@
       "Data": "fn\n",
       "File": "scope/scope.go",
       "Start": 304,
-      "End": 309
+      "End": 309,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -1018,7 +1085,8 @@
       "Data": "\u003cp\u003e\nT1: local\nT1.f: local\n\u003c/p\u003e\n",
       "File": "scope/scope.go",
       "Start": 525,
-      "End": 554
+      "End": 554,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -1028,7 +1096,8 @@
       "Data": "T1: local\nT1.f: local\n",
       "File": "scope/scope.go",
       "Start": 525,
-      "End": 554
+      "End": 554,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -1038,7 +1107,8 @@
       "Data": "\u003cp\u003e\nY: local\n\u003c/p\u003e\n",
       "File": "scope/scope.go",
       "Start": 490,
-      "End": 501
+      "End": 501,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -1048,7 +1118,8 @@
       "Data": "Y: local\n",
       "File": "scope/scope.go",
       "Start": 490,
-      "End": 501
+      "End": 501,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -1058,7 +1129,8 @@
       "Data": "\u003cp\u003e\nT0: local\nT0.f: local\n\u003c/p\u003e\n",
       "File": "scope/scope.go",
       "Start": 356,
-      "End": 384
+      "End": 384,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -1068,7 +1140,8 @@
       "Data": "T0: local\nT0.f: local\n",
       "File": "scope/scope.go",
       "Start": 356,
-      "End": 384
+      "End": 384,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -1078,7 +1151,8 @@
       "Data": "\u003cp\u003e\nb: local\n\u003c/p\u003e\n",
       "File": "scope/scope.go",
       "Start": 323,
-      "End": 334
+      "End": 334,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -1088,7 +1162,8 @@
       "Data": "b: local\n",
       "File": "scope/scope.go",
       "Start": 323,
-      "End": 334
+      "End": 334,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -1098,7 +1173,8 @@
       "Data": "\u003cp\u003e\nF: exported\n\u003c/p\u003e\n",
       "File": "scope/scope.go",
       "Start": 831,
-      "End": 845
+      "End": 845,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -1108,7 +1184,8 @@
       "Data": "F: exported\n",
       "File": "scope/scope.go",
       "Start": 831,
-      "End": 845
+      "End": 845,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -1118,7 +1195,8 @@
       "Data": "\u003cp\u003e\ng: unexported\n\u003c/p\u003e\n",
       "File": "scope/scope.go",
       "Start": 864,
-      "End": 880
+      "End": 880,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -1128,7 +1206,8 @@
       "Data": "g: unexported\n",
       "File": "scope/scope.go",
       "Start": 864,
-      "End": 880
+      "End": 880,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -1138,7 +1217,8 @@
       "Data": "\u003cp\u003e\na: local\n\u003c/p\u003e\n",
       "File": "scope/scope.go",
       "Start": 90,
-      "End": 101
+      "End": 101,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     },
     {
       "UnitType": "GoPackage",
@@ -1148,7 +1228,8 @@
       "Data": "a: local\n",
       "File": "scope/scope.go",
       "Start": 90,
-      "End": 101
+      "End": 101,
+      "DocUnit": "github.com/sgtest/go-misc/scope"
     }
   ]
 }
