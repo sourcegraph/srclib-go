@@ -2,11 +2,11 @@
   "Defs": [
     {
       "UnitType": "GoPackage",
-      "Unit": "github.com/sourcegraph/john-test/hi",
+      "Unit": "github.com/sgtest/go-vendored-lib/hi",
       "Path": ".",
       "Name": "hi",
       "Kind": "package",
-      "File": "vendor/github.com/sourcegraph/john-test/hi",
+      "File": "vendor/github.com/sgtest/go-vendored-lib/hi",
       "DefStart": 0,
       "DefEnd": 0,
       "Exported": true,
@@ -15,17 +15,17 @@
         "PkgName": "hi",
         "TypeString": "",
         "Kind": "package",
-        "PackageImportPath": "github.com/sgtest/go15vendor/vendor/github.com/sourcegraph/john-test/hi"
+        "PackageImportPath": "github.com/sgtest/go15vendor/vendor/github.com/sgtest/go-vendored-lib/hi"
       },
       "TreePath": "."
     },
     {
       "UnitType": "GoPackage",
-      "Unit": "github.com/sourcegraph/john-test/hi",
+      "Unit": "github.com/sgtest/go-vendored-lib/hi",
       "Path": "GetHi",
       "Name": "GetHi",
       "Kind": "func",
-      "File": "vendor/github.com/sourcegraph/john-test/hi/hi.go",
+      "File": "vendor/github.com/sgtest/go-vendored-lib/hi/hi.go",
       "DefStart": 48,
       "DefEnd": 93,
       "Exported": true,
@@ -36,7 +36,7 @@
         "TypeString": "func() string",
         "UnderlyingTypeString": "func() string",
         "Kind": "func",
-        "PackageImportPath": "github.com/sgtest/go15vendor/vendor/github.com/sourcegraph/john-test/hi"
+        "PackageImportPath": "github.com/sgtest/go15vendor/vendor/github.com/sgtest/go-vendored-lib/hi"
       },
       "TreePath": "./GetHi"
     }
@@ -44,20 +44,20 @@
   "Refs": [
     {
       "DefUnitType": "GoPackage",
-      "DefUnit": "github.com/sourcegraph/john-test/hi",
+      "DefUnit": "github.com/sgtest/go-vendored-lib/hi",
       "DefPath": ".",
-      "Unit": "github.com/sourcegraph/john-test/hi",
-      "File": "vendor/github.com/sourcegraph/john-test/hi/hi.go",
+      "Unit": "github.com/sgtest/go-vendored-lib/hi",
+      "File": "vendor/github.com/sgtest/go-vendored-lib/hi/hi.go",
       "Start": 8,
       "End": 10
     },
     {
       "DefUnitType": "GoPackage",
-      "DefUnit": "github.com/sourcegraph/john-test/hi",
+      "DefUnit": "github.com/sgtest/go-vendored-lib/hi",
       "DefPath": "GetHi",
-      "Unit": "github.com/sourcegraph/john-test/hi",
+      "Unit": "github.com/sgtest/go-vendored-lib/hi",
       "Def": true,
-      "File": "vendor/github.com/sourcegraph/john-test/hi/hi.go",
+      "File": "vendor/github.com/sgtest/go-vendored-lib/hi/hi.go",
       "Start": 53,
       "End": 58
     },
@@ -66,8 +66,8 @@
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "string",
-      "Unit": "github.com/sourcegraph/john-test/hi",
-      "File": "vendor/github.com/sourcegraph/john-test/hi/hi.go",
+      "Unit": "github.com/sgtest/go-vendored-lib/hi",
+      "File": "vendor/github.com/sgtest/go-vendored-lib/hi/hi.go",
       "Start": 61,
       "End": 67
     }
@@ -75,25 +75,25 @@
   "Docs": [
     {
       "UnitType": "GoPackage",
-      "Unit": "github.com/sourcegraph/john-test/hi",
+      "Unit": "github.com/sgtest/go-vendored-lib/hi",
       "Path": "GetHi",
       "Format": "text/html",
       "Data": "\u003cp\u003e\nGetHi returns a string saying hi\n\u003c/p\u003e\n",
-      "File": "vendor/github.com/sourcegraph/john-test/hi/hi.go",
+      "File": "vendor/github.com/sgtest/go-vendored-lib/hi/hi.go",
       "Start": 12,
       "End": 47,
-      "DocUnit": "github.com/sourcegraph/john-test/hi"
+      "DocUnit": "github.com/sgtest/go-vendored-lib/hi"
     },
     {
       "UnitType": "GoPackage",
-      "Unit": "github.com/sourcegraph/john-test/hi",
+      "Unit": "github.com/sgtest/go-vendored-lib/hi",
       "Path": "GetHi",
       "Format": "text/plain",
       "Data": "GetHi returns a string saying hi\n",
-      "File": "vendor/github.com/sourcegraph/john-test/hi/hi.go",
+      "File": "vendor/github.com/sgtest/go-vendored-lib/hi/hi.go",
       "Start": 12,
       "End": 47,
-      "DocUnit": "github.com/sourcegraph/john-test/hi"
+      "DocUnit": "github.com/sgtest/go-vendored-lib/hi"
     }
   ]
 }

@@ -10,20 +10,20 @@
     }
   },
   {
-    "Raw": "github.com/sgtest/go15vendor/bye",
+    "Raw": "github.com/sgtest/go-vendored-lib/hi",
     "Target": {
-      "ToRepoCloneURL": "",
-      "ToUnit": "github.com/sgtest/go15vendor/bye",
+      "ToRepoCloneURL": "https://github.com/sgtest/go-vendored-lib.git",
+      "ToUnit": "github.com/sgtest/go-vendored-lib/hi",
       "ToUnitType": "GoPackage",
       "ToVersionString": "",
       "ToRevSpec": ""
     }
   },
   {
-    "Raw": "github.com/sourcegraph/john-test/hi",
+    "Raw": "github.com/sgtest/go15vendor/bye",
     "Target": {
-      "ToRepoCloneURL": "https://github.com/sourcegraph/john-test.git",
-      "ToUnit": "github.com/sourcegraph/john-test/hi",
+      "ToRepoCloneURL": "",
+      "ToUnit": "github.com/sgtest/go15vendor/bye",
       "ToUnitType": "GoPackage",
       "ToVersionString": "",
       "ToRevSpec": ""

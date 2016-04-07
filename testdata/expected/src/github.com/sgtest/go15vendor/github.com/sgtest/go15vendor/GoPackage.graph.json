@@ -26,8 +26,8 @@
       "Name": "main",
       "Kind": "func",
       "File": "main.go",
-      "DefStart": 109,
-      "DefEnd": 176,
+      "DefStart": 110,
+      "DefEnd": 177,
       "Data": {
         "PkgScope": true,
         "PkgName": "main",
@@ -42,12 +42,21 @@
   "Refs": [
     {
       "DefUnitType": "GoPackage",
-      "DefUnit": "github.com/sgtest/go15vendor/bye",
+      "DefUnit": "github.com/sgtest/go-vendored-lib/hi",
       "DefPath": ".",
       "Unit": "github.com/sgtest/go15vendor",
       "File": "main.go",
-      "Start": 161,
-      "End": 164
+      "Start": 137,
+      "End": 139
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-vendored-lib/hi",
+      "DefPath": ".",
+      "Unit": "github.com/sgtest/go15vendor",
+      "File": "main.go",
+      "Start": 32,
+      "End": 70
     },
     {
       "DefUnitType": "GoPackage",
@@ -55,8 +64,17 @@
       "DefPath": ".",
       "Unit": "github.com/sgtest/go15vendor",
       "File": "main.go",
-      "Start": 32,
-      "End": 66
+      "Start": 162,
+      "End": 165
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go15vendor/bye",
+      "DefPath": ".",
+      "Unit": "github.com/sgtest/go15vendor",
+      "File": "main.go",
+      "Start": 72,
+      "End": 106
     },
     {
       "DefUnitType": "GoPackage",
@@ -68,22 +86,14 @@
       "End": 12
     },
     {
+      "DefRepo": "github.com/golang/go",
       "DefUnitType": "GoPackage",
-      "DefUnit": "github.com/sourcegraph/john-test/hi",
+      "DefUnit": "fmt",
       "DefPath": ".",
       "Unit": "github.com/sgtest/go15vendor",
       "File": "main.go",
-      "Start": 136,
-      "End": 138
-    },
-    {
-      "DefUnitType": "GoPackage",
-      "DefUnit": "github.com/sourcegraph/john-test/hi",
-      "DefPath": ".",
-      "Unit": "github.com/sgtest/go15vendor",
-      "File": "main.go",
-      "Start": 68,
-      "End": 105
+      "Start": 125,
+      "End": 128
     },
     {
       "DefRepo": "github.com/golang/go",
@@ -92,18 +102,8 @@
       "DefPath": ".",
       "Unit": "github.com/sgtest/go15vendor",
       "File": "main.go",
-      "Start": 124,
-      "End": 127
-    },
-    {
-      "DefRepo": "github.com/golang/go",
-      "DefUnitType": "GoPackage",
-      "DefUnit": "fmt",
-      "DefPath": ".",
-      "Unit": "github.com/sgtest/go15vendor",
-      "File": "main.go",
-      "Start": 149,
-      "End": 152
+      "Start": 150,
+      "End": 153
     },
     {
       "DefRepo": "github.com/golang/go",
@@ -121,17 +121,17 @@
       "DefPath": "GetBye",
       "Unit": "github.com/sgtest/go15vendor",
       "File": "main.go",
-      "Start": 165,
-      "End": 171
+      "Start": 166,
+      "End": 172
     },
     {
       "DefUnitType": "GoPackage",
-      "DefUnit": "github.com/sourcegraph/john-test/hi",
+      "DefUnit": "github.com/sgtest/go-vendored-lib/hi",
       "DefPath": "GetHi",
       "Unit": "github.com/sgtest/go15vendor",
       "File": "main.go",
-      "Start": 139,
-      "End": 144
+      "Start": 140,
+      "End": 145
     },
     {
       "DefRepo": "github.com/golang/go",
@@ -140,8 +140,8 @@
       "DefPath": "Println",
       "Unit": "github.com/sgtest/go15vendor",
       "File": "main.go",
-      "Start": 128,
-      "End": 135
+      "Start": 129,
+      "End": 136
     },
     {
       "DefRepo": "github.com/golang/go",
@@ -150,8 +150,8 @@
       "DefPath": "Println",
       "Unit": "github.com/sgtest/go15vendor",
       "File": "main.go",
-      "Start": 153,
-      "End": 160
+      "Start": 154,
+      "End": 161
     },
     {
       "DefUnitType": "GoPackage",
@@ -160,8 +160,8 @@
       "Unit": "github.com/sgtest/go15vendor",
       "Def": true,
       "File": "main.go",
-      "Start": 114,
-      "End": 118
+      "Start": 115,
+      "End": 119
     }
   ]
 }
