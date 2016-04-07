@@ -39,11 +39,15 @@ test: gotest srctest
 gotest:
 	go test $(shell go list ./... | grep -v /vendor/)
 
+GEN ?=
 srctest:
 # go1.5 excludes repos whose ImportPath would include testdata. Since all the
 # test repos are under testdata dir, we change the GOPATH to not root the
 # testdata dir
 	git submodule update --init
 	GOPATH=${PWD}/.test go get -d golang.org/x/net/ipv6 golang.org/x/tools/go/types
-	GOPATH=${PWD}/testdata/case:${PWD}/.test srclib test
-
+	@if [ -z "$$GEN" ]; then \
+		GOPATH=${PWD}/testdata/case:${PWD}/.test srclib test; \
+	else \
+		GOPATH=${PWD}/testdata/case:${PWD}/.test srclib test --gen; \
+	fi;
