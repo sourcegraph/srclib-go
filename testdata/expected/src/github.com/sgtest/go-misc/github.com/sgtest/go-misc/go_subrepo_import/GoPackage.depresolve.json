@@ -1,19 +1,19 @@
 [
   {
-    "Raw": "golang.org/x/net/ipv6",
+    "Raw": "go/types",
     "Target": {
-      "ToRepoCloneURL": "https://github.com/golang/net",
-      "ToUnit": "golang.org/x/net/ipv6",
+      "ToRepoCloneURL": "https://github.com/golang/go",
+      "ToUnit": "go/types",
       "ToUnitType": "GoPackage",
-      "ToVersionString": "",
+      "ToVersionString": "go1.6",
       "ToRevSpec": ""
     }
   },
   {
-    "Raw": "golang.org/x/tools/go/types",
+    "Raw": "golang.org/x/net/ipv6",
     "Target": {
-      "ToRepoCloneURL": "https://github.com/golang/tools",
-      "ToUnit": "golang.org/x/tools/go/types",
+      "ToRepoCloneURL": "https://github.com/golang/net",
+      "ToUnit": "golang.org/x/net/ipv6",
       "ToUnitType": "GoPackage",
       "ToVersionString": "",
       "ToRevSpec": ""

@@ -26,8 +26,8 @@
       "Name": "Foo",
       "Kind": "func",
       "File": "go_subrepo_import/go_subrepo_import.go",
-      "DefStart": 214,
-      "DefEnd": 282,
+      "DefStart": 195,
+      "DefEnd": 263,
       "Exported": true,
       "Data": {
         "Exported": true,
@@ -47,8 +47,8 @@
       "Name": "c",
       "Kind": "var",
       "File": "go_subrepo_import/go_subrepo_import.go",
-      "DefStart": 228,
-      "DefEnd": 244,
+      "DefStart": 209,
+      "DefEnd": 225,
       "Local": true,
       "Data": {
         "PkgName": "go_subrepo_import",
@@ -66,13 +66,13 @@
       "Name": "t",
       "Kind": "var",
       "File": "go_subrepo_import/go_subrepo_import.go",
-      "DefStart": 254,
-      "DefEnd": 273,
+      "DefStart": 235,
+      "DefEnd": 254,
       "Local": true,
       "Data": {
         "PkgName": "go_subrepo_import",
-        "TypeString": "golang.org/x/tools/go/types.Config",
-        "UnderlyingTypeString": "struct{IgnoreFuncBodies bool; FakeImportC bool; Packages map[string]*golang.org/x/tools/go/types.Package; Error func(err error); Import golang.org/x/tools/go/types.Importer; Sizes golang.org/x/tools/go/types.Sizes; DisableUnusedImportCheck bool}",
+        "TypeString": "go/types.Config",
+        "UnderlyingTypeString": "struct{IgnoreFuncBodies bool; FakeImportC bool; Error func(err error); Importer go/types.Importer; Sizes go/types.Sizes; DisableUnusedImportCheck bool}",
         "Kind": "var",
         "PackageImportPath": "github.com/sgtest/go-misc/go_subrepo_import"
       },
@@ -90,14 +90,24 @@
       "End": 144
     },
     {
-      "DefRepo": "github.com/golang/net",
+      "DefRepo": "github.com/golang/go",
       "DefUnitType": "GoPackage",
-      "DefUnit": "golang.org/x/net/ipv6",
+      "DefUnit": "go/types",
       "DefPath": ".",
       "Unit": "github.com/sgtest/go-misc/go_subrepo_import",
       "File": "go_subrepo_import/go_subrepo_import.go",
       "Start": 156,
-      "End": 179
+      "End": 166
+    },
+    {
+      "DefRepo": "github.com/golang/go",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "go/types",
+      "DefPath": ".",
+      "Unit": "github.com/sgtest/go-misc/go_subrepo_import",
+      "File": "go_subrepo_import/go_subrepo_import.go",
+      "Start": 240,
+      "End": 245
     },
     {
       "DefRepo": "github.com/golang/net",
@@ -106,38 +116,28 @@
       "DefPath": ".",
       "Unit": "github.com/sgtest/go-misc/go_subrepo_import",
       "File": "go_subrepo_import/go_subrepo_import.go",
-      "Start": 233,
-      "End": 237
+      "Start": 168,
+      "End": 191
     },
     {
-      "DefRepo": "github.com/golang/tools",
+      "DefRepo": "github.com/golang/net",
       "DefUnitType": "GoPackage",
-      "DefUnit": "golang.org/x/tools/go/types",
+      "DefUnit": "golang.org/x/net/ipv6",
       "DefPath": ".",
       "Unit": "github.com/sgtest/go-misc/go_subrepo_import",
       "File": "go_subrepo_import/go_subrepo_import.go",
-      "Start": 181,
-      "End": 210
+      "Start": 214,
+      "End": 218
     },
     {
-      "DefRepo": "github.com/golang/tools",
+      "DefRepo": "github.com/golang/go",
       "DefUnitType": "GoPackage",
-      "DefUnit": "golang.org/x/tools/go/types",
-      "DefPath": ".",
-      "Unit": "github.com/sgtest/go-misc/go_subrepo_import",
-      "File": "go_subrepo_import/go_subrepo_import.go",
-      "Start": 259,
-      "End": 264
-    },
-    {
-      "DefRepo": "github.com/golang/tools",
-      "DefUnitType": "GoPackage",
-      "DefUnit": "golang.org/x/tools/go/types",
+      "DefUnit": "go/types",
       "DefPath": "Config",
       "Unit": "github.com/sgtest/go-misc/go_subrepo_import",
       "File": "go_subrepo_import/go_subrepo_import.go",
-      "Start": 265,
-      "End": 271
+      "Start": 246,
+      "End": 252
     },
     {
       "DefRepo": "github.com/golang/net",
@@ -146,8 +146,8 @@
       "DefPath": "Conn",
       "Unit": "github.com/sgtest/go-misc/go_subrepo_import",
       "File": "go_subrepo_import/go_subrepo_import.go",
-      "Start": 238,
-      "End": 242
+      "Start": 219,
+      "End": 223
     },
     {
       "DefUnitType": "GoPackage",
@@ -156,8 +156,8 @@
       "Unit": "github.com/sgtest/go-misc/go_subrepo_import",
       "Def": true,
       "File": "go_subrepo_import/go_subrepo_import.go",
-      "Start": 228,
-      "End": 229
+      "Start": 209,
+      "End": 210
     },
     {
       "DefUnitType": "GoPackage",
@@ -165,8 +165,8 @@
       "DefPath": "Foo/c",
       "Unit": "github.com/sgtest/go-misc/go_subrepo_import",
       "File": "go_subrepo_import/go_subrepo_import.go",
-      "Start": 250,
-      "End": 251
+      "Start": 231,
+      "End": 232
     },
     {
       "DefUnitType": "GoPackage",
@@ -175,8 +175,8 @@
       "Unit": "github.com/sgtest/go-misc/go_subrepo_import",
       "Def": true,
       "File": "go_subrepo_import/go_subrepo_import.go",
-      "Start": 254,
-      "End": 255
+      "Start": 235,
+      "End": 236
     },
     {
       "DefUnitType": "GoPackage",
@@ -184,8 +184,8 @@
       "DefPath": "Foo/t",
       "Unit": "github.com/sgtest/go-misc/go_subrepo_import",
       "File": "go_subrepo_import/go_subrepo_import.go",
-      "Start": 279,
-      "End": 280
+      "Start": 260,
+      "End": 261
     },
     {
       "DefUnitType": "GoPackage",
@@ -194,8 +194,8 @@
       "Unit": "github.com/sgtest/go-misc/go_subrepo_import",
       "Def": true,
       "File": "go_subrepo_import/go_subrepo_import.go",
-      "Start": 219,
-      "End": 222
+      "Start": 200,
+      "End": 203
     }
   ],
   "Docs": [
