@@ -43,7 +43,8 @@ func parseFiles(fset *token.FileSet, filenames []string) (map[string]*ast.File, 
 			f, err = os.Open(path)
 		}
 		if err != nil {
-			return nil, err
+			log.Printf("Warning: parseFiles on %q: %s.", path, err)
+			continue
 		}
 		defer f.Close()
 
