@@ -45,7 +45,7 @@ srctest:
 # test repos are under testdata dir, we change the GOPATH to not root the
 # testdata dir
 	git submodule update --init
-	GOPATH=${PWD}/.test go get -d golang.org/x/net/ipv6 golang.org/x/tools/go/types
+	GOPATH=${PWD}/.test go get -d golang.org/x/net/ipv6 golang.org/x/tools/go/types/...
 	@if [ -z "$$GEN" ]; then \
 		GOPATH=${PWD}/testdata/case:${PWD}/.test srclib test; \
 	else \
