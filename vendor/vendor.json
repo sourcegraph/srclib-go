@@ -35,14 +35,14 @@
 		{
 			"checksumSHA1": "zPladqf0BtzfOdzO56zvpXmJNd4=",
 			"path": "golang.org/x/tools/go/ast/astutil",
-			"revision": "f7268ab39bf8b78faa0c2f9eb524b9ea85982c41",
-			"revisionTime": "2016-02-20T17:33:56-05:00"
+			"revision": "b75b3f5cd5d50fbb1fb88ce784d2e7cca17bba8a",
+			"revisionTime": "2016-04-03T16:33:36-07:00"
 		},
 		{
 			"checksumSHA1": "Dy2y+htQXcdM+krJOdglLLQbslw=",
 			"path": "golang.org/x/tools/go/buildutil",
-			"revision": "f7268ab39bf8b78faa0c2f9eb524b9ea85982c41",
-			"revisionTime": "2016-02-20T17:33:56-05:00"
+			"revision": "b75b3f5cd5d50fbb1fb88ce784d2e7cca17bba8a",
+			"revisionTime": "2016-04-03T16:33:36-07:00"
 		},
 		{
 			"checksumSHA1": "p+hK1c9noXGuHDzFlrFQ/uQfzLQ=",
@@ -57,10 +57,15 @@
 			"revisionTime": "2016-02-20T17:33:56-05:00"
 		},
 		{
+			"path": "golang.org/x/tools/go/gcimporter15",
+			"revision": "b75b3f5cd5d50fbb1fb88ce784d2e7cca17bba8a",
+			"revisionTime": "2016-04-03T16:33:36-07:00"
+		},
+		{
 			"checksumSHA1": "421hW0KZV6rT4JKvhlGgADrB6cQ=",
 			"path": "golang.org/x/tools/go/loader",
-			"revision": "f7268ab39bf8b78faa0c2f9eb524b9ea85982c41",
-			"revisionTime": "2016-02-20T17:33:56-05:00"
+			"revision": "b75b3f5cd5d50fbb1fb88ce784d2e7cca17bba8a",
+			"revisionTime": "2016-04-03T16:33:36-07:00"
 		},
 		{
 			"checksumSHA1": "v7ey9S5kMqoqXGefUQakdHmFGIQ=",
@@ -71,14 +76,14 @@
 		{
 			"checksumSHA1": "2bj5Jq3+RmE2blLnFUfkASYGTlg=",
 			"path": "golang.org/x/tools/godoc/vfs",
-			"revision": "84e7bc0dd39bab24b696dde4d714641fa738f945",
-			"revisionTime": "2016-03-29T14:32:15-04:00"
+			"revision": "b75b3f5cd5d50fbb1fb88ce784d2e7cca17bba8a",
+			"revisionTime": "2016-04-03T16:33:36-07:00"
 		},
 		{
 			"checksumSHA1": "Qwc7VecyIh84Ol8n9J9DUwZQtII=",
 			"path": "golang.org/x/tools/godoc/vfs/mapfs",
-			"revision": "84e7bc0dd39bab24b696dde4d714641fa738f945",
-			"revisionTime": "2016-03-29T14:32:15-04:00"
+			"revision": "b75b3f5cd5d50fbb1fb88ce784d2e7cca17bba8a",
+			"revisionTime": "2016-04-03T16:33:36-07:00"
 		},
 		{
 			"checksumSHA1": "+rKScRmK+7v+CtgygG/nq72iUnQ=",

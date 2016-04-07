@@ -10,7 +10,7 @@ import (
 
 	"go/types"
 
-	_ "golang.org/x/tools/go/gcimporter"
+	_ "golang.org/x/tools/go/gcimporter15"
 	"golang.org/x/tools/go/loader"
 )
 
