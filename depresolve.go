@@ -118,11 +118,10 @@ func ResolveDep(importPath string) (*dep.ResolvedTarget, error) {
 	// inside this repository (i.e., NOT linked to the external repository from which the code was vendored).
 	if pkg, err := buildContext.Import(importPath, "", build.FindOnly); err == nil {
 		if pathHasPrefix(pkg.Dir, cwd) || isInEffectiveConfigGOPATH(pkg.Dir) {
-			if strings.Contains(importPath, "/vendor/") {
-				unvendoredImportPath := strings.SplitAfterN(importPath, "/vendor/", 2)[1]
+			if name, isVendored := vendoredUnitName(pkg); isVendored {
 				return &dep.ResolvedTarget{
 					ToRepoCloneURL: "", // empty ToRepoCloneURL to indicate it's from this repository
-					ToUnit:         unvendoredImportPath,
+					ToUnit:         name,
 					ToUnitType:     "GoPackage",
 				}, nil
 			} else {

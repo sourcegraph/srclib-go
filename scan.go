@@ -119,17 +119,9 @@ func (c *ScanCmd) Execute(args []string) error {
 	// Make go1.5 style vendored dep unit names (package import paths)
 	// relative to vendored dir, not to top-level dir.
 	for _, u := range units {
-		pkg := u.Data.(*build.Package)
-		i, ok := findVendor(pkg.Dir)
-		if !ok {
-			continue
+		if name, isVendored := vendoredUnitName(u.Data.(*build.Package)); isVendored {
+			u.Name = name
 		}
-		relDir := pkg.Dir[i+len("vendor"):]
-		if strings.HasPrefix(relDir, "/src/") || !strings.HasPrefix(relDir, "/") {
-			continue
-		}
-		relImport := relDir[1:]
-		u.Name = relImport
 	}
 
 	// make files relative to repository root
@@ -214,6 +206,22 @@ func findVendor(path string) (index int, ok bool) {
 		return 0, true
 	}
 	return 0, false
+}
+
+// vendoredUnitName returns the proper unit name of a Go package if it
+// is vendored. If the package is not vendored, it returns the empty
+// string and false.
+func vendoredUnitName(pkg *build.Package) (name string, isVendored bool) {
+	i, ok := findVendor(pkg.Dir)
+	if !ok {
+		return "", false
+	}
+	relDir := pkg.Dir[i+len("vendor"):]
+	if strings.HasPrefix(relDir, "/src/") || !strings.HasPrefix(relDir, "/") {
+		return "", false
+	}
+	relImport := relDir[1:]
+	return relImport, true
 }
 
 func isInGopath(path string) bool {
