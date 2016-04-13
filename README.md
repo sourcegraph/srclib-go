@@ -28,6 +28,7 @@ cd $GOPATH/src/sourcegraph.com/sourcegraph/srclib-go
 make
 
 # link this toolchain in your SRCLIBPATH (default ~/.srclib) to enable it
+```
 
 To verify that installation succeeded, run:
 
