@@ -60,7 +60,8 @@ func parseFiles(fset *token.FileSet, filenames []string) (map[string]*ast.File, 
 	return files, nil
 }
 
-func (g *Grapher) emitDocs(pkgInfo *loader.PackageInfo) error {
+func (g *Grapher) emitDocs(pkgInfo *loader.PackageInfo) ([]*Doc, error) {
+	var pkgDocs []*Doc
 	objOf := make(map[token.Position]types.Object, len(pkgInfo.Defs))
 	for ident, obj := range pkgInfo.Defs {
 		objOf[g.program.Fset.Position(ident.Pos())] = obj
@@ -80,7 +81,7 @@ func (g *Grapher) emitDocs(pkgInfo *loader.PackageInfo) error {
 	sort.Strings(filenames)
 	files, err := parseFiles(g.program.Fset, filenames)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// First we collect all of the Doc comments from the files,
@@ -100,7 +101,8 @@ func (g *Grapher) emitDocs(pkgInfo *loader.PackageInfo) error {
 	}
 
 	pkgPath := pkgInfo.Pkg.Path()
-	g.emitDoc(types.NewPkgName(0, pkgInfo.Pkg, pkgPath, pkgInfo.Pkg), nil, pkgDoc, "", pkgPath)
+	fileDocs := g.emitDoc(types.NewPkgName(0, pkgInfo.Pkg, pkgPath, pkgInfo.Pkg), nil, pkgDoc, "", pkgPath)
+	pkgDocs = append(pkgDocs, fileDocs...)
 
 	// We walk the AST for comments attached to nodes.
 	for filename, f := range files {
@@ -114,16 +116,18 @@ func (g *Grapher) emitDocs(pkgInfo *loader.PackageInfo) error {
 					return true
 				}
 				for _, i := range n.Names {
-					if g.emitDoc(objOf[g.program.Fset.Position(i.Pos())], n.Doc, n.Doc.Text(), filename, pkgPath) {
+					if docs := g.emitDoc(objOf[g.program.Fset.Position(i.Pos())], n.Doc, n.Doc.Text(), filename, pkgPath); len(docs) > 0 {
 						docSeen[n.Doc.Pos()] = struct{}{}
+						pkgDocs = append(pkgDocs, docs...)
 					}
 				}
 			case *ast.FuncDecl:
 				if n.Doc == nil || n.Name == nil {
 					return true
 				}
-				if g.emitDoc(objOf[g.program.Fset.Position(n.Name.Pos())], n.Doc, n.Doc.Text(), filename, pkgPath) {
+				if docs := g.emitDoc(objOf[g.program.Fset.Position(n.Name.Pos())], n.Doc, n.Doc.Text(), filename, pkgPath); len(docs) > 0 {
 					docSeen[n.Doc.Pos()] = struct{}{}
+					pkgDocs = append(pkgDocs, docs...)
 				}
 			case *ast.GenDecl:
 				for _, spec := range n.Specs {
@@ -131,14 +135,16 @@ func (g *Grapher) emitDocs(pkgInfo *loader.PackageInfo) error {
 					case *ast.ValueSpec:
 						for _, name := range spec.Names {
 							c := firstNonNil(spec.Doc, spec.Comment, n.Doc)
-							if g.emitDoc(objOf[g.program.Fset.Position(name.Pos())], c, c.Text(), filename, pkgPath) {
+							if docs := g.emitDoc(objOf[g.program.Fset.Position(name.Pos())], c, c.Text(), filename, pkgPath); len(docs) > 0 {
 								docSeen[c.Pos()] = struct{}{}
+								pkgDocs = append(pkgDocs, docs...)
 							}
 						}
 					case *ast.TypeSpec:
 						c := firstNonNil(spec.Doc, spec.Comment, n.Doc)
-						if g.emitDoc(objOf[g.program.Fset.Position(spec.Name.Pos())], c, c.Text(), filename, pkgPath) {
+						if docs := g.emitDoc(objOf[g.program.Fset.Position(spec.Name.Pos())], c, c.Text(), filename, pkgPath); len(docs) > 0 {
 							docSeen[c.Pos()] = struct{}{}
+							pkgDocs = append(pkgDocs, docs...)
 						}
 					}
 				}
@@ -146,23 +152,26 @@ func (g *Grapher) emitDocs(pkgInfo *loader.PackageInfo) error {
 				if n.Doc == nil || n.Name == nil {
 					return true
 				}
-				if g.emitDoc(objOf[g.program.Fset.Position(n.Name.Pos())], n.Doc, n.Doc.Text(), filename, pkgPath) {
+				if docs := g.emitDoc(objOf[g.program.Fset.Position(n.Name.Pos())], n.Doc, n.Doc.Text(), filename, pkgPath); len(docs) > 0 {
 					docSeen[n.Doc.Pos()] = struct{}{}
+					pkgDocs = append(pkgDocs, docs...)
 				}
 			case *ast.TypeSpec:
 				if n.Doc == nil || n.Name == nil {
 					return true
 				}
-				if g.emitDoc(objOf[g.program.Fset.Position(n.Name.Pos())], n.Doc, n.Doc.Text(), filename, pkgPath) {
+				if docs := g.emitDoc(objOf[g.program.Fset.Position(n.Name.Pos())], n.Doc, n.Doc.Text(), filename, pkgPath); len(docs) > 0 {
 					docSeen[n.Doc.Pos()] = struct{}{}
+					pkgDocs = append(pkgDocs, docs...)
 				}
 			case *ast.ValueSpec:
 				if n.Doc == nil {
 					return true
 				}
 				for _, i := range n.Names {
-					if g.emitDoc(objOf[g.program.Fset.Position(i.Pos())], n.Doc, n.Doc.Text(), filename, pkgPath) {
+					if docs := g.emitDoc(objOf[g.program.Fset.Position(i.Pos())], n.Doc, n.Doc.Text(), filename, pkgPath); len(docs) > 0 {
 						docSeen[n.Doc.Pos()] = struct{}{}
+						pkgDocs = append(pkgDocs, docs...)
 					}
 				}
 			}
@@ -171,11 +180,12 @@ func (g *Grapher) emitDocs(pkgInfo *loader.PackageInfo) error {
 		// Add comments that haven't already been seen.
 		for _, c := range f.Comments {
 			if _, seen := docSeen[c.Pos()]; !seen {
-				g.emitDoc(nil, c, c.Text(), filename, pkgPath)
+				commentDocs := g.emitDoc(nil, c, c.Text(), filename, pkgPath)
+				pkgDocs = append(pkgDocs, commentDocs...)
 			}
 		}
 	}
-	return nil
+	return pkgDocs, nil
 }
 
 func firstNonNil(comments ...*ast.CommentGroup) *ast.CommentGroup {
@@ -187,9 +197,9 @@ func firstNonNil(comments ...*ast.CommentGroup) *ast.CommentGroup {
 	return nil
 }
 
-func (g *Grapher) emitDoc(obj types.Object, dc *ast.CommentGroup, docstring, filename, pkgPath string) bool {
+func (g *Grapher) emitDoc(obj types.Object, dc *ast.CommentGroup, docstring, filename, pkgPath string) (docs []*Doc) {
 	if docstring == "" {
-		return false
+		return
 	}
 	if obj == nil {
 		var htmlBuf bytes.Buffer
@@ -198,7 +208,7 @@ func (g *Grapher) emitDoc(obj types.Object, dc *ast.CommentGroup, docstring, fil
 		if dc != nil {
 			span = makeSpan(g.program.Fset, dc)
 		}
-		g.addDoc(&Doc{
+		docs = append(docs, &Doc{
 			DefKey: nil,
 			Unit:   pkgPath,
 			Format: "text/html",
@@ -206,7 +216,7 @@ func (g *Grapher) emitDoc(obj types.Object, dc *ast.CommentGroup, docstring, fil
 			File:   filename,
 			Span:   span,
 		})
-		g.addDoc(&Doc{
+		docs = append(docs, &Doc{
 			DefKey: nil,
 			Unit:   pkgPath,
 			Format: "text/plain",
@@ -214,27 +224,27 @@ func (g *Grapher) emitDoc(obj types.Object, dc *ast.CommentGroup, docstring, fil
 			File:   filename,
 			Span:   span,
 		})
-		return true
+		return
 	}
 
 	if g.seenDocObjs == nil {
 		g.seenDocObjs = make(map[types.Object]struct{})
 	}
 	if _, seen := g.seenDocObjs[obj]; seen {
-		return false
+		return
 	}
 	g.seenDocObjs[obj] = struct{}{}
 
 	key, _, err := g.defInfo(obj)
 	if err != nil {
-		return false
+		return
 	}
 
 	if g.seenDocKeys == nil {
 		g.seenDocKeys = make(map[string]struct{})
 	}
 	if _, seen := g.seenDocKeys[key.String()]; seen {
-		return false
+		return
 	}
 	g.seenDocKeys[key.String()] = struct{}{}
 
@@ -246,7 +256,7 @@ func (g *Grapher) emitDoc(obj types.Object, dc *ast.CommentGroup, docstring, fil
 		span = makeSpan(g.program.Fset, dc)
 	}
 
-	g.addDoc(&Doc{
+	docs = append(docs, &Doc{
 		DefKey: key,
 		Unit:   pkgPath,
 		Format: "text/html",
@@ -254,7 +264,7 @@ func (g *Grapher) emitDoc(obj types.Object, dc *ast.CommentGroup, docstring, fil
 		File:   filename,
 		Span:   span,
 	})
-	g.addDoc(&Doc{
+	docs = append(docs, &Doc{
 		DefKey: key,
 		Unit:   pkgPath,
 		Format: "text/plain",
@@ -262,10 +272,5 @@ func (g *Grapher) emitDoc(obj types.Object, dc *ast.CommentGroup, docstring, fil
 		File:   filename,
 		Span:   span,
 	})
-
-	return true
-}
-
-func (g *Grapher) addDoc(doc *Doc) {
-	g.Docs = append(g.Docs, doc)
+	return
 }

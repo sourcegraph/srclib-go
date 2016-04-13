@@ -131,7 +131,8 @@ func Graph(units unit.SourceUnits) (*graph.Output, error) {
 	for _, u := range units {
 		pkg, err := UnitDataAsBuildPackage(u)
 		if err != nil {
-			return nil, err
+			log.Printf("Ignoring unit %q due to error in converting to build pkg: %s.", u.Name, err)
+			continue
 		}
 		pkgs = append(pkgs, pkg)
 	}
@@ -146,7 +147,8 @@ func Graph(units unit.SourceUnits) (*graph.Output, error) {
 	for _, gs := range o.Defs {
 		d, err := convertGoDef(gs)
 		if err != nil {
-			return nil, err
+			log.Printf("Ignoring def %v due to error in converting to GoDef: %s.", gs, err)
+			continue
 		}
 		if d != nil {
 			o2.Defs = append(o2.Defs, d)
@@ -155,7 +157,8 @@ func Graph(units unit.SourceUnits) (*graph.Output, error) {
 	for _, gr := range o.Refs {
 		r, err := convertGoRef(gr)
 		if err != nil {
-			return nil, err
+			log.Printf("Ignoring ref %v due to error in converting to GoRef: %s.", gr, err)
+			continue
 		}
 		if r != nil {
 			o2.Refs = append(o2.Refs, r)
@@ -164,7 +167,8 @@ func Graph(units unit.SourceUnits) (*graph.Output, error) {
 	for _, gd := range o.Docs {
 		d, err := convertGoDoc(gd)
 		if err != nil {
-			return nil, err
+			log.Printf("Ignoring doc %v due to error in converting to GoDoc: %s.", gd, err)
+			continue
 		}
 		if d != nil {
 			o2.Docs = append(o2.Docs, d)
@@ -368,7 +372,7 @@ func doGraph(pkgs []*build.Package) (*gog.Output, error) {
 
 	for _, pkg := range pkgInfos {
 		if err := g.Graph(pkg); err != nil {
-			return nil, err
+			log.Printf("Ignoring pkg %q due to error in gog.Graph: %s.", pkg.Pkg.Name(), err)
 		}
 	}
 
