@@ -150,11 +150,11 @@ func ResolveDep(importPath string) (*dep.ResolvedTarget, error) {
 
 	// Special-case github.com/... import paths for performance.
 	case strings.HasPrefix(importPath, "github.com/") || strings.HasPrefix(importPath, "sourcegraph.com/"):
-		parts := strings.SplitN(importPath, "/", 4)
-		if len(parts) < 3 {
-			return nil, fmt.Errorf("import path starts with '(github|sourcegraph).com/' but is not valid: %q", importPath)
+		cloneURL, err := standardRepoHostImportPathToCloneURL(importPath)
+		if err != nil {
+			return nil, err
 		}
-		target.ToRepoCloneURL = "https://" + strings.Join(parts[:3], "/") + ".git"
+		target.ToRepoCloneURL = cloneURL
 
 	// Special-case google.golang.org/... (e.g., /appengine) import
 	// paths for performance and to avoid hitting GitHub rate limit.
@@ -182,7 +182,15 @@ func ResolveDep(importPath string) (*dep.ResolvedTarget, error) {
 		log.Printf("Resolving Go dep: %s", importPath)
 		dir, err := gosrc.Get(http.DefaultClient, string(importPath), "")
 		if err == nil {
-			target.ToRepoCloneURL = strings.TrimSuffix(dir.ProjectURL, "/")
+			if strings.HasPrefix(dir.ResolvedPath, "github.com/") {
+				cloneURL, err := standardRepoHostImportPathToCloneURL(dir.ResolvedPath)
+				if err != nil {
+					return nil, err
+				}
+				target.ToRepoCloneURL = cloneURL
+			} else {
+				target.ToRepoCloneURL = strings.TrimSuffix(dir.ProjectURL, "/")
+			}
 		} else {
 			log.Printf("warning: unable to fetch information about Go package %q: %s", importPath, err)
 			target.ToRepoCloneURL = importPath
@@ -193,4 +201,16 @@ func ResolveDep(importPath string) (*dep.ResolvedTarget, error) {
 	resolveCache.Put(importPath, target)
 
 	return target, nil
+}
+
+// standardRepoHostImportPathToCloneURL returns the clone URL for an
+// import path that references a standard repo host (e.g.,
+// github.com). It assumes a structure of
+// $HOST/$OWNER/$REPO/$PACKAGE_PATH. E.g., "github.com/foo/bar/path/to/pkg".
+func standardRepoHostImportPathToCloneURL(importPath string) (string, error) {
+	parts := strings.SplitN(importPath, "/", 4)
+	if len(parts) < 3 {
+		return "", fmt.Errorf("import path expected to have at least 3 parts, but didn't: %q", importPath)
+	}
+	return "https://" + strings.Join(parts[:3], "/") + ".git", nil
 }
