@@ -57,6 +57,7 @@
 			"revisionTime": "2016-02-20T17:33:56-05:00"
 		},
 		{
+			"checksumSHA1": "Ymuplsf82NNHBZUgUT/nM/U4BpM=",
 			"path": "golang.org/x/tools/go/gcimporter15",
 			"revision": "b75b3f5cd5d50fbb1fb88ce784d2e7cca17bba8a",
 			"revisionTime": "2016-04-03T16:33:36-07:00"
@@ -98,7 +99,7 @@
 			"revisionTime": "2016-03-24T15:23:09+01:00"
 		},
 		{
-			"checksumSHA1": "DQegZodz5GxmUbCOPySjzei4Zbw=",
+			"checksumSHA1": "seWWPqWX4VyY7hsix0woW6OYLAY=",
 			"path": "sourcegraph.com/sourcegraph/srclib",
 			"revision": "2c38b1042a946ec4531ca463bf6e65d7a356190b",
 			"revisionTime": "2016-01-07T01:13:23-08:00"
@@ -128,7 +129,7 @@
 			"revisionTime": "2016-01-07T01:13:23-08:00"
 		},
 		{
-			"checksumSHA1": "y1FdQWZzVB6Ssln91LjRD4AiMIM=",
+			"checksumSHA1": "hYUGZVDD9sRAxEGqEvfeQUpzK6o=",
 			"path": "sourcegraph.com/sourcegraph/srclib/graph",
 			"revision": "2c38b1042a946ec4531ca463bf6e65d7a356190b",
 			"revisionTime": "2016-01-07T01:13:23-08:00"
@@ -146,7 +147,7 @@
 			"revisionTime": "2016-03-29T22:33:49-07:00"
 		},
 		{
-			"checksumSHA1": "Eff/+/OaGHAVErr2rEnQO1Szi5U=",
+			"checksumSHA1": "DO2ClRpKhE9dkk3dJ2L0tdkDnRc=",
 			"path": "sourcegraph.com/sourcegraph/srclib/unit",
 			"revision": "2c38b1042a946ec4531ca463bf6e65d7a356190b",
 			"revisionTime": "2016-01-07T01:13:23-08:00"
