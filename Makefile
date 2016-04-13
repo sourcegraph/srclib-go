@@ -36,8 +36,12 @@ ${SRCLIB_GO_EXE}: $(shell /usr/bin/find . -type f -and -name '*.go' -not -path '
 
 test: gotest srctest
 
+TESTPKGS ?= $(shell go list ./... | grep -v /vendor/)
 gotest:
-	go test $(shell go list ./... | grep -v /vendor/)
+	go test ${TESTPKGS}
+
+smtest:
+	go test -short ${TESTPKGS}
 
 GEN ?=
 srctest:
