@@ -1,0 +1,168 @@
+{
+  "Defs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "builtin",
+      "Path": ".",
+      "Name": "builtin",
+      "Kind": "package",
+      "File": "src/builtin",
+      "DefStart": 0,
+      "DefEnd": 0,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgName": "builtin",
+        "TypeString": "",
+        "Kind": "package",
+        "PackageImportPath": "builtin"
+      },
+      "TreePath": "."
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "builtin",
+      "Path": "bool",
+      "Name": "bool",
+      "Kind": "type",
+      "File": "src/builtin/builtin.go",
+      "DefStart": 88,
+      "DefEnd": 97,
+      "Data": {
+        "PkgScope": true,
+        "PkgName": "builtin",
+        "TypeString": "builtin.bool",
+        "UnderlyingTypeString": "builtin",
+        "Kind": "type",
+        "PackageImportPath": "builtin"
+      },
+      "TreePath": "./bool"
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "builtin",
+      "Path": "int",
+      "Name": "int",
+      "Kind": "type",
+      "File": "src/builtin/builtin.go",
+      "DefStart": 74,
+      "DefEnd": 81,
+      "Data": {
+        "PkgScope": true,
+        "PkgName": "builtin",
+        "TypeString": "builtin.int",
+        "UnderlyingTypeString": "builtin",
+        "Kind": "type",
+        "PackageImportPath": "builtin"
+      },
+      "TreePath": "./int"
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "builtin",
+      "Path": "string",
+      "Name": "string",
+      "Kind": "type",
+      "File": "src/builtin/builtin.go",
+      "DefStart": 104,
+      "DefEnd": 117,
+      "Data": {
+        "PkgScope": true,
+        "PkgName": "builtin",
+        "TypeString": "builtin.string",
+        "UnderlyingTypeString": "builtin",
+        "Kind": "type",
+        "PackageImportPath": "builtin"
+      },
+      "TreePath": "./string"
+    }
+  ],
+  "Refs": [
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "builtin",
+      "DefPath": ".",
+      "Unit": "builtin",
+      "File": "src/builtin/builtin.go",
+      "Start": 8,
+      "End": 15
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "builtin",
+      "DefPath": "bool",
+      "Unit": "builtin",
+      "Def": true,
+      "File": "src/builtin/builtin.go",
+      "Start": 88,
+      "End": 92
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "builtin",
+      "DefPath": "bool",
+      "Unit": "builtin",
+      "File": "src/builtin/builtin.go",
+      "Start": 93,
+      "End": 97
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "builtin",
+      "DefPath": "int",
+      "Unit": "builtin",
+      "Def": true,
+      "File": "src/builtin/builtin.go",
+      "Start": 74,
+      "End": 77
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "builtin",
+      "DefPath": "int",
+      "Unit": "builtin",
+      "File": "src/builtin/builtin.go",
+      "Start": 78,
+      "End": 81
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "builtin",
+      "DefPath": "string",
+      "Unit": "builtin",
+      "Def": true,
+      "File": "src/builtin/builtin.go",
+      "Start": 104,
+      "End": 110
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "builtin",
+      "DefPath": "string",
+      "Unit": "builtin",
+      "File": "src/builtin/builtin.go",
+      "Start": 111,
+      "End": 117
+    }
+  ],
+  "Docs": [
+    {
+      "Path": "",
+      "Format": "text/html",
+      "Data": "\u003cp\u003e\nCheck that builtin types are correctly graphed.\n\u003c/p\u003e\n",
+      "File": "src/builtin/builtin.go",
+      "Start": 17,
+      "End": 67,
+      "DocUnit": "builtin"
+    },
+    {
+      "Path": "",
+      "Format": "text/plain",
+      "Data": "Check that builtin types are correctly graphed.\n",
+      "File": "src/builtin/builtin.go",
+      "Start": 17,
+      "End": 67,
+      "DocUnit": "builtin"
+    }
+  ]
+}
