@@ -26,8 +26,8 @@
       "Name": "bool",
       "Kind": "type",
       "File": "src/builtin/builtin.go",
-      "DefStart": 88,
-      "DefEnd": 97,
+      "DefStart": 196,
+      "DefEnd": 205,
       "Data": {
         "PkgScope": true,
         "PkgName": "builtin",
@@ -45,8 +45,8 @@
       "Name": "int",
       "Kind": "type",
       "File": "src/builtin/builtin.go",
-      "DefStart": 74,
-      "DefEnd": 81,
+      "DefStart": 182,
+      "DefEnd": 189,
       "Data": {
         "PkgScope": true,
         "PkgName": "builtin",
@@ -64,8 +64,8 @@
       "Name": "string",
       "Kind": "type",
       "File": "src/builtin/builtin.go",
-      "DefStart": 104,
-      "DefEnd": 117,
+      "DefStart": 212,
+      "DefEnd": 225,
       "Data": {
         "PkgScope": true,
         "PkgName": "builtin",
@@ -94,8 +94,8 @@
       "Unit": "builtin",
       "Def": true,
       "File": "src/builtin/builtin.go",
-      "Start": 88,
-      "End": 92
+      "Start": 196,
+      "End": 200
     },
     {
       "DefUnitType": "GoPackage",
@@ -103,8 +103,8 @@
       "DefPath": "bool",
       "Unit": "builtin",
       "File": "src/builtin/builtin.go",
-      "Start": 93,
-      "End": 97
+      "Start": 201,
+      "End": 205
     },
     {
       "DefUnitType": "GoPackage",
@@ -113,8 +113,8 @@
       "Unit": "builtin",
       "Def": true,
       "File": "src/builtin/builtin.go",
-      "Start": 74,
-      "End": 77
+      "Start": 182,
+      "End": 185
     },
     {
       "DefUnitType": "GoPackage",
@@ -122,8 +122,8 @@
       "DefPath": "int",
       "Unit": "builtin",
       "File": "src/builtin/builtin.go",
-      "Start": 78,
-      "End": 81
+      "Start": 186,
+      "End": 189
     },
     {
       "DefUnitType": "GoPackage",
@@ -132,8 +132,8 @@
       "Unit": "builtin",
       "Def": true,
       "File": "src/builtin/builtin.go",
-      "Start": 104,
-      "End": 110
+      "Start": 212,
+      "End": 218
     },
     {
       "DefUnitType": "GoPackage",
@@ -141,27 +141,27 @@
       "DefPath": "string",
       "Unit": "builtin",
       "File": "src/builtin/builtin.go",
-      "Start": 111,
-      "End": 117
+      "Start": 219,
+      "End": 225
     }
   ],
   "Docs": [
     {
       "Path": "",
       "Format": "text/html",
-      "Data": "\u003cp\u003e\nCheck that builtin types are correctly graphed.\n\u003c/p\u003e\n",
+      "Data": "\u003cp\u003e\nCheck that builtin types are correctly graphed.\nThis simulates the real builtin package and makes sure we\nproperly handle references to builtin defs.\n\u003c/p\u003e\n",
       "File": "src/builtin/builtin.go",
       "Start": 17,
-      "End": 67,
+      "End": 175,
       "DocUnit": "builtin"
     },
     {
       "Path": "",
       "Format": "text/plain",
-      "Data": "Check that builtin types are correctly graphed.\n",
+      "Data": "Check that builtin types are correctly graphed.\nThis simulates the real builtin package and makes sure we\nproperly handle references to builtin defs.\n",
       "File": "src/builtin/builtin.go",
       "Start": 17,
-      "End": 67,
+      "End": 175,
       "DocUnit": "builtin"
     }
   ]
