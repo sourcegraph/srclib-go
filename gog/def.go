@@ -65,7 +65,9 @@ found:
 
 	if typ := obj.Type(); typ != nil {
 		si.TypeString = typ.String()
-		if utyp := typ.Underlying(); utyp != nil {
+		if key.PackageImportPath == "builtin" {
+			si.UnderlyingTypeString = "builtin"
+		} else if utyp := typ.Underlying(); utyp != nil {
 			si.UnderlyingTypeString = utyp.String()
 		}
 	}

@@ -91,7 +91,6 @@
       "End": 196
     },
     {
-      "DefRepo": "github.com/golang/go",
       "DefUnitType": "GoPackage",
       "DefUnit": "builtin",
       "DefPath": "string",
