@@ -15,10 +15,14 @@ endif
 ifeq ($(OS),Windows_NT)
 	SRCLIB_GO_EXE := .bin/srclib-go.exe
 	CURDIR := $(shell $(CMD) "echo %cd%")
-	CURDIR := $(subst \,/,$(CURDIR))
-	PWD := $(CURDIR)
+	UNIXDIR := $(subst \,/,$(CURDIR))
+	WINDIR := $(subst \,\\,$(CURDIR))
+	TESTGOPATH := $(WINDIR)\\testdata\\case\;$(WINDIR)\\.test
+	TESTFETCHGOPATH := $(UNIXDIR)/.test
 else
 	SRCLIB_GO_EXE := .bin/srclib-go
+	TESTGOPATH := $(PWD)/testdata/case:$(PWD)/.test
+	TESTFETCHGOPATH := $(PWD)/.test
 endif
 
 .PHONY: install test gotest srctest
@@ -45,9 +49,9 @@ srctest:
 # test repos are under testdata dir, we change the GOPATH to not root the
 # testdata dir
 	git submodule update --init
-	GOPATH=${PWD}/.test go get -d golang.org/x/net/ipv6
+	GOPATH=${TESTFETCHGOPATH} go get -d golang.org/x/net/ipv6
 	@if [ -z "$$GEN" ]; then \
-		GOPATH=${PWD}/testdata/case:${PWD}/.test srclib test; \
+		GOPATH=${TESTGOPATH} srclib test; \
 	else \
-		GOPATH=${PWD}/testdata/case:${PWD}/.test srclib test --gen; \
+		GOPATH=${TESTGOPATH} srclib test --gen; \
 	fi;

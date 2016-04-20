@@ -148,7 +148,7 @@ func (c *ScanCmd) Execute(args []string) error {
 				if err != nil {
 					return err
 				}
-				dirs[i] = relDir
+				dirs[i] = filepath.ToSlash(relDir)
 			}
 			u.Config["GOPATH"] = strings.Join(dirs, string(filepath.ListSeparator))
 		}
@@ -157,12 +157,13 @@ func (c *ScanCmd) Execute(args []string) error {
 	// Find vendored units to build a list of vendor directories
 	vendorDirs := map[string]struct{}{}
 	for _, u := range units {
-		i, ok := findVendor(u.Dir)
+		unixStyle := filepath.ToSlash(u.Dir)
+		i, ok := findVendor(unixStyle)
 		// Don't include old style vendor dirs
-		if !ok || strings.HasPrefix(u.Dir[i:], "vendor/src/") {
+		if !ok || strings.HasPrefix(unixStyle[i:], "vendor/src/") {
 			continue
 		}
-		vendorDirs[u.Dir[:i+len("vendor")]] = struct{}{}
+		vendorDirs[unixStyle[:i+len("vendor")]] = struct{}{}
 	}
 
 	for _, u := range units {
@@ -212,11 +213,12 @@ func findVendor(path string) (index int, ok bool) {
 // is vendored. If the package is not vendored, it returns the empty
 // string and false.
 func vendoredUnitName(pkg *build.Package) (name string, isVendored bool) {
-	i, ok := findVendor(pkg.Dir)
+	unixStyle := filepath.ToSlash(pkg.Dir)
+	i, ok := findVendor(unixStyle)
 	if !ok {
 		return "", false
 	}
-	relDir := pkg.Dir[i+len("vendor"):]
+	relDir := unixStyle[i+len("vendor"):]
 	if strings.HasPrefix(relDir, "/src/") || !strings.HasPrefix(relDir, "/") {
 		return "", false
 	}
