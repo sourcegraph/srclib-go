@@ -13,7 +13,7 @@
     "Raw": "golang.org/x/net/ipv6",
     "Target": {
       "ToRepoCloneURL": "https://github.com/golang/net",
-      "ToUnit": "golang.org/x/net/ipv6",
+      "ToUnit": "github.com/golang/net/ipv6",
       "ToUnitType": "GoPackage",
       "ToVersionString": "",
       "ToRevSpec": ""
