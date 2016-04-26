@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"go/build"
 	"log"
-	"net/http"
 	"os"
 	"runtime"
 	"strings"
 	"sync"
+
+	"golang.org/x/tools/go/vcs"
 
 	"github.com/golang/gddo/gosrc"
 
@@ -160,6 +161,7 @@ func ResolveDep(importPath string) (*dep.ResolvedTarget, error) {
 	// paths for performance and to avoid hitting GitHub rate limit.
 	case strings.HasPrefix(importPath, "google.golang.org/"):
 		target.ToRepoCloneURL = "https://" + strings.Replace(importPath, "google.golang.org/", "github.com/golang/", 1) + ".git"
+		target.ToUnit = strings.Replace(importPath, "google.golang.org/", "github.com/golang/", 1)
 
 	// Special-case code.google.com/p/... import paths for performance.
 	case strings.HasPrefix(importPath, "code.google.com/p/"):
@@ -176,21 +178,15 @@ func ResolveDep(importPath string) (*dep.ResolvedTarget, error) {
 			return nil, fmt.Errorf("import path starts with 'golang.org/x/' but is not valid: %q", importPath)
 		}
 		target.ToRepoCloneURL = "https://" + strings.Replace(strings.Join(parts[:3], "/"), "golang.org/x/", "github.com/golang/", 1)
+		target.ToUnit = strings.Replace(importPath, "golang.org/x/", "github.com/golang/", 1)
 
 	// Try to resolve everything else
 	default:
 		log.Printf("Resolving Go dep: %s", importPath)
-		dir, err := gosrc.Get(http.DefaultClient, string(importPath), "")
+		repoRoot, err := vcs.RepoRootForImportPath(string(importPath), false)
 		if err == nil {
-			if strings.HasPrefix(dir.ResolvedPath, "github.com/") {
-				cloneURL, err := standardRepoHostImportPathToCloneURL(dir.ResolvedPath)
-				if err != nil {
-					return nil, err
-				}
-				target.ToRepoCloneURL = cloneURL
-			} else {
-				target.ToRepoCloneURL = strings.TrimSuffix(dir.ProjectURL, "/")
-			}
+			target.ToRepoCloneURL = repoRoot.Repo
+			target.ToUnit = replaceImportPathRepoRoot(target.ToUnit, repoRoot.Root, repoRoot.Repo)
 		} else {
 			log.Printf("warning: unable to fetch information about Go package %q: %s", importPath, err)
 			target.ToRepoCloneURL = importPath
@@ -213,4 +209,25 @@ func standardRepoHostImportPathToCloneURL(importPath string) (string, error) {
 		return "", fmt.Errorf("import path expected to have at least 3 parts, but didn't: %q", importPath)
 	}
 	return "https://" + strings.Join(parts[:3], "/") + ".git", nil
+}
+
+// replaceImportPathRepoRoot modifies the given importPath by replacing the
+// root string in the importPath with the host+path of the clone URL.
+// This is necessary for resolving refs to custom import path packages, since
+// the defs within those packages would have the Unit field set to
+// "${repoURI}/path/to/pkg/dir", where repoURI is the host+path of the cloneURL.
+//
+// This is a HACK to make def resolution work in presence of custom import
+// paths. A proper solution would require passing in the custom import path
+// information from srclib to the graph step, and setting that as the Unit field
+// of the defs identified in the source unit.
+//
+// TODO: Implement the proper solution and get rid of this hack.
+func replaceImportPathRepoRoot(importPath, root, cloneURL string) string {
+	i := strings.Index(cloneURL, "://")
+	if i < 0 {
+		return importPath
+	}
+	newRoot := strings.TrimSuffix(cloneURL[i+len("://"):], ".git")
+	return strings.Replace(importPath, root, newRoot, 1)
 }

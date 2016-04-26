@@ -112,7 +112,7 @@
     {
       "DefRepo": "github.com/golang/net",
       "DefUnitType": "GoPackage",
-      "DefUnit": "golang.org/x/net/ipv6",
+      "DefUnit": "github.com/golang/net/ipv6",
       "DefPath": ".",
       "Unit": "github.com/sgtest/go-misc/go_subrepo_import",
       "File": "go_subrepo_import/go_subrepo_import.go",
@@ -122,7 +122,7 @@
     {
       "DefRepo": "github.com/golang/net",
       "DefUnitType": "GoPackage",
-      "DefUnit": "golang.org/x/net/ipv6",
+      "DefUnit": "github.com/golang/net/ipv6",
       "DefPath": ".",
       "Unit": "github.com/sgtest/go-misc/go_subrepo_import",
       "File": "go_subrepo_import/go_subrepo_import.go",
@@ -142,7 +142,7 @@
     {
       "DefRepo": "github.com/golang/net",
       "DefUnitType": "GoPackage",
-      "DefUnit": "golang.org/x/net/ipv6",
+      "DefUnit": "github.com/golang/net/ipv6",
       "DefPath": "Conn",
       "Unit": "github.com/sgtest/go-misc/go_subrepo_import",
       "File": "go_subrepo_import/go_subrepo_import.go",
