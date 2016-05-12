@@ -32,6 +32,7 @@ type Grapher struct {
 	structFields map[*types.Var]*structField
 
 	scopeNodes map[*types.Scope]ast.Node
+	funcNames  map[*types.Scope]string
 
 	paths      map[types.Object][]string
 	scopePaths map[*types.Scope][]string
@@ -58,6 +59,7 @@ func New(prog *loader.Program) *Grapher {
 		structFields: make(map[*types.Var]*structField),
 
 		scopeNodes: make(map[*types.Scope]ast.Node),
+		funcNames:  make(map[*types.Scope]string),
 
 		paths:      make(map[types.Object][]string),
 		scopePaths: make(map[*types.Scope][]string),

@@ -15,6 +15,13 @@ import (
 )
 
 func (g *Grapher) buildScopeInfo(pkgInfo *loader.PackageInfo) {
+	// Precomputing funcNames now avoids an expensive lookup later on.
+	for ident, obj := range pkgInfo.Defs {
+		if funcType, ok := obj.(*types.Func); ok {
+			g.funcNames[funcType.Scope()] = ident.Name
+		}
+	}
+
 	for node, scope := range pkgInfo.Scopes {
 		g.scopeNodes[scope] = node
 	}
@@ -87,28 +94,27 @@ func (g *Grapher) scopeLabel(s *types.Scope) (path []string) {
 
 	case *ast.FuncType:
 		// get func name
-		_, astPath, _ := g.program.PathEnclosingInterval(n.Pos(), n.End())
-		if false {
-			log.Printf("----------")
-			for i, n := range astPath {
-				log.Printf("%d. %T %+v", i, n, n)
+		if name, exists := g.funcNames[s]; exists {
+			return []string{name}
+		} else {
+			_, astPath, _ := g.program.PathEnclosingInterval(n.Pos(), n.End())
+			if f, ok := astPath[0].(*ast.FuncDecl); ok {
+				var path []string
+				if f.Recv != nil {
+					path = []string{derefNode(f.Recv.List[0].Type).(*ast.Ident).Name}
+				}
+				var uniqName string
+				if f.Name.Name == "init" {
+					// init function can appear multiple times in each file and
+					// package, so need to uniquify it
+					uniqName = f.Name.Name + uniqID(g.program.Fset.Position(f.Name.Pos()))
+				} else {
+					uniqName = f.Name.Name
+				}
+				path = append(path, uniqName)
+
+				return path
 			}
-		}
-		if f, ok := astPath[0].(*ast.FuncDecl); ok {
-			var path []string
-			if f.Recv != nil {
-				path = []string{derefNode(f.Recv.List[0].Type).(*ast.Ident).Name}
-			}
-			var uniqName string
-			if f.Name.Name == "init" {
-				// init function can appear multiple times in each file and
-				// package, so need to uniquify it
-				uniqName = f.Name.Name + uniqID(g.program.Fset.Position(f.Name.Pos()))
-			} else {
-				uniqName = f.Name.Name
-			}
-			path = append(path, uniqName)
-			return path
 		}
 	}
 
