@@ -244,6 +244,12 @@ func scan(scanDir string) ([]*unit.SourceUnit, error) {
 		return nil, err
 	}
 
+	// heuristic: if more than 600 packages, graph units independently, which is slower but will avoid OOM
+	var graphOp = "graph-all"
+	if len(pkgs) > 600 {
+		graphOp = "graph"
+	}
+
 	var units []*unit.SourceUnit
 	for _, pkg := range pkgs {
 		// Collect all files
@@ -302,7 +308,7 @@ func scan(scanDir string) ([]*unit.SourceUnit, error) {
 			Files:        files,
 			Data:         pkg,
 			Dependencies: deps,
-			Ops:          map[string]*srclib.ToolRef{"depresolve": nil, "graph-all": nil},
+			Ops:          map[string]*srclib.ToolRef{"depresolve": nil, graphOp: nil},
 		})
 	}
 
