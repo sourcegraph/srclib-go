@@ -93,8 +93,10 @@ func (g *Grapher) scopeLabel(s *types.Scope) (path []string) {
 		return []string{}
 
 	case *ast.FuncType:
-		// get func name
-		if name, exists := g.funcNames[s]; exists {
+		// Get func name, but treat each "init" func as separate
+		// (because there can be multiple top-level init funcs in a Go
+		// package).
+		if name, exists := g.funcNames[s]; exists && name != "init" {
 			return []string{name}
 		} else {
 			_, astPath, _ := g.program.PathEnclosingInterval(n.Pos(), n.End())

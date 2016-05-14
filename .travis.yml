@@ -18,6 +18,5 @@ install:
   - ln -s $HOME/gopath/src/sourcegraph.com/sourcegraph/srclib-go $HOME/.srclib/sourcegraph.com/sourcegraph/srclib-go
   - make
 
-# TODO(sqs): add `go test`
 script:
-  - make srctest
+  - make test
