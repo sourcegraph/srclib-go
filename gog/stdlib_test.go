@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -25,7 +27,7 @@ var (
 )
 
 func TestStdlib(t *testing.T) {
-	if testing.Short() {
+	if v, _ := strconv.ParseBool(os.Getenv("TEST_STDLIB")); !v {
 		t.Skip()
 	}
 
