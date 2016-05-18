@@ -111,16 +111,6 @@ func (g *Grapher) checkRef(ref *Ref) bool {
 	return true
 }
 
-func (g *Grapher) GraphImported() error {
-	for _, pkgInfo := range g.program.Imported {
-		err := g.Graph(pkgInfo)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func (g *Grapher) GraphAll() error {
 	for _, pkgInfo := range g.program.AllPackages {
 		err := g.Graph(pkgInfo)
