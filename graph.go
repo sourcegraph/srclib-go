@@ -310,10 +310,6 @@ func treePath(path string) string {
 	return "./" + path
 }
 
-// allowErrorsInGraph is whether the grapher should continue after
-// encountering "reasonably common" errors (such as compile errors).
-var allowErrorsInGraph = true
-
 func doGraph(pkgs []*build.Package) (*gog.Output, error) {
 	// Special-case: if this is a Cgo package, treat the CgoFiles as GoFiles or
 	// else the character offsets will be junk.
