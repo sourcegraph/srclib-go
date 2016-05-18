@@ -113,7 +113,7 @@ func (g *Grapher) checkRef(ref *Ref) bool {
 
 func (g *Grapher) GraphAll() error {
 	for _, pkgInfo := range g.program.AllPackages {
-		err := g.Graph(pkgInfo)
+		err := g.Graph(pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info)
 		if err != nil {
 			return err
 		}
@@ -121,9 +121,9 @@ func (g *Grapher) GraphAll() error {
 	return nil
 }
 
-func (g *Grapher) Graph(pkgInfo *loader.PackageInfo) error {
-	if len(pkgInfo.Files) == 0 {
-		log.Printf("warning: attempted to graph package %+v with no files", pkgInfo)
+func (g *Grapher) Graph(files []*ast.File, typesPkg *types.Package, typesInfo *types.Info) error {
+	if len(files) == 0 {
+		log.Printf("warning: attempted to graph package %s with no files", typesPkg.Path())
 		return nil
 	}
 
@@ -136,9 +136,9 @@ func (g *Grapher) Graph(pkgInfo *loader.PackageInfo) error {
 	var pkgRefs []*Ref
 	var pkgDocs []*Doc
 
-	for node, obj := range pkgInfo.Implicits {
+	for node, obj := range typesInfo.Implicits {
 		if importSpec, ok := node.(*ast.ImportSpec); ok {
-			ref, err := g.NewRef(importSpec, obj, pkgInfo.Pkg.Path())
+			ref, err := g.NewRef(importSpec, obj, typesPkg.Path())
 			if err != nil {
 				return err
 			}
@@ -154,7 +154,7 @@ func (g *Grapher) Graph(pkgInfo *loader.PackageInfo) error {
 		}
 	}
 
-	pkgDef, err := g.NewPackageDef(pkgInfo, pkgInfo.Pkg)
+	pkgDef, err := g.NewPackageDef(filepath.Dir(g.program.Fset.Position(files[0].Package).Filename), typesPkg)
 	if err != nil {
 		return err
 	}
@@ -162,7 +162,7 @@ func (g *Grapher) Graph(pkgInfo *loader.PackageInfo) error {
 		pkgDefs = append(pkgDefs, pkgDef)
 	}
 
-	for ident, obj := range pkgInfo.Defs {
+	for ident, obj := range typesInfo.Defs {
 		_, isLabel := obj.(*types.Label)
 		if obj == nil || ident.Name == "_" || isLabel {
 			g.skipResolve[ident] = struct{}{}
@@ -172,7 +172,7 @@ func (g *Grapher) Graph(pkgInfo *loader.PackageInfo) error {
 		if v, isVar := obj.(*types.Var); isVar && obj.Pos() != ident.Pos() && !v.IsField() {
 			// If this is an assign statement reassignment of existing var, treat this as a
 			// use (not a def).
-			pkgInfo.Uses[ident] = obj
+			typesInfo.Uses[ident] = obj
 			continue
 		}
 
@@ -189,7 +189,7 @@ func (g *Grapher) Graph(pkgInfo *loader.PackageInfo) error {
 			}
 		}
 
-		ref, err := g.NewRef(ident, obj, pkgInfo.Pkg.Path())
+		ref, err := g.NewRef(ident, obj, typesPkg.Path())
 		if err != nil {
 			return err
 		}
@@ -199,7 +199,7 @@ func (g *Grapher) Graph(pkgInfo *loader.PackageInfo) error {
 		}
 	}
 
-	for ident, obj := range pkgInfo.Uses {
+	for ident, obj := range typesInfo.Uses {
 		if _, isLabel := obj.(*types.Label); isLabel {
 			g.skipResolve[ident] = struct{}{}
 			continue
@@ -221,7 +221,7 @@ func (g *Grapher) Graph(pkgInfo *loader.PackageInfo) error {
 			continue
 		}
 
-		ref, err := g.NewRef(ident, obj, pkgInfo.Pkg.Path())
+		ref, err := g.NewRef(ident, obj, typesPkg.Path())
 		if err != nil {
 			return err
 		}
@@ -232,9 +232,9 @@ func (g *Grapher) Graph(pkgInfo *loader.PackageInfo) error {
 
 	// Create a ref that represent the name of the package ("package foo")
 	// for each file.
-	for _, f := range pkgInfo.Files {
-		pkgObj := types.NewPkgName(f.Name.Pos(), pkgInfo.Pkg, pkgInfo.Pkg.Name(), pkgInfo.Pkg)
-		ref, err := g.NewRef(f.Name, pkgObj, pkgInfo.Pkg.Path())
+	for _, f := range files {
+		pkgObj := types.NewPkgName(f.Name.Pos(), typesPkg, typesPkg.Name(), typesPkg)
+		ref, err := g.NewRef(f.Name, pkgObj, typesPkg.Path())
 		if err != nil {
 			return err
 		}
@@ -244,7 +244,7 @@ func (g *Grapher) Graph(pkgInfo *loader.PackageInfo) error {
 	}
 
 	if !g.SkipDocs {
-		pkgDocs, err = g.emitDocs(pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info)
+		pkgDocs, err = g.emitDocs(files, typesPkg, typesInfo)
 		if err != nil {
 			return err
 		}

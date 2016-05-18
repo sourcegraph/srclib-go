@@ -3,14 +3,11 @@ package gog
 import (
 	"fmt"
 	"go/ast"
-	"path/filepath"
 	"strings"
 
 	"sourcegraph.com/sourcegraph/srclib-go/gog/definfo"
 
 	"go/types"
-
-	"golang.org/x/tools/go/loader"
 )
 
 type DefKey struct {
@@ -103,12 +100,7 @@ found:
 }
 
 // NewPackageDef creates a new Def that represents a Go package.
-func (g *Grapher) NewPackageDef(pkgInfo *loader.PackageInfo, pkg *types.Package) (*Def, error) {
-	var pkgDir string
-	if len(pkgInfo.Files) > 0 {
-		pkgDir = filepath.Dir(g.program.Fset.Position(pkgInfo.Files[0].Package).Filename)
-	}
-
+func (g *Grapher) NewPackageDef(pkgDir string, pkg *types.Package) (*Def, error) {
 	return &Def{
 		Name: pkg.Name(),
 

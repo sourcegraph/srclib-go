@@ -48,7 +48,7 @@ func Main(config *loader.Config, args []string) (*Output, error) {
 	}
 
 	for _, pkg := range pkgs {
-		if err := g.Graph(pkg); err != nil {
+		if err := g.Graph(pkg.Files, pkg.Pkg, &pkg.Info); err != nil {
 			return nil, err
 		}
 	}
