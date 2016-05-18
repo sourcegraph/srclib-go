@@ -3,16 +3,8 @@ package gog
 import (
 	"bytes"
 	"go/ast"
-	"go/build"
 	"go/doc"
-	"go/parser"
 	"go/token"
-	"io"
-	"log"
-	"os"
-	"path"
-	"path/filepath"
-	"sort"
 
 	"go/types"
 
@@ -30,36 +22,6 @@ type Doc struct {
 	Span [2]uint32 `json:",omitempty"`
 }
 
-func parseFiles(fset *token.FileSet, filenames []string) (map[string]*ast.File, error) {
-	files := make(map[string]*ast.File)
-	for _, path := range filenames {
-		// read file contents using go/build context so we use our vfs if
-		// present
-		var f io.ReadCloser
-		var err error
-		if build.Default.OpenFile != nil {
-			f, err = build.Default.OpenFile(path)
-		} else {
-			f, err = os.Open(path)
-		}
-		if err != nil {
-			log.Printf("Warning: parseFiles on %q: %s.", path, err)
-			continue
-		}
-		defer f.Close()
-
-		file, err := parser.ParseFile(fset, path, f, parser.ParseComments)
-		if err != nil {
-			// Don't fail on parser errors.
-			log.Printf("Warning: parsing: %s.", err)
-		}
-		if file != nil {
-			files[path] = file
-		}
-	}
-	return files, nil
-}
-
 func (g *Grapher) emitDocs(pkgInfo *loader.PackageInfo) ([]*Doc, error) {
 	var pkgDocs []*Doc
 	objOf := make(map[token.Position]types.Object, len(pkgInfo.Defs))
@@ -67,29 +29,12 @@ func (g *Grapher) emitDocs(pkgInfo *loader.PackageInfo) ([]*Doc, error) {
 		objOf[g.program.Fset.Position(ident.Pos())] = obj
 	}
 
-	var filenames []string
-	for _, f := range pkgInfo.Files {
-		name := g.program.Fset.Position(f.Name.Pos()).Filename
-		if filepath.Base(name) == "C" {
-			// skip cgo-generated file
-			continue
-		}
-		if path.Ext(name) == ".go" {
-			filenames = append(filenames, name)
-		}
-	}
-	sort.Strings(filenames)
-	files, err := parseFiles(g.program.Fset, filenames)
-	if err != nil {
-		return nil, err
-	}
-
 	// First we collect all of the Doc comments from the files,
 	// which will make up the Doc for the package. If more than
 	// one file has a doc associated with it, append them
 	// together.
 	pkgDoc := ""
-	for _, f := range files {
+	for _, f := range pkgInfo.Files {
 		if f.Doc == nil {
 			continue
 		}
@@ -105,7 +50,8 @@ func (g *Grapher) emitDocs(pkgInfo *loader.PackageInfo) ([]*Doc, error) {
 	pkgDocs = append(pkgDocs, fileDocs...)
 
 	// We walk the AST for comments attached to nodes.
-	for filename, f := range files {
+	for _, f := range pkgInfo.Files {
+		filename := g.program.Fset.Position(f.Name.Pos()).Filename
 		// docSeen is a map from the starting byte of a doc to
 		// an empty struct.
 		docSeen := make(map[token.Pos]struct{})

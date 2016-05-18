@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"go/build"
 	"go/importer"
+	"go/parser"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -19,6 +20,7 @@ var (
 	buildContext = build.Default
 
 	loaderConfig = loader.Config{
+		ParserMode: parser.ParseComments,
 		TypeChecker: types.Config{
 			Importer:    importer.Default(),
 			FakeImportC: true,
