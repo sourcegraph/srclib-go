@@ -348,7 +348,6 @@ func doGraph(pkgs []*build.Package) (*gog.Output, error) {
 
 	prog, err := loaderConfig.Load()
 	if err != nil {
-		log.Println("XXX", err)
 		return nil, err
 	}
 
