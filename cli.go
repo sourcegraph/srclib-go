@@ -8,12 +8,12 @@ import (
 )
 
 var (
-	parser = flags.NewNamedParser("srclib-go", flags.Default)
-	cwd    = getCWD()
+	flagParser = flags.NewNamedParser("srclib-go", flags.Default)
+	cwd        = getCWD()
 )
 
 func init() {
-	parser.LongDescription = "srclib-go performs Go package, dependency, and source analysis."
+	flagParser.LongDescription = "srclib-go performs Go package, dependency, and source analysis."
 }
 
 func getCWD() string {
@@ -26,7 +26,7 @@ func getCWD() string {
 
 func main() {
 	log.SetFlags(0)
-	if _, err := parser.Parse(); err != nil {
+	if _, err := flagParser.Parse(); err != nil {
 		os.Exit(1)
 	}
 }

@@ -23,7 +23,7 @@ import (
 )
 
 func init() {
-	_, err := parser.AddCommand("graph",
+	_, err := flagParser.AddCommand("graph",
 		"graph a Go package",
 		"Graph a Go package, producing all defs, refs, and docs.",
 		&graphCmd,

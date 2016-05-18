@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	_, err := parser.AddCommand("fmt",
+	_, err := flagParser.AddCommand("fmt",
 		"format a Go object (def, doc)",
 		"The fmt command takes an object and formats it.",
 		&fmtCmd,

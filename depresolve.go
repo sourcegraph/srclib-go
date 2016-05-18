@@ -15,7 +15,7 @@ import (
 )
 
 func init() {
-	_, err := parser.AddCommand("depresolve",
+	_, err := flagParser.AddCommand("depresolve",
 		"resolve a Go package's imports",
 		"Resolve a Go package's imports to their repository clone URL.",
 		&depResolveCmd,

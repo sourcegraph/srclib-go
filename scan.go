@@ -16,7 +16,7 @@ import (
 )
 
 func init() {
-	_, err := parser.AddCommand("scan",
+	_, err := flagParser.AddCommand("scan",
 		"scan for Go packages",
 		"Scan the directory tree rooted at the current directory for Go packages.",
 		&scanCmd,
