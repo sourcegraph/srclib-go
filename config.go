@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"go/build"
+	"go/importer"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -18,7 +19,10 @@ var (
 	buildContext = build.Default
 
 	loaderConfig = loader.Config{
-		TypeChecker: types.Config{FakeImportC: true},
+		TypeChecker: types.Config{
+			Importer:    importer.Default(),
+			FakeImportC: true,
+		},
 		Build:       &buildContext,
 		AllowErrors: true,
 	}
