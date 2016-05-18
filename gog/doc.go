@@ -7,8 +7,6 @@ import (
 	"go/token"
 
 	"go/types"
-
-	"golang.org/x/tools/go/loader"
 )
 
 type Doc struct {
@@ -22,10 +20,10 @@ type Doc struct {
 	Span [2]uint32 `json:",omitempty"`
 }
 
-func (g *Grapher) emitDocs(pkgInfo *loader.PackageInfo) ([]*Doc, error) {
+func (g *Grapher) emitDocs(files []*ast.File, typesPkg *types.Package, typesInfo *types.Info) ([]*Doc, error) {
 	var pkgDocs []*Doc
-	objOf := make(map[token.Position]types.Object, len(pkgInfo.Defs))
-	for ident, obj := range pkgInfo.Defs {
+	objOf := make(map[token.Position]types.Object, len(typesInfo.Defs))
+	for ident, obj := range typesInfo.Defs {
 		objOf[g.program.Fset.Position(ident.Pos())] = obj
 	}
 
@@ -34,7 +32,7 @@ func (g *Grapher) emitDocs(pkgInfo *loader.PackageInfo) ([]*Doc, error) {
 	// one file has a doc associated with it, append them
 	// together.
 	pkgDoc := ""
-	for _, f := range pkgInfo.Files {
+	for _, f := range files {
 		if f.Doc == nil {
 			continue
 		}
@@ -45,12 +43,12 @@ func (g *Grapher) emitDocs(pkgInfo *loader.PackageInfo) ([]*Doc, error) {
 		pkgDoc += "\n" + f.Doc.Text()
 	}
 
-	pkgPath := pkgInfo.Pkg.Path()
-	fileDocs := g.emitDoc(types.NewPkgName(0, pkgInfo.Pkg, pkgPath, pkgInfo.Pkg), nil, pkgDoc, "", pkgPath)
+	pkgPath := typesPkg.Path()
+	fileDocs := g.emitDoc(types.NewPkgName(0, typesPkg, pkgPath, typesPkg), nil, pkgDoc, "", pkgPath)
 	pkgDocs = append(pkgDocs, fileDocs...)
 
 	// We walk the AST for comments attached to nodes.
-	for _, f := range pkgInfo.Files {
+	for _, f := range files {
 		filename := g.program.Fset.Position(f.Name.Pos()).Filename
 		// docSeen is a map from the starting byte of a doc to
 		// an empty struct.

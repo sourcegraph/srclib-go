@@ -244,7 +244,7 @@ func (g *Grapher) Graph(pkgInfo *loader.PackageInfo) error {
 	}
 
 	if !g.SkipDocs {
-		pkgDocs, err = g.emitDocs(pkgInfo)
+		pkgDocs, err = g.emitDocs(pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info)
 		if err != nil {
 			return err
 		}
