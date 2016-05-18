@@ -12,7 +12,7 @@
   {
     "Raw": "github.com/sgtest/go-vendored-lib/hi",
     "Target": {
-      "ToRepoCloneURL": "https://github.com/sgtest/go-vendored-lib.git",
+      "ToRepoCloneURL": "https://github.com/sgtest/go-vendored-lib",
       "ToUnit": "github.com/sgtest/go-vendored-lib/hi",
       "ToUnitType": "GoPackage",
       "ToVersionString": "",
