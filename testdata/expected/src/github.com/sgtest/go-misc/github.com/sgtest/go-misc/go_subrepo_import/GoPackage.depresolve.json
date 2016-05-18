@@ -5,7 +5,7 @@
       "ToRepoCloneURL": "https://github.com/golang/go",
       "ToUnit": "go/types",
       "ToUnitType": "GoPackage",
-      "ToVersionString": "go1.6",
+      "ToVersionString": "go1.6.2",
       "ToRevSpec": ""
     }
   },
