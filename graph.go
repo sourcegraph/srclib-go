@@ -311,30 +311,20 @@ func treePath(path string) string {
 }
 
 func doGraph(pkgs []*build.Package) (*gog.Output, error) {
-	// Special-case: if this is a Cgo package, treat the CgoFiles as GoFiles or
-	// else the character offsets will be junk.
-	//
-	// See https://codereview.appspot.com/86140043.
-	loaderConfig.Build.CgoEnabled = false
 	build.Default = *loaderConfig.Build
 
 	for _, pkg := range pkgs {
 		importPath := pkg.ImportPath
 		importUnsafe := importPath == "unsafe"
 
-		if len(pkg.CgoFiles) > 0 {
-			var allGoFiles []string
-			allGoFiles = append(allGoFiles, pkg.GoFiles...)
-			allGoFiles = append(allGoFiles, pkg.CgoFiles...)
-			allGoFiles = append(allGoFiles, pkg.TestGoFiles...)
-			for i, f := range allGoFiles {
-				allGoFiles[i] = filepath.Join(cwd, pkg.Dir, f)
-			}
-			loaderConfig.CreateFromFilenames(pkg.ImportPath, allGoFiles...)
-		} else {
-			// Normal import
-			loaderConfig.ImportWithTests(importPath)
+		var allGoFiles []string
+		allGoFiles = append(allGoFiles, pkg.GoFiles...)
+		allGoFiles = append(allGoFiles, pkg.CgoFiles...)
+		allGoFiles = append(allGoFiles, pkg.TestGoFiles...)
+		for i, f := range allGoFiles {
+			allGoFiles[i] = filepath.Join(cwd, pkg.Dir, f)
 		}
+		loaderConfig.CreateFromFilenames(pkg.ImportPath, allGoFiles...)
 
 		if importUnsafe {
 			// Special-case "unsafe" because go/loader does not let you load it
