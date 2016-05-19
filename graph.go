@@ -314,9 +314,6 @@ func doGraph(pkgs []*build.Package) (*gog.Output, error) {
 	build.Default = *loaderConfig.Build
 
 	for _, pkg := range pkgs {
-		importPath := pkg.ImportPath
-		importUnsafe := importPath == "unsafe"
-
 		var allGoFiles []string
 		allGoFiles = append(allGoFiles, pkg.GoFiles...)
 		allGoFiles = append(allGoFiles, pkg.CgoFiles...)
@@ -325,15 +322,6 @@ func doGraph(pkgs []*build.Package) (*gog.Output, error) {
 			allGoFiles[i] = filepath.Join(cwd, pkg.Dir, f)
 		}
 		loaderConfig.CreateFromFilenames(pkg.ImportPath, allGoFiles...)
-
-		if importUnsafe {
-			// Special-case "unsafe" because go/loader does not let you load it
-			// directly.
-			if loaderConfig.ImportPkgs == nil {
-				loaderConfig.ImportPkgs = make(map[string]bool)
-			}
-			loaderConfig.ImportPkgs["unsafe"] = true
-		}
 	}
 
 	prog, err := loaderConfig.Load()
