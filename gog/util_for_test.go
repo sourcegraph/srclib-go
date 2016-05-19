@@ -12,9 +12,11 @@ import (
 func graphPkgFromFiles(t *testing.T, path string, filenames []string) (*Grapher, *loader.Program) {
 	prog := createPkgFromFiles(t, path, filenames)
 	g := New(prog)
-	err := g.GraphAll()
-	if err != nil {
-		t.Fatal(err)
+	for _, pkgInfo := range prog.AllPackages {
+		err := g.Graph(pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info)
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 	return g, prog
 }

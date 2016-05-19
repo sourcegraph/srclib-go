@@ -111,16 +111,6 @@ func (g *Grapher) checkRef(ref *Ref) bool {
 	return true
 }
 
-func (g *Grapher) GraphAll() error {
-	for _, pkgInfo := range g.program.AllPackages {
-		err := g.Graph(pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func (g *Grapher) Graph(files []*ast.File, typesPkg *types.Package, typesInfo *types.Info) error {
 	if len(files) == 0 {
 		log.Printf("warning: attempted to graph package %s with no files", typesPkg.Path())
