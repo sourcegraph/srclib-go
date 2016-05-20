@@ -1,0 +1,192 @@
+{
+  "Defs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/field",
+      "Path": ".",
+      "Name": "field",
+      "Kind": "package",
+      "File": "field",
+      "DefStart": 0,
+      "DefEnd": 0,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgName": "field",
+        "TypeString": "",
+        "Kind": "package",
+        "PackageImportPath": "github.com/sgtest/go-misc/field"
+      },
+      "TreePath": "."
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/field",
+      "Path": "S",
+      "Name": "S",
+      "Kind": "type",
+      "File": "field/field.go",
+      "DefStart": 20,
+      "DefEnd": 39,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgScope": true,
+        "PkgName": "field",
+        "TypeString": "github.com/sgtest/go-misc/field.S",
+        "UnderlyingTypeString": "struct{F int}",
+        "Kind": "type",
+        "PackageImportPath": "github.com/sgtest/go-misc/field"
+      },
+      "TreePath": "./S"
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/field",
+      "Path": "S/F",
+      "Name": "F",
+      "Kind": "field",
+      "File": "field/field.go",
+      "DefStart": 32,
+      "DefEnd": 37,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgScope": true,
+        "PkgName": "field",
+        "FieldOfStruct": "S",
+        "TypeString": "int",
+        "UnderlyingTypeString": "int",
+        "Kind": "field",
+        "PackageImportPath": "github.com/sgtest/go-misc/field"
+      },
+      "TreePath": "./S/F"
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/field",
+      "Path": "test",
+      "Name": "test",
+      "Kind": "func",
+      "File": "field/field.go",
+      "DefStart": 41,
+      "DefEnd": 75,
+      "Data": {
+        "PkgScope": true,
+        "PkgName": "field",
+        "TypeString": "func()",
+        "UnderlyingTypeString": "func()",
+        "Kind": "func",
+        "PackageImportPath": "github.com/sgtest/go-misc/field"
+      },
+      "TreePath": "./test"
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/field",
+      "Path": "test/s",
+      "Name": "s",
+      "Kind": "var",
+      "File": "field/field.go",
+      "DefStart": 60,
+      "DefEnd": 63,
+      "Local": true,
+      "Data": {
+        "PkgName": "field",
+        "TypeString": "github.com/sgtest/go-misc/field.S",
+        "UnderlyingTypeString": "struct{F int}",
+        "Kind": "var",
+        "PackageImportPath": "github.com/sgtest/go-misc/field"
+      },
+      "TreePath": "./test/s"
+    }
+  ],
+  "Refs": [
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/field",
+      "DefPath": ".",
+      "Unit": "github.com/sgtest/go-misc/field",
+      "File": "field/field.go",
+      "Start": 8,
+      "End": 13
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/field",
+      "DefPath": "S/F",
+      "Unit": "github.com/sgtest/go-misc/field",
+      "Def": true,
+      "File": "field/field.go",
+      "Start": 32,
+      "End": 33
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/field",
+      "DefPath": "S/F",
+      "Unit": "github.com/sgtest/go-misc/field",
+      "File": "field/field.go",
+      "Start": 67,
+      "End": 68
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/field",
+      "DefPath": "S",
+      "Unit": "github.com/sgtest/go-misc/field",
+      "Def": true,
+      "File": "field/field.go",
+      "Start": 20,
+      "End": 21
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/field",
+      "DefPath": "S",
+      "Unit": "github.com/sgtest/go-misc/field",
+      "File": "field/field.go",
+      "Start": 62,
+      "End": 63
+    },
+    {
+      "DefRepo": "github.com/golang/go",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "builtin",
+      "DefPath": "int",
+      "Unit": "github.com/sgtest/go-misc/field",
+      "File": "field/field.go",
+      "Start": 34,
+      "End": 37
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/field",
+      "DefPath": "test/s",
+      "Unit": "github.com/sgtest/go-misc/field",
+      "Def": true,
+      "File": "field/field.go",
+      "Start": 60,
+      "End": 61
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/field",
+      "DefPath": "test/s",
+      "Unit": "github.com/sgtest/go-misc/field",
+      "File": "field/field.go",
+      "Start": 65,
+      "End": 66
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/field",
+      "DefPath": "test",
+      "Unit": "github.com/sgtest/go-misc/field",
+      "Def": true,
+      "File": "field/field.go",
+      "Start": 46,
+      "End": 50
+    }
+  ]
+}
