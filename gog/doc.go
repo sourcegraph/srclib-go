@@ -179,10 +179,7 @@ func (g *Grapher) emitDoc(obj types.Object, dc *ast.CommentGroup, docstring, fil
 	}
 	g.seenDocObjs[obj] = struct{}{}
 
-	key, _, err := g.defInfo(obj)
-	if err != nil {
-		return
-	}
+	key, _ := g.defInfo(obj)
 
 	if g.seenDocKeys == nil {
 		g.seenDocKeys = make(map[string]struct{})

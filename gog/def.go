@@ -48,10 +48,7 @@ found:
 		return nil, fmt.Errorf("On ident %s at %s: no DeclNode found (using PathEnclosingInterval)", declIdent.Name, g.program.Fset.Position(declIdent.Pos()))
 	}
 
-	key, info, err := g.defInfo(obj)
-	if err != nil {
-		return nil, err
-	}
+	key, info := g.defInfo(obj)
 
 	si := definfo.DefInfo{
 		Exported: info.exported,

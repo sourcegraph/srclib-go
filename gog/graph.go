@@ -110,10 +110,7 @@ func (g *Grapher) Graph(files []*ast.File, typesPkg *types.Package, typesInfo *t
 
 	for node, obj := range typesInfo.Implicits {
 		if importSpec, ok := node.(*ast.ImportSpec); ok {
-			ref, err := g.NewRef(importSpec, obj, typesPkg.Path())
-			if err != nil {
-				return err
-			}
+			ref := g.NewRef(importSpec, obj, typesPkg.Path())
 			pkgRefs = append(pkgRefs, ref)
 			seen[importSpec] = struct{}{}
 		} else if x, ok := node.(*ast.Ident); ok {
@@ -155,10 +152,7 @@ func (g *Grapher) Graph(files []*ast.File, typesPkg *types.Package, typesInfo *t
 			pkgDefs = append(pkgDefs, def)
 		}
 
-		ref, err := g.NewRef(ident, obj, typesPkg.Path())
-		if err != nil {
-			return err
-		}
+		ref := g.NewRef(ident, obj, typesPkg.Path())
 		ref.IsDef = true
 		pkgRefs = append(pkgRefs, ref)
 	}
@@ -185,10 +179,7 @@ func (g *Grapher) Graph(files []*ast.File, typesPkg *types.Package, typesInfo *t
 			continue
 		}
 
-		ref, err := g.NewRef(ident, obj, typesPkg.Path())
-		if err != nil {
-			return err
-		}
+		ref := g.NewRef(ident, obj, typesPkg.Path())
 		pkgRefs = append(pkgRefs, ref)
 	}
 
@@ -196,10 +187,7 @@ func (g *Grapher) Graph(files []*ast.File, typesPkg *types.Package, typesInfo *t
 	// for each file.
 	for _, f := range files {
 		pkgObj := types.NewPkgName(f.Name.Pos(), typesPkg, typesPkg.Name(), typesPkg)
-		ref, err := g.NewRef(f.Name, pkgObj, typesPkg.Path())
-		if err != nil {
-			return err
-		}
+		ref := g.NewRef(f.Name, pkgObj, typesPkg.Path())
 		pkgRefs = append(pkgRefs, ref)
 	}
 
@@ -223,34 +211,28 @@ type defInfo struct {
 	pkgscope bool
 }
 
-func (g *Grapher) defKey(obj types.Object) (*DefKey, error) {
-	key, _, err := g.defInfo(obj)
-	if err != nil {
-		return nil, err
-	}
-	return key, nil
+func (g *Grapher) defKey(obj types.Object) *DefKey {
+	key, _ := g.defInfo(obj)
+	return key
 }
 
-func (g *Grapher) defInfo(obj types.Object) (*DefKey, *defInfo, error) {
+func (g *Grapher) defInfo(obj types.Object) (*DefKey, *defInfo) {
 	key, info := g.lookupDefInfo(obj)
 	if key != nil && info != nil {
-		return key, info, nil
+		return key, info
 	}
 
 	// Don't block while we traverse the AST to construct the object path. We
 	// might duplicate effort, but it's better than allowing only one goroutine
 	// to do this at a time.
 
-	key, info, err := g.makeDefInfo(obj)
-	if err != nil {
-		return nil, nil, err
-	}
+	key, info = g.makeDefInfo(obj)
 
 	g.defCacheLock.Lock()
 	defer g.defCacheLock.Unlock()
 	g.defKeyCache[obj] = key
 	g.defInfoCache[obj] = info
-	return key, info, nil
+	return key, info
 }
 
 func (g *Grapher) lookupDefInfo(obj types.Object) (*DefKey, *defInfo) {
@@ -259,21 +241,21 @@ func (g *Grapher) lookupDefInfo(obj types.Object) (*DefKey, *defInfo) {
 	return g.defKeyCache[obj], g.defInfoCache[obj]
 }
 
-func (g *Grapher) makeDefInfo(obj types.Object) (*DefKey, *defInfo, error) {
+func (g *Grapher) makeDefInfo(obj types.Object) (*DefKey, *defInfo) {
 	switch obj := obj.(type) {
 	case *types.Builtin:
-		return &DefKey{"builtin", []string{obj.Name()}}, &defInfo{pkgscope: false, exported: true}, nil
+		return &DefKey{"builtin", []string{obj.Name()}}, &defInfo{pkgscope: false, exported: true}
 	case *types.Nil:
-		return &DefKey{"builtin", []string{"nil"}}, &defInfo{pkgscope: false, exported: true}, nil
+		return &DefKey{"builtin", []string{"nil"}}, &defInfo{pkgscope: false, exported: true}
 	case *types.TypeName:
 		if basic, ok := obj.Type().(*types.Basic); ok {
-			return &DefKey{"builtin", []string{basic.Name()}}, &defInfo{pkgscope: false, exported: true}, nil
+			return &DefKey{"builtin", []string{basic.Name()}}, &defInfo{pkgscope: false, exported: true}
 		}
 		if obj.Name() == "error" {
-			return &DefKey{"builtin", []string{obj.Name()}}, &defInfo{pkgscope: false, exported: true}, nil
+			return &DefKey{"builtin", []string{obj.Name()}}, &defInfo{pkgscope: false, exported: true}
 		}
 	case *types.PkgName:
-		return &DefKey{obj.Imported().Path(), []string{}}, &defInfo{pkgscope: false, exported: true}, nil
+		return &DefKey{obj.Imported().Path(), []string{}}, &defInfo{pkgscope: false, exported: true}
 	case *types.Const:
 		var pkg string
 		if obj.Pkg() == nil {
@@ -282,13 +264,13 @@ func (g *Grapher) makeDefInfo(obj types.Object) (*DefKey, *defInfo, error) {
 			pkg = obj.Pkg().Path()
 		}
 		if obj.Val().Kind() == constant.Bool && pkg == "builtin" {
-			return &DefKey{pkg, []string{obj.Name()}}, &defInfo{pkgscope: false, exported: true}, nil
+			return &DefKey{pkg, []string{obj.Name()}}, &defInfo{pkgscope: false, exported: true}
 		}
 	}
 
 	if obj.Pkg() == nil {
 		// builtin
-		return &DefKey{"builtin", []string{obj.Name()}}, &defInfo{pkgscope: false, exported: true}, nil
+		return &DefKey{"builtin", []string{obj.Name()}}, &defInfo{pkgscope: false, exported: true}
 	}
 
 	path := g.path(obj)
@@ -301,5 +283,5 @@ func (g *Grapher) makeDefInfo(obj types.Object) (*DefKey, *defInfo, error) {
 		path = append([]string{filepath.Base(p.Filename)}, path...)
 	}
 
-	return &DefKey{obj.Pkg().Path(), path}, &defInfo{pkgscope: g.pkgscope[obj], exported: g.exported[obj]}, nil
+	return &DefKey{obj.Pkg().Path(), path}, &defInfo{pkgscope: g.pkgscope[obj], exported: g.exported[obj]}
 }
