@@ -93,24 +93,6 @@ func (pi packageInfos) Len() int           { return len(pi) }
 func (pi packageInfos) Less(i, j int) bool { return pi[i].Pkg.Path() < pi[j].Pkg.Path() }
 func (pi packageInfos) Swap(i, j int)      { pi[i], pi[j] = pi[j], pi[i] }
 
-func (g *Grapher) checkDef(def *Def) bool {
-	//	log.Printf("SYM %v %v", def.DefKey.PackageImportPath, def.DefKey.Path)
-	if filepath.Base(def.File) == "C" {
-		// skip cgo-generated file
-		return false
-	}
-	return true
-}
-
-func (g *Grapher) checkRef(ref *Ref) bool {
-	//	log.Printf("REF %v %v at %s:%v", ref.Def.PackageImportPath,	ref.Def.Path, ref.File, ref.Span)
-	if filepath.Base(ref.File) == "C" {
-		// skip cgo-generated file
-		return false
-	}
-	return true
-}
-
 func (g *Grapher) Graph(files []*ast.File, typesPkg *types.Package, typesInfo *types.Info) error {
 	if len(files) == 0 {
 		log.Printf("warning: attempted to graph package %s with no files", typesPkg.Path())
@@ -132,9 +114,7 @@ func (g *Grapher) Graph(files []*ast.File, typesPkg *types.Package, typesInfo *t
 			if err != nil {
 				return err
 			}
-			if ok := g.checkRef(ref); ok {
-				pkgRefs = append(pkgRefs, ref)
-			}
+			pkgRefs = append(pkgRefs, ref)
 			seen[importSpec] = struct{}{}
 		} else if x, ok := node.(*ast.Ident); ok {
 			g.skipResolve[x] = struct{}{}
@@ -148,9 +128,7 @@ func (g *Grapher) Graph(files []*ast.File, typesPkg *types.Package, typesInfo *t
 	if err != nil {
 		return err
 	}
-	if ok := g.checkDef(pkgDef); ok {
-		pkgDefs = append(pkgDefs, pkgDef)
-	}
+	pkgDefs = append(pkgDefs, pkgDef)
 
 	for ident, obj := range typesInfo.Defs {
 		_, isLabel := obj.(*types.Label)
@@ -174,9 +152,7 @@ func (g *Grapher) Graph(files []*ast.File, typesPkg *types.Package, typesInfo *t
 			if err != nil {
 				return err
 			}
-			if ok := g.checkDef(def); ok {
-				pkgDefs = append(pkgDefs, def)
-			}
+			pkgDefs = append(pkgDefs, def)
 		}
 
 		ref, err := g.NewRef(ident, obj, typesPkg.Path())
@@ -184,9 +160,7 @@ func (g *Grapher) Graph(files []*ast.File, typesPkg *types.Package, typesInfo *t
 			return err
 		}
 		ref.IsDef = true
-		if ok := g.checkRef(ref); ok {
-			pkgRefs = append(pkgRefs, ref)
-		}
+		pkgRefs = append(pkgRefs, ref)
 	}
 
 	for ident, obj := range typesInfo.Uses {
@@ -215,9 +189,7 @@ func (g *Grapher) Graph(files []*ast.File, typesPkg *types.Package, typesInfo *t
 		if err != nil {
 			return err
 		}
-		if ok := g.checkRef(ref); ok {
-			pkgRefs = append(pkgRefs, ref)
-		}
+		pkgRefs = append(pkgRefs, ref)
 	}
 
 	// Create a ref that represent the name of the package ("package foo")
@@ -228,9 +200,7 @@ func (g *Grapher) Graph(files []*ast.File, typesPkg *types.Package, typesInfo *t
 		if err != nil {
 			return err
 		}
-		if ok := g.checkRef(ref); ok {
-			pkgRefs = append(pkgRefs, ref)
-		}
+		pkgRefs = append(pkgRefs, ref)
 	}
 
 	if !g.SkipDocs {
