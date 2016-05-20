@@ -1,0 +1,130 @@
+{
+  "Defs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/type_switch",
+      "Path": ".",
+      "Name": "type_switch",
+      "Kind": "package",
+      "File": "type_switch",
+      "DefStart": 0,
+      "DefEnd": 0,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgName": "type_switch",
+        "TypeString": "",
+        "Kind": "package",
+        "PackageImportPath": "github.com/sgtest/go-misc/type_switch"
+      },
+      "TreePath": "."
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/type_switch",
+      "Path": "test",
+      "Name": "test",
+      "Kind": "func",
+      "File": "type_switch/type_switch.go",
+      "DefStart": 21,
+      "DefEnd": 106,
+      "Data": {
+        "PkgScope": true,
+        "PkgName": "type_switch",
+        "TypeString": "func()",
+        "UnderlyingTypeString": "func()",
+        "Kind": "func",
+        "PackageImportPath": "github.com/sgtest/go-misc/type_switch"
+      },
+      "TreePath": "./test"
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/type_switch",
+      "Path": "test/x",
+      "Name": "x",
+      "Kind": "var",
+      "File": "type_switch/type_switch.go",
+      "DefStart": 40,
+      "DefEnd": 53,
+      "Local": true,
+      "Data": {
+        "PkgName": "type_switch",
+        "TypeString": "interface{}",
+        "UnderlyingTypeString": "interface{}",
+        "Kind": "var",
+        "PackageImportPath": "github.com/sgtest/go-misc/type_switch"
+      },
+      "TreePath": "./test/x"
+    }
+  ],
+  "Refs": [
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/type_switch",
+      "DefPath": ".",
+      "Unit": "github.com/sgtest/go-misc/type_switch",
+      "File": "type_switch/type_switch.go",
+      "Start": 8,
+      "End": 19
+    },
+    {
+      "DefRepo": "github.com/golang/go",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "builtin",
+      "DefPath": "int",
+      "Unit": "github.com/sgtest/go-misc/type_switch",
+      "File": "type_switch/type_switch.go",
+      "Start": 84,
+      "End": 87
+    },
+    {
+      "DefRepo": "github.com/golang/go",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "builtin",
+      "DefPath": "println",
+      "Unit": "github.com/sgtest/go-misc/type_switch",
+      "File": "type_switch/type_switch.go",
+      "Start": 91,
+      "End": 98
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/type_switch",
+      "DefPath": "test/$type_switch0/$type_switch0/y",
+      "Unit": "github.com/sgtest/go-misc/type_switch",
+      "File": "type_switch/type_switch.go",
+      "Start": 99,
+      "End": 100
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/type_switch",
+      "DefPath": "test/x",
+      "Unit": "github.com/sgtest/go-misc/type_switch",
+      "Def": true,
+      "File": "type_switch/type_switch.go",
+      "Start": 40,
+      "End": 41
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/type_switch",
+      "DefPath": "test/x",
+      "Unit": "github.com/sgtest/go-misc/type_switch",
+      "File": "type_switch/type_switch.go",
+      "Start": 67,
+      "End": 68
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/type_switch",
+      "DefPath": "test",
+      "Unit": "github.com/sgtest/go-misc/type_switch",
+      "Def": true,
+      "File": "type_switch/type_switch.go",
+      "Start": 26,
+      "End": 30
+    }
+  ]
+}

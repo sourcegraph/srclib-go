@@ -1,0 +1,73 @@
+{
+  "Defs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/label",
+      "Path": ".",
+      "Name": "label",
+      "Kind": "package",
+      "File": "label",
+      "DefStart": 0,
+      "DefEnd": 0,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgName": "label",
+        "TypeString": "",
+        "Kind": "package",
+        "PackageImportPath": "github.com/sgtest/go-misc/label"
+      },
+      "TreePath": "."
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/label",
+      "Path": "test",
+      "Name": "test",
+      "Kind": "func",
+      "File": "label/label.go",
+      "DefStart": 15,
+      "DefEnd": 54,
+      "Data": {
+        "PkgScope": true,
+        "PkgName": "label",
+        "TypeString": "func()",
+        "UnderlyingTypeString": "func()",
+        "Kind": "func",
+        "PackageImportPath": "github.com/sgtest/go-misc/label"
+      },
+      "TreePath": "./test"
+    }
+  ],
+  "Refs": [
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/label",
+      "DefPath": ".",
+      "Unit": "github.com/sgtest/go-misc/label",
+      "File": "label/label.go",
+      "Start": 8,
+      "End": 13
+    },
+    {
+      "DefRepo": "github.com/golang/go",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "builtin",
+      "DefPath": "println",
+      "Unit": "github.com/sgtest/go-misc/label",
+      "File": "label/label.go",
+      "Start": 41,
+      "End": 48
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/label",
+      "DefPath": "test",
+      "Unit": "github.com/sgtest/go-misc/label",
+      "Def": true,
+      "File": "label/label.go",
+      "Start": 20,
+      "End": 24
+    }
+  ]
+}
