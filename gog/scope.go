@@ -10,19 +10,17 @@ import (
 	"strings"
 
 	"go/types"
-
-	"golang.org/x/tools/go/loader"
 )
 
-func (g *Grapher) buildScopeInfo(pkgInfo *loader.PackageInfo) {
+func (g *Grapher) buildScopeInfo(typesInfo *types.Info) {
 	// Precomputing funcNames now avoids an expensive lookup later on.
-	for ident, obj := range pkgInfo.Defs {
+	for ident, obj := range typesInfo.Defs {
 		if funcType, ok := obj.(*types.Func); ok {
 			g.funcNames[funcType.Scope()] = ident.Name
 		}
 	}
 
-	for node, scope := range pkgInfo.Scopes {
+	for node, scope := range typesInfo.Scopes {
 		g.scopeNodes[scope] = node
 	}
 }
@@ -144,9 +142,8 @@ func strippedFilename(filename string) string {
 	return strings.TrimSuffix(filepath.Base(filename), ".go")
 }
 
-func (g *Grapher) assignPathsInPackage(pkgInfo *loader.PackageInfo) {
-	pkg := pkgInfo.Pkg
-	g.assignPaths(pkg.Scope(), []string{}, true)
+func (g *Grapher) assignPathsInPackage(typesPkg *types.Package) {
+	g.assignPaths(typesPkg.Scope(), []string{}, true)
 }
 
 func (g *Grapher) assignPaths(s *types.Scope, prefix []string, pkgscope bool) {

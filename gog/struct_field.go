@@ -1,18 +1,14 @@
 package gog
 
-import (
-	"go/types"
-
-	"golang.org/x/tools/go/loader"
-)
+import "go/types"
 
 type structField struct {
 	*types.Var
 	parent types.Type
 }
 
-func (g *Grapher) buildStructFields(pkgInfo *loader.PackageInfo) {
-	for _, obj := range pkgInfo.Defs {
+func (g *Grapher) buildStructFields(typesInfo *types.Info) {
+	for _, obj := range typesInfo.Defs {
 		if tn, ok := obj.(*types.TypeName); ok {
 			typ := tn.Type().Underlying()
 			if st, ok := typ.(*types.Struct); ok {
@@ -24,7 +20,7 @@ func (g *Grapher) buildStructFields(pkgInfo *loader.PackageInfo) {
 		}
 	}
 
-	for selExpr, sel := range pkgInfo.Selections {
+	for selExpr, sel := range typesInfo.Selections {
 		switch sel.Kind() {
 		case types.FieldVal:
 			rt := derefType(sel.Recv())

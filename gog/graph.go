@@ -70,9 +70,9 @@ func New(prog *loader.Program) *Grapher {
 	}
 
 	for _, pkgInfo := range sortedPkgs(prog.AllPackages) {
-		g.buildStructFields(pkgInfo)
-		g.buildScopeInfo(pkgInfo)
-		g.assignPathsInPackage(pkgInfo)
+		g.buildStructFields(&pkgInfo.Info)
+		g.buildScopeInfo(&pkgInfo.Info)
+		g.assignPathsInPackage(pkgInfo.Pkg)
 	}
 
 	return g
