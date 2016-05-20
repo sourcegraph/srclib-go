@@ -34,7 +34,6 @@ type Grapher struct {
 
 	paths      map[types.Object][]string
 	scopePaths map[*types.Scope][]string
-	exported   map[types.Object]bool
 	pkgscope   map[types.Object]bool
 
 	Output
@@ -54,7 +53,6 @@ func New(prog *loader.Program) *Grapher {
 
 		paths:      make(map[types.Object][]string),
 		scopePaths: make(map[*types.Scope][]string),
-		exported:   make(map[types.Object]bool),
 		pkgscope:   make(map[types.Object]bool),
 	}
 
@@ -274,5 +272,8 @@ func (g *Grapher) makeDefInfo(obj types.Object) (*DefKey, *defInfo) {
 		path = append([]string{filepath.Base(p.Filename)}, path...)
 	}
 
-	return &DefKey{obj.Pkg().Path(), path}, &defInfo{pkgscope: g.pkgscope[obj], exported: g.exported[obj]}
+	return &DefKey{obj.Pkg().Path(), path}, &defInfo{
+		pkgscope: g.pkgscope[obj],
+		exported: obj.Exported() && (obj.Parent() == nil || obj.Parent() == obj.Pkg().Scope()),
+	}
 }

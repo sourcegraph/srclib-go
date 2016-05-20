@@ -156,7 +156,6 @@ func (g *Grapher) assignPaths(s *types.Scope, prefix []string, pkgscope bool) {
 		}
 		path := append(append([]string{}, prefix...), name)
 		g.paths[e] = path
-		g.exported[e] = ast.IsExported(name) && pkgscope
 		g.pkgscope[e] = pkgscope
 
 		if tn, ok := e.(*types.TypeName); ok {
@@ -211,7 +210,6 @@ func (g *Grapher) assignMethodPaths(named *types.Named, prefix []string, pkgscop
 		path := append(append([]string{}, prefix...), m.Name())
 		g.paths[m] = path
 
-		g.exported[m] = ast.IsExported(m.Name())
 		g.pkgscope[m] = pkgscope
 
 		if s := m.Scope(); s != nil {
@@ -225,7 +223,6 @@ func (g *Grapher) assignMethodPaths(named *types.Named, prefix []string, pkgscop
 			path := append(append([]string{}, prefix...), m.Name())
 			g.paths[m] = path
 
-			g.exported[m] = ast.IsExported(m.Name())
 			g.pkgscope[m] = pkgscope
 
 			if s := m.Scope(); s != nil {
@@ -241,7 +238,6 @@ func (g *Grapher) assignStructFieldPaths(styp *types.Struct, prefix []string, pk
 		path := append(append([]string{}, prefix...), f.Name())
 		g.paths[f] = path
 
-		g.exported[f] = ast.IsExported(f.Name())
 		g.pkgscope[f] = pkgscope
 
 		// recurse to anonymous structs (named structs are assigned directly)
