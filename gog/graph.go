@@ -200,34 +200,24 @@ type defInfo struct {
 	pkgscope bool
 }
 
-func (g *Grapher) defKey(obj types.Object) *DefKey {
-	key, _ := g.defInfo(obj)
-	return key
-}
-
 func (g *Grapher) defInfo(obj types.Object) (*DefKey, *defInfo) {
-	key, info := g.lookupDefInfo(obj)
-	if key != nil && info != nil {
-		return key, info
+	g.defCacheLock.Lock()
+	key := g.defKeyCache[obj]
+	info := g.defInfoCache[obj]
+
+	if key == nil || info == nil {
+		// Don't block while we traverse the AST to construct the object path. We
+		// might duplicate effort, but it's better than allowing only one goroutine
+		// to do this at a time.
+		g.defCacheLock.Unlock()
+		key, info = g.makeDefInfo(obj)
+		g.defCacheLock.Lock()
+		g.defKeyCache[obj] = key
+		g.defInfoCache[obj] = info
 	}
 
-	// Don't block while we traverse the AST to construct the object path. We
-	// might duplicate effort, but it's better than allowing only one goroutine
-	// to do this at a time.
-
-	key, info = g.makeDefInfo(obj)
-
-	g.defCacheLock.Lock()
-	defer g.defCacheLock.Unlock()
-	g.defKeyCache[obj] = key
-	g.defInfoCache[obj] = info
+	g.defCacheLock.Unlock()
 	return key, info
-}
-
-func (g *Grapher) lookupDefInfo(obj types.Object) (*DefKey, *defInfo) {
-	g.defCacheLock.Lock()
-	defer g.defCacheLock.Unlock()
-	return g.defKeyCache[obj], g.defInfoCache[obj]
 }
 
 func (g *Grapher) makeDefInfo(obj types.Object) (*DefKey, *defInfo) {

@@ -7,7 +7,7 @@ import (
 )
 
 func (g *Grapher) NewRef(node ast.Node, obj types.Object, pkgPath string) *Ref {
-	key := g.defKey(obj)
+	key, _ := g.defInfo(obj)
 
 	pos := g.program.Fset.Position(node.Pos())
 	return &Ref{
