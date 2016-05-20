@@ -41,11 +41,6 @@ type Grapher struct {
 
 	Output
 
-	// skipResolve is the set of *ast.Idents that the grapher encountered but
-	// did not resolve (by design). Idents in this set are omitted from the list
-	// of unresolved idents in the tests.
-	skipResolve map[*ast.Ident]struct{}
-
 	seenDocObjs map[types.Object]struct{}
 	seenDocKeys map[string]struct{}
 }
@@ -65,8 +60,6 @@ func New(prog *loader.Program) *Grapher {
 		scopePaths: make(map[*types.Scope][]string),
 		exported:   make(map[types.Object]bool),
 		pkgscope:   make(map[types.Object]bool),
-
-		skipResolve: make(map[*ast.Ident]struct{}),
 	}
 
 	for _, pkgInfo := range sortedPkgs(prog.AllPackages) {
@@ -99,111 +92,103 @@ func (g *Grapher) Graph(files []*ast.File, typesPkg *types.Package, typesInfo *t
 		return nil
 	}
 
-	seen := make(map[ast.Node]struct{})
-	skipResolveObjs := make(map[types.Object]struct{})
-
 	// Accumulate the defs, refs and docs from the package being graphed currently.
 	// If the package is graphed successfully, these are added to Output.
-	var pkgDefs []*Def
-	var pkgRefs []*Ref
-	var pkgDocs []*Doc
-
-	for node, obj := range typesInfo.Implicits {
-		if importSpec, ok := node.(*ast.ImportSpec); ok {
-			ref := g.NewRef(importSpec, obj, typesPkg.Path())
-			pkgRefs = append(pkgRefs, ref)
-			seen[importSpec] = struct{}{}
-		} else if x, ok := node.(*ast.Ident); ok {
-			g.skipResolve[x] = struct{}{}
-		} else if _, ok := node.(*ast.CaseClause); ok {
-			// type-specific *Var for each type switch case clause
-			skipResolveObjs[obj] = struct{}{}
-		}
-	}
+	v := &astVisitor{g: g, typesPkg: typesPkg, typesInfo: typesInfo}
 
 	pkgDef, err := g.NewPackageDef(filepath.Dir(g.program.Fset.Position(files[0].Package).Filename), typesPkg)
 	if err != nil {
 		return err
 	}
-	pkgDefs = append(pkgDefs, pkgDef)
+	v.pkgDefs = append(v.pkgDefs, pkgDef)
 
-	for ident, obj := range typesInfo.Defs {
-		_, isLabel := obj.(*types.Label)
-		if obj == nil || ident.Name == "_" || isLabel {
-			g.skipResolve[ident] = struct{}{}
-			continue
-		}
-
-		if v, isVar := obj.(*types.Var); isVar && obj.Pos() != ident.Pos() && !v.IsField() {
-			// If this is an assign statement reassignment of existing var, treat this as a
-			// use (not a def).
-			typesInfo.Uses[ident] = obj
-			continue
-		}
-
-		// don't treat import aliases as things that belong to this package
-		_, isPkg := obj.(*types.PkgName)
-
-		if !isPkg {
-			def, err := g.NewDef(obj, ident)
-			if err != nil {
-				return err
-			}
-			pkgDefs = append(pkgDefs, def)
-		}
-
-		ref := g.NewRef(ident, obj, typesPkg.Path())
-		ref.IsDef = true
-		pkgRefs = append(pkgRefs, ref)
-	}
-
-	for ident, obj := range typesInfo.Uses {
-		if _, isLabel := obj.(*types.Label); isLabel {
-			g.skipResolve[ident] = struct{}{}
-			continue
-		}
-
-		if obj == nil || ident == nil || ident.Name == "_" {
-			continue
-		}
-
-		if _, skip := skipResolveObjs[obj]; skip {
-			g.skipResolve[ident] = struct{}{}
-		}
-
-		if _, seen := seen[ident]; seen {
-			continue
-		}
-
-		if _, isLabel := obj.(*types.Label); isLabel {
-			continue
-		}
-
-		ref := g.NewRef(ident, obj, typesPkg.Path())
-		pkgRefs = append(pkgRefs, ref)
-	}
-
-	// Create a ref that represent the name of the package ("package foo")
-	// for each file.
 	for _, f := range files {
-		pkgObj := types.NewPkgName(f.Name.Pos(), typesPkg, typesPkg.Name(), typesPkg)
-		ref := g.NewRef(f.Name, pkgObj, typesPkg.Path())
-		pkgRefs = append(pkgRefs, ref)
+		ast.Walk(v, f)
+	}
+	if v.err != nil {
+		return v.err
 	}
 
 	if !g.SkipDocs {
-		pkgDocs, err = g.emitDocs(files, typesPkg, typesInfo)
+		var err error
+		v.pkgDocs, err = g.emitDocs(files, typesPkg, typesInfo)
 		if err != nil {
 			return err
 		}
 	}
 
 	// Transfer pkg graph data to output
-	g.Defs = append(g.Defs, pkgDefs...)
-	g.Refs = append(g.Refs, pkgRefs...)
-	g.Docs = append(g.Docs, pkgDocs...)
+	g.Defs = append(g.Defs, v.pkgDefs...)
+	g.Refs = append(g.Refs, v.pkgRefs...)
+	g.Docs = append(g.Docs, v.pkgDocs...)
 
 	return nil
+}
+
+type astVisitor struct {
+	g         *Grapher
+	typesPkg  *types.Package
+	typesInfo *types.Info
+
+	err     error
+	pkgDefs []*Def
+	pkgRefs []*Ref
+	pkgDocs []*Doc
+}
+
+func (v *astVisitor) Visit(node ast.Node) (w ast.Visitor) {
+	if v.err != nil {
+		return nil
+	}
+
+	switch n := node.(type) {
+	case *ast.File:
+		// Create a ref that represent the name of the package ("package foo")
+		pkgObj := types.NewPkgName(n.Name.Pos(), v.typesPkg, v.typesPkg.Name(), v.typesPkg)
+		ref := v.g.NewRef(n.Name, pkgObj, v.typesPkg.Path())
+		v.pkgRefs = append(v.pkgRefs, ref)
+
+	case *ast.ImportSpec:
+		if obj := v.typesInfo.Implicits[n]; obj != nil {
+			ref := v.g.NewRef(n, obj, v.typesPkg.Path())
+			v.pkgRefs = append(v.pkgRefs, ref)
+		}
+
+	case *ast.Ident:
+		ident := n
+		if ident.Name == "_" {
+			break
+		}
+
+		isDef := false
+		if obj := v.typesInfo.Defs[ident]; obj != nil {
+			isDef = true
+			// don't treat import aliases as things that belong to this package
+			if _, isPkg := obj.(*types.PkgName); !isPkg {
+				def, err := v.g.NewDef(obj, ident)
+				if err != nil {
+					v.err = err
+					return nil
+				}
+				v.pkgDefs = append(v.pkgDefs, def)
+			}
+		}
+
+		if obj := v.typesInfo.ObjectOf(ident); obj != nil {
+			ref := v.g.NewRef(ident, obj, v.typesPkg.Path())
+			ref.IsDef = isDef
+			v.pkgRefs = append(v.pkgRefs, ref)
+		}
+
+	case *ast.LabeledStmt:
+		ast.Walk(v, n.Stmt)
+		return nil
+
+	case *ast.BranchStmt:
+		return nil
+	}
+
+	return v
 }
 
 type defInfo struct {

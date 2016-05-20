@@ -64,7 +64,7 @@ type identPos struct {
 
 func checkIdents(t *testing.T, fset *token.FileSet, file *ast.File, idents map[identPos]interface{}, defs map[defPath]struct{}, g *Grapher, printAll bool) {
 	ast.Inspect(file, func(n ast.Node) bool {
-		if x, ok := n.(*ast.Ident); ok && !ignoreIdent(g, x) {
+		if x, ok := n.(*ast.Ident); ok && x.Name != "_" {
 			pos, end := fset.Position(x.Pos()), fset.Position(x.End())
 			if printAll {
 				t.Logf("ident %q at %s:%d-%d", x.Name, pos.Filename, pos.Offset, end.Offset)
@@ -91,14 +91,4 @@ func checkIdents(t *testing.T, fset *token.FileSet, file *ast.File, idents map[i
 
 func ignoreRef(dp defPath) bool {
 	return dp.pkg == "builtin" || dp.pkg == "unsafe"
-}
-
-func ignoreIdent(g *Grapher, x *ast.Ident) bool {
-	if x.Name == "_" {
-		return true
-	}
-	if _, skip := g.skipResolve[x]; skip {
-		return true
-	}
-	return false
 }
