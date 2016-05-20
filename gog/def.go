@@ -32,7 +32,7 @@ type Def struct {
 }
 
 // NewDef creates a new Def.
-func (g *Grapher) NewDef(obj types.Object, declIdent *ast.Ident) (*Def, error) {
+func (g *Grapher) NewDef(obj types.Object, declIdent *ast.Ident, structName string) (*Def, error) {
 	// Find the AST node that declares this def.
 	var declNode ast.Node
 	_, astPath, _ := g.program.PathEnclosingInterval(declIdent.Pos(), declIdent.End())
@@ -51,10 +51,11 @@ found:
 	key, info := g.defInfo(obj)
 
 	si := definfo.DefInfo{
-		Exported: info.exported,
-		PkgScope: info.pkgscope,
-		PkgName:  obj.Pkg().Name(),
-		Kind:     defKind(obj),
+		Exported:      info.exported,
+		PkgScope:      info.pkgscope,
+		PkgName:       obj.Pkg().Name(),
+		Kind:          defKind(obj),
+		FieldOfStruct: structName,
 	}
 
 	if typ := obj.Type(); typ != nil {
@@ -67,14 +68,6 @@ found:
 	}
 
 	switch obj := obj.(type) {
-	case *types.Var:
-		if obj.IsField() {
-			if fieldStruct, ok := g.structFields[obj]; ok {
-				if struct_, ok := fieldStruct.parent.(*types.Named); ok {
-					si.FieldOfStruct = struct_.Obj().Name()
-				}
-			}
-		}
 	case *types.Func:
 		sig := obj.Type().(*types.Signature)
 		if recv := sig.Recv(); recv != nil && recv.Type() != nil {

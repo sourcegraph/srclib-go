@@ -29,8 +29,6 @@ type Grapher struct {
 	defInfoCache map[types.Object]*defInfo
 	defKeyCache  map[types.Object]*DefKey
 
-	structFields map[*types.Var]*structField
-
 	scopeNodes map[*types.Scope]ast.Node
 	funcNames  map[*types.Scope]string
 
@@ -51,8 +49,6 @@ func New(prog *loader.Program) *Grapher {
 		defInfoCache: make(map[types.Object]*defInfo),
 		defKeyCache:  make(map[types.Object]*DefKey),
 
-		structFields: make(map[*types.Var]*structField),
-
 		scopeNodes: make(map[*types.Scope]ast.Node),
 		funcNames:  make(map[*types.Scope]string),
 
@@ -63,7 +59,6 @@ func New(prog *loader.Program) *Grapher {
 	}
 
 	for _, pkgInfo := range sortedPkgs(prog.AllPackages) {
-		g.buildStructFields(&pkgInfo.Info)
 		g.buildScopeInfo(&pkgInfo.Info)
 		g.assignPathsInPackage(pkgInfo.Pkg)
 	}
@@ -134,6 +129,8 @@ type astVisitor struct {
 	pkgDefs []*Def
 	pkgRefs []*Ref
 	pkgDocs []*Doc
+
+	structName string
 }
 
 func (v *astVisitor) Visit(node ast.Node) (w ast.Visitor) {
@@ -154,6 +151,15 @@ func (v *astVisitor) Visit(node ast.Node) (w ast.Visitor) {
 			v.pkgRefs = append(v.pkgRefs, ref)
 		}
 
+	case *ast.TypeSpec:
+		if s, ok := n.Type.(*ast.StructType); ok {
+			ast.Walk(v, n.Name)
+			v.structName = n.Name.Name
+			ast.Walk(v, s)
+			v.structName = ""
+			return nil
+		}
+
 	case *ast.Ident:
 		ident := n
 		if ident.Name == "_" {
@@ -165,7 +171,7 @@ func (v *astVisitor) Visit(node ast.Node) (w ast.Visitor) {
 			isDef = true
 			// don't treat import aliases as things that belong to this package
 			if _, isPkg := obj.(*types.PkgName); !isPkg {
-				def, err := v.g.NewDef(obj, ident)
+				def, err := v.g.NewDef(obj, ident, v.structName)
 				if err != nil {
 					v.err = err
 					return nil
