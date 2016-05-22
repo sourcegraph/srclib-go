@@ -1,17 +1,14 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"go/build"
 	"log"
-	"os"
 	"strings"
 	"sync"
 
 	"sourcegraph.com/sourcegraph/srclib-go/depresolve"
 	"sourcegraph.com/sourcegraph/srclib/dep"
-	"sourcegraph.com/sourcegraph/srclib/unit"
 )
 
 func init() {
@@ -32,46 +29,7 @@ type DepResolveCmd struct {
 var depResolveCmd DepResolveCmd
 
 func (c *DepResolveCmd) Execute(args []string) error {
-	var unit *unit.SourceUnit
-	if err := json.NewDecoder(os.Stdin).Decode(&unit); err != nil {
-		return err
-	}
-	if err := os.Stdin.Close(); err != nil {
-		return err
-	}
-
-	if err := unmarshalTypedConfig(unit.Config); err != nil {
-		return err
-	}
-	if err := config.apply(); err != nil {
-		return err
-	}
-
-	res := make([]*dep.Resolution, len(unit.Dependencies))
-	for i, rawDep := range unit.Dependencies {
-		importPath, ok := rawDep.(string)
-		if !ok {
-			return fmt.Errorf("Go raw dep is not a string import path: %v (%T)", rawDep, rawDep)
-		}
-
-		res[i] = &dep.Resolution{Raw: rawDep}
-
-		rt, err := ResolveDep(importPath)
-		if err != nil {
-			res[i].Error = err.Error()
-			continue
-		}
-		res[i].Target = rt
-	}
-
-	b, err := json.MarshalIndent(res, "", "  ")
-	if err != nil {
-		return err
-	}
-	if _, err := os.Stdout.Write(b); err != nil {
-		return err
-	}
-	fmt.Println()
+	fmt.Println("[]")
 	return nil
 }
 

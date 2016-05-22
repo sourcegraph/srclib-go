@@ -11,7 +11,6 @@ import (
 	"sort"
 	"strings"
 
-	"sourcegraph.com/sourcegraph/srclib"
 	"sourcegraph.com/sourcegraph/srclib/unit"
 )
 
@@ -74,24 +73,6 @@ func (c *ScanCmd) Execute(args []string) error {
 		return err
 	}
 
-	if len(config.PkgPatterns) != 0 {
-		matchers := make([]func(name string) bool, len(config.PkgPatterns))
-		for i, pattern := range config.PkgPatterns {
-			matchers[i] = matchPattern(pattern)
-		}
-
-		var filteredUnits []*unit.SourceUnit
-		for _, unit := range units {
-			for _, m := range matchers {
-				if m(unit.Name) {
-					filteredUnits = append(filteredUnits, unit)
-					break
-				}
-			}
-		}
-		units = filteredUnits
-	}
-
 	// Make vendored dep unit names (package import paths) relative to
 	// vendored src dir, not to top-level dir.
 	if config.GOPATH != "" {
@@ -103,7 +84,10 @@ func (c *ScanCmd) Execute(args []string) error {
 			}
 			srcDir := filepath.Join(relDir, "src")
 			for _, u := range units {
-				pkg := u.Data.(*build.Package)
+				var pkg build.Package
+				if err := json.Unmarshal(u.Data, &pkg); err != nil {
+					return err
+				}
 				if strings.HasPrefix(pkg.Dir, srcDir) {
 					relImport, err := filepath.Rel(srcDir, pkg.Dir)
 					if err != nil {
@@ -119,14 +103,22 @@ func (c *ScanCmd) Execute(args []string) error {
 	// Make go1.5 style vendored dep unit names (package import paths)
 	// relative to vendored dir, not to top-level dir.
 	for _, u := range units {
-		if name, isVendored := vendoredUnitName(u.Data.(*build.Package)); isVendored {
+		var pkg build.Package
+		if err := json.Unmarshal(u.Data, &pkg); err != nil {
+			return err
+		}
+		if name, isVendored := vendoredUnitName(&pkg); isVendored {
 			u.Name = name
 		}
 	}
 
 	// make files relative to repository root
 	for _, u := range units {
-		pkgSubdir := u.Data.(*build.Package).Dir
+		var pkg build.Package
+		if err := json.Unmarshal(u.Data, &pkg); err != nil {
+			return err
+		}
+		pkgSubdir := pkg.Dir
 		for i, f := range u.Files {
 			u.Files[i] = filepath.ToSlash(filepath.Join(pkgSubdir, f))
 		}
@@ -139,7 +131,7 @@ func (c *ScanCmd) Execute(args []string) error {
 	if setAutoGOPATH {
 		for _, u := range units {
 			if u.Config == nil {
-				u.Config = map[string]interface{}{}
+				u.Config = map[string]string{}
 			}
 
 			dirs := filepath.SplitList(config.GOPATH)
@@ -164,25 +156,6 @@ func (c *ScanCmd) Execute(args []string) error {
 			continue
 		}
 		vendorDirs[unixStyle[:i+len("vendor")]] = struct{}{}
-	}
-
-	for _, u := range units {
-		unitDir := u.Dir + string(filepath.Separator)
-		var dirs vendorDirSlice
-		for dir := range vendorDirs {
-			// Must be a child of baseDir to use the vendor dir
-			baseDir := filepath.Dir(dir) + string(filepath.Separator)
-			if filepath.Clean(baseDir) == "." || strings.HasPrefix(unitDir, baseDir) {
-				dirs = append(dirs, dir)
-			}
-		}
-		sort.Sort(dirs)
-		if len(dirs) > 0 {
-			if u.Config == nil {
-				u.Config = map[string]interface{}{}
-			}
-			u.Config["VendorDirs"] = dirs
-		}
 	}
 
 	b, err := json.MarshalIndent(units, "", "  ")
@@ -277,9 +250,13 @@ func scan(scanDir string) ([]*unit.SourceUnit, error) {
 		sort.Strings(imports)
 
 		// Create appropriate type for (unit).SourceUnit
-		deps := make([]interface{}, len(imports))
+		deps := make([]*unit.Key, len(imports))
 		for i, imp := range imports {
-			deps[i] = imp
+			deps[i] = &unit.Key{
+				Repo: unit.UnitRepoUnresolved,
+				Type: "GoPackage",
+				Name: imp,
+			}
 		}
 
 		pkg.Dir, err = filepath.Rel(scanDir, pkg.Dir)
@@ -301,14 +278,23 @@ func scan(scanDir string) ([]*unit.SourceUnit, error) {
 		pkg.TestImportPos = nil
 		pkg.XTestImportPos = nil
 
+		pkgData, err := json.Marshal(pkg)
+		if err != nil {
+			return nil, err
+		}
+
 		units = append(units, &unit.SourceUnit{
-			Name:         pkg.ImportPath,
-			Type:         "GoPackage",
-			Dir:          pkg.Dir,
-			Files:        files,
-			Data:         pkg,
-			Dependencies: deps,
-			Ops:          map[string]*srclib.ToolRef{"depresolve": nil, graphOp: nil},
+			Key: unit.Key{
+				Name: pkg.ImportPath,
+				Type: "GoPackage",
+			},
+			Info: unit.Info{
+				Dir:          pkg.Dir,
+				Files:        files,
+				Data:         pkgData,
+				Dependencies: deps,
+				Ops:          map[string][]byte{"depresolve": nil, graphOp: nil},
+			},
 		})
 	}
 
