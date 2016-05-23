@@ -150,6 +150,7 @@ func (v *astVisitor) Visit(node ast.Node) (w ast.Visitor) {
 		}
 
 	case *ast.TypeSpec:
+		v.newDef(n, n.Name)
 		if s, ok := n.Type.(*ast.StructType); ok {
 			ast.Walk(v, n.Name)
 			v.structName = n.Name.Name
@@ -157,6 +158,32 @@ func (v *astVisitor) Visit(node ast.Node) (w ast.Visitor) {
 			v.structName = ""
 			return nil
 		}
+
+	case *ast.Field:
+		v.newDef(n, n.Type) // anonymous field
+		if starExpr, ok := n.Type.(*ast.StarExpr); ok {
+			v.newDef(n, starExpr.X) // anonymous field with pointer
+		}
+		for _, name := range n.Names {
+			v.newDef(n, name)
+		}
+
+	case *ast.FuncDecl:
+		v.newDef(n, n.Name)
+
+	case *ast.ValueSpec:
+		for _, name := range n.Names {
+			v.newDef(n, name)
+		}
+
+	case *ast.AssignStmt:
+		for _, lhs := range n.Lhs {
+			v.newDef(n, lhs)
+		}
+
+	case *ast.RangeStmt:
+		v.newDef(n, n.Key)
+		v.newDef(n, n.Value)
 
 	case *ast.SelectorExpr:
 		if sel := v.typesInfo.Selections[n]; sel != nil {
@@ -168,28 +195,12 @@ func (v *astVisitor) Visit(node ast.Node) (w ast.Visitor) {
 		}
 
 	case *ast.Ident:
-		ident := n
-		if ident.Name == "_" {
+		if n.Name == "_" {
 			break
 		}
-
-		isDef := false
-		if obj := v.typesInfo.Defs[ident]; obj != nil {
-			isDef = true
-			// don't treat import aliases as things that belong to this package
-			if _, isPkg := obj.(*types.PkgName); !isPkg {
-				def, err := v.g.NewDef(obj, ident, v.structName)
-				if err != nil {
-					v.err = err
-					return nil
-				}
-				v.pkgDefs = append(v.pkgDefs, def)
-			}
-		}
-
-		if obj := v.typesInfo.ObjectOf(ident); obj != nil {
-			ref := v.g.NewRef(ident, obj, v.typesPkg.Path())
-			ref.IsDef = isDef
+		if obj := v.typesInfo.ObjectOf(n); obj != nil {
+			ref := v.g.NewRef(n, obj, v.typesPkg.Path())
+			ref.IsDef = (v.typesInfo.Defs[n] != nil)
 			v.pkgRefs = append(v.pkgRefs, ref)
 		}
 
@@ -202,6 +213,25 @@ func (v *astVisitor) Visit(node ast.Node) (w ast.Visitor) {
 	}
 
 	return v
+}
+
+func (v *astVisitor) newDef(declNode, declName ast.Node) {
+	declIdent, ok := declName.(*ast.Ident)
+	if !ok || declIdent.Name == "_" {
+		return
+	}
+
+	obj := v.typesInfo.Defs[declIdent]
+	if obj == nil {
+		return
+	}
+
+	def, err := v.g.NewDef(obj, declNode, declIdent, v.structName)
+	if err != nil {
+		v.err = err
+		return
+	}
+	v.pkgDefs = append(v.pkgDefs, def)
 }
 
 type defInfo struct {
