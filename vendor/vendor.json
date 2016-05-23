@@ -89,62 +89,62 @@
 		{
 			"checksumSHA1": "wMibXd2FzCwmV4WMCwh0D7bzxjE=",
 			"path": "sourcegraph.com/sourcegraph/srclib",
-			"revision": "1b846c8ec38de4246d038eebb0ce63ef80ca0aa3",
-			"revisionTime": "2016-05-23T02:07:53Z"
+			"revision": "dd64b3e43e325a13763d75a5162effe069e1f5bc",
+			"revisionTime": "2016-05-23T07:07:52Z"
 		},
 		{
 			"checksumSHA1": "50qafmhTyHoz2X+UbQeqJKcELjw=",
 			"path": "sourcegraph.com/sourcegraph/srclib/ann",
-			"revision": "1b846c8ec38de4246d038eebb0ce63ef80ca0aa3",
-			"revisionTime": "2016-05-23T02:07:53Z"
+			"revision": "dd64b3e43e325a13763d75a5162effe069e1f5bc",
+			"revisionTime": "2016-05-23T07:07:52Z"
 		},
 		{
 			"checksumSHA1": "6Gr29dGzABWc6eUncFUs7LMVDVY=",
 			"path": "sourcegraph.com/sourcegraph/srclib/buildstore",
-			"revision": "1b846c8ec38de4246d038eebb0ce63ef80ca0aa3",
-			"revisionTime": "2016-05-23T02:07:53Z"
+			"revision": "dd64b3e43e325a13763d75a5162effe069e1f5bc",
+			"revisionTime": "2016-05-23T07:07:52Z"
 		},
 		{
 			"checksumSHA1": "kvnyBbEvqJqDFaiSJ6Hxc24jatw=",
 			"path": "sourcegraph.com/sourcegraph/srclib/config",
-			"revision": "1b846c8ec38de4246d038eebb0ce63ef80ca0aa3",
-			"revisionTime": "2016-05-23T02:07:53Z"
+			"revision": "dd64b3e43e325a13763d75a5162effe069e1f5bc",
+			"revisionTime": "2016-05-23T07:07:52Z"
 		},
 		{
 			"checksumSHA1": "vUECzhjLYS4ERgLkmb5MNIhRVEw=",
 			"path": "sourcegraph.com/sourcegraph/srclib/dep",
-			"revision": "1b846c8ec38de4246d038eebb0ce63ef80ca0aa3",
-			"revisionTime": "2016-05-23T02:07:53Z"
+			"revision": "dd64b3e43e325a13763d75a5162effe069e1f5bc",
+			"revisionTime": "2016-05-23T07:07:52Z"
 		},
 		{
 			"checksumSHA1": "IlhJpzgSvjk9dQXGcZARbjn3D/I=",
 			"path": "sourcegraph.com/sourcegraph/srclib/graph",
-			"revision": "1b846c8ec38de4246d038eebb0ce63ef80ca0aa3",
-			"revisionTime": "2016-05-23T02:07:53Z"
+			"revision": "dd64b3e43e325a13763d75a5162effe069e1f5bc",
+			"revisionTime": "2016-05-23T07:07:52Z"
 		},
 		{
 			"checksumSHA1": "4bz5pt5eM29kurcWK2WpjlHqRAo=",
 			"path": "sourcegraph.com/sourcegraph/srclib/plan",
-			"revision": "1b846c8ec38de4246d038eebb0ce63ef80ca0aa3",
-			"revisionTime": "2016-05-23T02:07:53Z"
+			"revision": "dd64b3e43e325a13763d75a5162effe069e1f5bc",
+			"revisionTime": "2016-05-23T07:07:52Z"
 		},
 		{
-			"checksumSHA1": "3XZ5o79PnWt80Oj2CYZAx2givxM=",
+			"checksumSHA1": "/kQ2M+FpVNUNpe6dW3IulQDwSh8=",
 			"path": "sourcegraph.com/sourcegraph/srclib/toolchain",
-			"revision": "1b846c8ec38de4246d038eebb0ce63ef80ca0aa3",
-			"revisionTime": "2016-05-23T02:07:53Z"
+			"revision": "dd64b3e43e325a13763d75a5162effe069e1f5bc",
+			"revisionTime": "2016-05-23T07:07:52Z"
 		},
 		{
-			"checksumSHA1": "8LsEMxQ7WrqTvL4joD91V4vKj8k=",
+			"checksumSHA1": "4d2m9PwaX1/gm9RbgWAJ5fGOBCM=",
 			"path": "sourcegraph.com/sourcegraph/srclib/unit",
-			"revision": "1b846c8ec38de4246d038eebb0ce63ef80ca0aa3",
-			"revisionTime": "2016-05-23T02:07:53Z"
+			"revision": "dd64b3e43e325a13763d75a5162effe069e1f5bc",
+			"revisionTime": "2016-05-23T07:07:52Z"
 		},
 		{
 			"checksumSHA1": "sX55Z0+7/lbGcM2XgxpFylHQCIc=",
 			"path": "sourcegraph.com/sourcegraph/srclib/util",
-			"revision": "1b846c8ec38de4246d038eebb0ce63ef80ca0aa3",
-			"revisionTime": "2016-05-23T02:07:53Z"
+			"revision": "dd64b3e43e325a13763d75a5162effe069e1f5bc",
+			"revisionTime": "2016-05-23T07:07:52Z"
 		},
 		{
 			"checksumSHA1": "uI8qIf344+loGq9x6UlJ1DN/RWI=",
