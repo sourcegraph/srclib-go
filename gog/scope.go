@@ -30,6 +30,17 @@ func (g *Grapher) path(obj types.Object) (path []string) {
 		return path
 	}
 
+	if obj.Pkg() != g.pkg {
+		if v, ok := obj.(*types.Var); ok {
+			if t, ok := g.fields[v]; ok {
+				if nt, ok := t.(*types.Named); ok {
+					return []string{nt.Obj().Name(), obj.Name()}
+				}
+			}
+		}
+		return []string{obj.Name()}
+	}
+
 	var scope *types.Scope
 	pkgInfo, astPath, _ := g.program.PathEnclosingInterval(obj.Pos(), obj.Pos())
 	if astPath != nil {

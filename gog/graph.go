@@ -24,6 +24,7 @@ type Grapher struct {
 	SkipDocs bool
 
 	program *loader.Program
+	pkg     *types.Package
 
 	defCacheLock sync.Mutex
 	defInfoCache map[types.Object]*defInfo
@@ -35,6 +36,7 @@ type Grapher struct {
 	paths      map[types.Object][]string
 	scopePaths map[*types.Scope][]string
 	pkgscope   map[types.Object]bool
+	fields     map[*types.Var]types.Type
 
 	Output
 
@@ -54,11 +56,7 @@ func New(prog *loader.Program) *Grapher {
 		paths:      make(map[types.Object][]string),
 		scopePaths: make(map[*types.Scope][]string),
 		pkgscope:   make(map[types.Object]bool),
-	}
-
-	for _, pkgInfo := range sortedPkgs(prog.AllPackages) {
-		g.buildScopeInfo(&pkgInfo.Info)
-		g.assignPathsInPackage(pkgInfo.Pkg)
+		fields:     make(map[*types.Var]types.Type),
 	}
 
 	return g
@@ -84,6 +82,10 @@ func (g *Grapher) Graph(files []*ast.File, typesPkg *types.Package, typesInfo *t
 		log.Printf("warning: attempted to graph package %s with no files", typesPkg.Path())
 		return nil
 	}
+
+	g.pkg = typesPkg
+	g.buildScopeInfo(typesInfo)
+	g.assignPathsInPackage(typesPkg)
 
 	// Accumulate the defs, refs and docs from the package being graphed currently.
 	// If the package is graphed successfully, these are added to Output.
@@ -114,8 +116,6 @@ func (g *Grapher) Graph(files []*ast.File, typesPkg *types.Package, typesInfo *t
 	g.Defs = append(g.Defs, v.pkgDefs...)
 	g.Refs = append(g.Refs, v.pkgRefs...)
 	g.Docs = append(g.Docs, v.pkgDocs...)
-
-	return nil
 }
 
 type astVisitor struct {
@@ -156,6 +156,15 @@ func (v *astVisitor) Visit(node ast.Node) (w ast.Visitor) {
 			ast.Walk(v, s)
 			v.structName = ""
 			return nil
+		}
+
+	case *ast.SelectorExpr:
+		if sel := v.typesInfo.Selections[n]; sel != nil {
+			t := sel.Recv()
+			if ptr, ok := t.(*types.Pointer); ok {
+				t = ptr.Elem()
+			}
+			v.g.fields[sel.Obj().(*types.Var)] = t
 		}
 
 	case *ast.Ident:
