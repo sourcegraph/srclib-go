@@ -263,8 +263,8 @@
       "Name": "x",
       "Kind": "var",
       "File": "scope/scope.go",
-      "DefStart": 310,
-      "DefEnd": 588,
+      "DefStart": 428,
+      "DefEnd": 586,
       "Local": true,
       "Data": {
         "PkgName": "scope",
