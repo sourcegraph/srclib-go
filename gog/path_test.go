@@ -43,10 +43,10 @@ func TestPaths(t *testing.T) {
 		start, end := uint32(strings.Index(src, "/*START*/")), uint32(strings.Index(src, "/*END*/"))
 		prog := createPkg(t, "foo", []string{src}, nil)
 
-		g := New(prog)
+		g := New()
 		g.SkipDocs = true
 		pkgInfo := prog.Created[0]
-		err := g.Graph(pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info)
+		err := g.Graph(prog.Fset, pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info)
 		if err != nil {
 			t.Fatal(err)
 		}

@@ -329,7 +329,7 @@ func doGraph(pkgs []*build.Package) (*gog.Output, error) {
 		return nil, err
 	}
 
-	g := gog.New(prog)
+	g := gog.New()
 
 	var pkgInfos []*loader.PackageInfo
 	for _, pkg := range prog.Created {
@@ -344,7 +344,7 @@ func doGraph(pkgs []*build.Package) (*gog.Output, error) {
 	}
 
 	for _, pkg := range pkgInfos {
-		if err := g.Graph(pkg.Files, pkg.Pkg, &pkg.Info); err != nil {
+		if err := g.Graph(prog.Fset, pkg.Files, pkg.Pkg, &pkg.Info); err != nil {
 			log.Printf("Ignoring pkg %q due to error in gog.Graph: %s.", pkg.Pkg.Name(), err)
 		}
 	}

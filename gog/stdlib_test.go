@@ -64,11 +64,11 @@ func testPkg(t *testing.T, path string) {
 	if err != nil {
 		t.Fatal(path, err)
 	}
-	g := New(prog)
+	g := New()
 
 	start := time.Now()
 	for _, pkgInfo := range prog.AllPackages {
-		err := g.Graph(pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info)
+		err := g.Graph(prog.Fset, pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info)
 		if err != nil {
 			t.Fatal(err)
 		}

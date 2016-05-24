@@ -66,9 +66,9 @@ func (g *Grapher) NewDef(obj types.Object, declNode ast.Node, declIdent *ast.Ide
 
 		DefKey: key,
 
-		File:      g.program.Fset.Position(declIdent.Pos()).Filename,
-		IdentSpan: makeSpan(g.program.Fset, declIdent),
-		DeclSpan:  makeSpan(g.program.Fset, declNode),
+		File:      g.fset.Position(declIdent.Pos()).Filename,
+		IdentSpan: makeSpan(g.fset, declIdent),
+		DeclSpan:  makeSpan(g.fset, declNode),
 
 		DefInfo: si,
 	}, nil

@@ -9,11 +9,11 @@ import (
 func (g *Grapher) NewRef(node ast.Node, obj types.Object, pkgPath string) *Ref {
 	key, _ := g.defInfo(obj)
 
-	pos := g.program.Fset.Position(node.Pos())
+	pos := g.fset.Position(node.Pos())
 	return &Ref{
 		Unit: pkgPath,
 		File: pos.Filename,
-		Span: makeSpan(g.program.Fset, node),
+		Span: makeSpan(g.fset, node),
 		Def:  key,
 	}
 }
