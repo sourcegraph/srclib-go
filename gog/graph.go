@@ -62,10 +62,10 @@ func New() *Grapher {
 	return g
 }
 
-func (g *Grapher) Graph(fset *token.FileSet, files []*ast.File, typesPkg *types.Package, typesInfo *types.Info) error {
+func (g *Grapher) Graph(fset *token.FileSet, files []*ast.File, typesPkg *types.Package, typesInfo *types.Info) {
 	if len(files) == 0 {
 		log.Printf("warning: attempted to graph package %s with no files", typesPkg.Path())
-		return nil
+		return
 	}
 
 	g.fset = fset
@@ -79,25 +79,14 @@ func (g *Grapher) Graph(fset *token.FileSet, files []*ast.File, typesPkg *types.
 	// If the package is graphed successfully, these are added to Output.
 	v := &astVisitor{g: g, typesPkg: typesPkg, typesInfo: typesInfo}
 
-	pkgDef, err := g.NewPackageDef(filepath.Dir(g.fset.Position(files[0].Package).Filename), typesPkg)
-	if err != nil {
-		return err
-	}
-	v.pkgDefs = append(v.pkgDefs, pkgDef)
+	v.pkgDefs = append(v.pkgDefs, g.NewPackageDef(filepath.Dir(g.fset.Position(files[0].Package).Filename), typesPkg))
 
 	for _, f := range files {
 		ast.Walk(v, f)
 	}
-	if v.err != nil {
-		return v.err
-	}
 
 	if !g.SkipDocs {
-		var err error
-		v.pkgDocs, err = g.emitDocs(files, typesPkg, typesInfo)
-		if err != nil {
-			return err
-		}
+		v.pkgDocs = g.emitDocs(files, typesPkg, typesInfo)
 	}
 
 	// Transfer pkg graph data to output
@@ -111,7 +100,6 @@ type astVisitor struct {
 	typesPkg  *types.Package
 	typesInfo *types.Info
 
-	err     error
 	pkgDefs []*Def
 	pkgRefs []*Ref
 	pkgDocs []*Doc
@@ -120,10 +108,6 @@ type astVisitor struct {
 }
 
 func (v *astVisitor) Visit(node ast.Node) (w ast.Visitor) {
-	if v.err != nil {
-		return nil
-	}
-
 	switch n := node.(type) {
 	case *ast.File:
 		// Create a ref that represent the name of the package ("package foo")
@@ -214,12 +198,7 @@ func (v *astVisitor) newDef(declNode, declName ast.Node) {
 		return
 	}
 
-	def, err := v.g.NewDef(obj, declNode, declIdent, v.structName)
-	if err != nil {
-		v.err = err
-		return
-	}
-	v.pkgDefs = append(v.pkgDefs, def)
+	v.pkgDefs = append(v.pkgDefs, v.g.NewDef(obj, declNode, declIdent, v.structName))
 }
 
 type defInfo struct {
