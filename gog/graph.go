@@ -5,7 +5,6 @@ import (
 	"go/constant"
 	"log"
 	"path/filepath"
-	"sort"
 	"sync"
 
 	"go/types"
@@ -61,21 +60,6 @@ func New(prog *loader.Program) *Grapher {
 
 	return g
 }
-
-func sortedPkgs(m map[*types.Package]*loader.PackageInfo) []*loader.PackageInfo {
-	var pis []*loader.PackageInfo
-	for _, pi := range m {
-		pis = append(pis, pi)
-	}
-	sort.Sort(packageInfos(pis))
-	return pis
-}
-
-type packageInfos []*loader.PackageInfo
-
-func (pi packageInfos) Len() int           { return len(pi) }
-func (pi packageInfos) Less(i, j int) bool { return pi[i].Pkg.Path() < pi[j].Pkg.Path() }
-func (pi packageInfos) Swap(i, j int)      { pi[i], pi[j] = pi[j], pi[i] }
 
 func (g *Grapher) Graph(files []*ast.File, typesPkg *types.Package, typesInfo *types.Info) error {
 	if len(files) == 0 {
