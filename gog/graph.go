@@ -3,6 +3,7 @@ package gog
 import (
 	"go/ast"
 	"go/constant"
+	"go/token"
 	"log"
 	"path/filepath"
 	"sync"
@@ -10,7 +11,6 @@ import (
 	"go/types"
 
 	_ "golang.org/x/tools/go/gcimporter15"
-	"golang.org/x/tools/go/loader"
 )
 
 type Output struct {
@@ -22,8 +22,10 @@ type Output struct {
 type Grapher struct {
 	SkipDocs bool
 
-	program *loader.Program
-	pkg     *types.Package
+	fset      *token.FileSet
+	files     []*ast.File
+	typesPkg  *types.Package
+	typesInfo *types.Info
 
 	defCacheLock sync.Mutex
 	defInfoCache map[types.Object]*defInfo
@@ -43,9 +45,8 @@ type Grapher struct {
 	seenDocKeys map[string]struct{}
 }
 
-func New(prog *loader.Program) *Grapher {
+func New() *Grapher {
 	g := &Grapher{
-		program:      prog,
 		defInfoCache: make(map[types.Object]*defInfo),
 		defKeyCache:  make(map[types.Object]*DefKey),
 
@@ -61,13 +62,16 @@ func New(prog *loader.Program) *Grapher {
 	return g
 }
 
-func (g *Grapher) Graph(files []*ast.File, typesPkg *types.Package, typesInfo *types.Info) error {
+func (g *Grapher) Graph(fset *token.FileSet, files []*ast.File, typesPkg *types.Package, typesInfo *types.Info) error {
 	if len(files) == 0 {
 		log.Printf("warning: attempted to graph package %s with no files", typesPkg.Path())
 		return nil
 	}
 
-	g.pkg = typesPkg
+	g.fset = fset
+	g.files = files
+	g.typesPkg = typesPkg
+	g.typesInfo = typesInfo
 	g.buildScopeInfo(typesInfo)
 	g.assignPathsInPackage(typesPkg)
 
@@ -75,7 +79,7 @@ func (g *Grapher) Graph(files []*ast.File, typesPkg *types.Package, typesInfo *t
 	// If the package is graphed successfully, these are added to Output.
 	v := &astVisitor{g: g, typesPkg: typesPkg, typesInfo: typesInfo}
 
-	pkgDef, err := g.NewPackageDef(filepath.Dir(g.program.Fset.Position(files[0].Package).Filename), typesPkg)
+	pkgDef, err := g.NewPackageDef(filepath.Dir(g.fset.Position(files[0].Package).Filename), typesPkg)
 	if err != nil {
 		return err
 	}
@@ -281,7 +285,7 @@ func (g *Grapher) makeDefInfo(obj types.Object) (*DefKey, *defInfo) {
 	// intended to be compiled together and have overlapping def
 	// paths. Prefix the def path with the filename.
 	if obj.Pkg().Name() == "main" {
-		p := g.program.Fset.Position(obj.Pos())
+		p := g.fset.Position(obj.Pos())
 		path = append([]string{filepath.Base(p.Filename)}, path...)
 	}
 

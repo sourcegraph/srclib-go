@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"golang.org/x/tools/go/ast/astutil"
+
 	"go/types"
 )
 
@@ -30,7 +32,7 @@ func (g *Grapher) path(obj types.Object) (path []string) {
 		return path
 	}
 
-	if obj.Pkg() != g.pkg {
+	if obj.Pkg() != g.typesPkg {
 		if v, ok := obj.(*types.Var); ok {
 			if t, ok := g.fields[v]; ok {
 				if nt, ok := t.(*types.Named); ok {
@@ -42,10 +44,10 @@ func (g *Grapher) path(obj types.Object) (path []string) {
 	}
 
 	var scope *types.Scope
-	pkgInfo, astPath, _ := g.program.PathEnclosingInterval(obj.Pos(), obj.Pos())
+	astPath, _ := g.pathEnclosingInterval(obj.Pos(), obj.Pos())
 	if astPath != nil {
 		for _, node := range astPath {
-			if s, hasScope := pkgInfo.Scopes[node]; hasScope {
+			if s, hasScope := g.typesInfo.Scopes[node]; hasScope {
 				scope = s
 			}
 		}
@@ -57,7 +59,7 @@ func (g *Grapher) path(obj types.Object) (path []string) {
 	if scope == nil {
 		// TODO(sqs): make this actually handle cases like the one described in
 		// https://github.com/sourcegraph/sourcegraph.com/issues/218
-		log.Printf("Warning: no scope for object %s at pos %s", obj.String(), g.program.Fset.Position(obj.Pos()))
+		log.Printf("Warning: no scope for object %s at pos %s", obj.String(), g.fset.Position(obj.Pos()))
 		return nil
 	}
 
@@ -66,7 +68,7 @@ func (g *Grapher) path(obj types.Object) (path []string) {
 		panic("no scope path for scope " + scope.String())
 	}
 	path = append([]string{}, prefix...)
-	p := g.program.Fset.Position(obj.Pos())
+	p := g.fset.Position(obj.Pos())
 	path = append(path, obj.Name()+uniqID(p))
 	return path
 
@@ -108,7 +110,7 @@ func (g *Grapher) scopeLabel(s *types.Scope) (path []string) {
 		if name, exists := g.funcNames[s]; exists && name != "init" {
 			return []string{name}
 		} else {
-			_, astPath, _ := g.program.PathEnclosingInterval(n.Pos(), n.End())
+			astPath, _ := g.pathEnclosingInterval(n.Pos(), n.End())
 			if f, ok := astPath[0].(*ast.FuncDecl); ok {
 				var path []string
 				if f.Recv != nil {
@@ -118,7 +120,7 @@ func (g *Grapher) scopeLabel(s *types.Scope) (path []string) {
 				if f.Name.Name == "init" {
 					// init function can appear multiple times in each file and
 					// package, so need to uniquify it
-					uniqName = f.Name.Name + uniqID(g.program.Fset.Position(f.Name.Pos()))
+					uniqName = f.Name.Name + uniqID(g.fset.Position(f.Name.Pos()))
 				} else {
 					uniqName = f.Name.Name
 				}
@@ -136,12 +138,12 @@ func (g *Grapher) scopeLabel(s *types.Scope) (path []string) {
 	var prefix []string
 	if fs, ok := g.scopeNodes[p].(*ast.File); ok {
 		// avoid file scope collisions by using file index as well
-		filename := g.program.Fset.Position(fs.Name.Pos()).Filename
+		filename := g.fset.Position(fs.Name.Pos()).Filename
 		prefix = []string{fmt.Sprintf("$%s", strippedFilename(filename))}
 	}
 	for i := 0; i < p.NumChildren(); i++ {
 		if p.Child(i) == s {
-			filename := g.program.Fset.Position(node.Pos()).Filename
+			filename := g.fset.Position(node.Pos()).Filename
 			return append(prefix, fmt.Sprintf("$%s%d", strippedFilename(filename), i))
 		}
 	}
@@ -257,4 +259,22 @@ func (g *Grapher) assignStructFieldPaths(styp *types.Struct, prefix []string, pk
 			g.assignStructFieldPaths(styp, path, pkgscope)
 		}
 	}
+}
+
+func (g *Grapher) pathEnclosingInterval(start, end token.Pos) ([]ast.Node, bool) {
+	for _, f := range g.files {
+		if f.Pos() == token.NoPos || !tokenFileContainsPos(g.fset.File(f.Pos()), start) {
+			continue
+		}
+		if path, exact := astutil.PathEnclosingInterval(f, start, end); path != nil {
+			return path, exact
+		}
+	}
+	return nil, false
+}
+
+func tokenFileContainsPos(f *token.File, pos token.Pos) bool {
+	p := int(pos)
+	base := f.Base()
+	return base <= p && p < base+f.Size()
 }
