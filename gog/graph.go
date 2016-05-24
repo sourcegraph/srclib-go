@@ -38,6 +38,7 @@ type Grapher struct {
 	scopePaths map[*types.Scope][]string
 	pkgscope   map[types.Object]bool
 	fields     map[*types.Var]types.Type
+	structName string
 
 	Output
 
@@ -75,130 +76,109 @@ func (g *Grapher) Graph(fset *token.FileSet, files []*ast.File, typesPkg *types.
 	g.buildScopeInfo(typesInfo)
 	g.assignPathsInPackage(typesPkg)
 
-	// Accumulate the defs, refs and docs from the package being graphed currently.
-	// If the package is graphed successfully, these are added to Output.
-	v := &astVisitor{g: g, typesPkg: typesPkg, typesInfo: typesInfo}
-
-	v.pkgDefs = append(v.pkgDefs, g.NewPackageDef(filepath.Dir(g.fset.Position(files[0].Package).Filename), typesPkg))
+	g.Defs = append(g.Defs, g.NewPackageDef(filepath.Dir(g.fset.Position(files[0].Package).Filename), typesPkg))
 
 	for _, f := range files {
-		ast.Walk(v, f)
+		ast.Walk(g, f)
 	}
 
 	if !g.SkipDocs {
-		v.pkgDocs = g.emitDocs(files, typesPkg, typesInfo)
+		g.Docs = append(g.Docs, g.emitDocs(files, typesPkg, typesInfo)...)
 	}
-
-	// Transfer pkg graph data to output
-	g.Defs = append(g.Defs, v.pkgDefs...)
-	g.Refs = append(g.Refs, v.pkgRefs...)
-	g.Docs = append(g.Docs, v.pkgDocs...)
 }
 
-type astVisitor struct {
-	g         *Grapher
-	typesPkg  *types.Package
-	typesInfo *types.Info
-
-	pkgDefs []*Def
-	pkgRefs []*Ref
-	pkgDocs []*Doc
-
-	structName string
-}
-
-func (v *astVisitor) Visit(node ast.Node) (w ast.Visitor) {
+func (g *Grapher) Visit(node ast.Node) (w ast.Visitor) {
 	switch n := node.(type) {
 	case *ast.File:
 		// Create a ref that represent the name of the package ("package foo")
-		pkgObj := types.NewPkgName(n.Name.Pos(), v.typesPkg, v.typesPkg.Name(), v.typesPkg)
-		ref := v.g.NewRef(n.Name, pkgObj, v.typesPkg.Path())
-		v.pkgRefs = append(v.pkgRefs, ref)
+		pkgObj := types.NewPkgName(n.Name.Pos(), g.typesPkg, g.typesPkg.Name(), g.typesPkg)
+		ref := g.NewRef(n.Name, pkgObj, g.typesPkg.Path())
+		g.Output.Refs = append(g.Output.Refs, ref)
 
 	case *ast.ImportSpec:
-		if obj := v.typesInfo.Implicits[n]; obj != nil {
-			ref := v.g.NewRef(n, obj, v.typesPkg.Path())
-			v.pkgRefs = append(v.pkgRefs, ref)
+		if obj := g.typesInfo.Implicits[n]; obj != nil {
+			ref := g.NewRef(n, obj, g.typesPkg.Path())
+			g.Output.Refs = append(g.Output.Refs, ref)
 		}
 
 	case *ast.TypeSpec:
-		v.newDef(n, n.Name)
+		g.newDef(n, n.Name)
 		if s, ok := n.Type.(*ast.StructType); ok {
-			ast.Walk(v, n.Name)
-			v.structName = n.Name.Name
-			ast.Walk(v, s)
-			v.structName = ""
+			ast.Walk(g, n.Name)
+			g.structName = n.Name.Name
+			ast.Walk(g, s)
+			g.structName = ""
 			return nil
 		}
 
 	case *ast.Field:
-		v.newDef(n, n.Type) // anonymous field
+		g.newDef(n, n.Type) // anonymous field
 		if starExpr, ok := n.Type.(*ast.StarExpr); ok {
-			v.newDef(n, starExpr.X) // anonymous field with pointer
+			g.newDef(n, starExpr.X) // anonymous field with pointer
 		}
 		for _, name := range n.Names {
-			v.newDef(n, name)
+			g.newDef(n, name)
 		}
 
 	case *ast.FuncDecl:
-		v.newDef(n, n.Name)
+		g.newDef(n, n.Name)
 
 	case *ast.ValueSpec:
 		for _, name := range n.Names {
-			v.newDef(n, name)
+			g.newDef(n, name)
 		}
 
 	case *ast.AssignStmt:
 		for _, lhs := range n.Lhs {
-			v.newDef(n, lhs)
+			g.newDef(n, lhs)
 		}
 
 	case *ast.RangeStmt:
-		v.newDef(n, n.Key)
-		v.newDef(n, n.Value)
+		g.newDef(n, n.Key)
+		g.newDef(n, n.Value)
 
 	case *ast.SelectorExpr:
-		if sel := v.typesInfo.Selections[n]; sel != nil {
+		if sel := g.typesInfo.Selections[n]; sel != nil {
 			t := sel.Recv()
 			if ptr, ok := t.(*types.Pointer); ok {
 				t = ptr.Elem()
 			}
-			v.g.fields[sel.Obj().(*types.Var)] = t
+			g.fields[sel.Obj().(*types.Var)] = t
 		}
 
 	case *ast.Ident:
 		if n.Name == "_" {
 			break
 		}
-		if obj := v.typesInfo.ObjectOf(n); obj != nil {
-			ref := v.g.NewRef(n, obj, v.typesPkg.Path())
-			ref.IsDef = (v.typesInfo.Defs[n] != nil)
-			v.pkgRefs = append(v.pkgRefs, ref)
+		if obj := g.typesInfo.ObjectOf(n); obj != nil {
+			ref := g.NewRef(n, obj, g.typesPkg.Path())
+			ref.IsDef = (g.typesInfo.Defs[n] != nil)
+			g.Output.Refs = append(g.Output.Refs, ref)
 		}
 
 	case *ast.LabeledStmt:
-		ast.Walk(v, n.Stmt)
+		ast.Walk(g, n.Stmt)
 		return nil
 
 	case *ast.BranchStmt:
 		return nil
 	}
 
-	return v
+	return g
 }
 
-func (v *astVisitor) newDef(declNode, declName ast.Node) {
+func (g *Grapher) newDef(declNode, declName ast.Node) {
 	declIdent, ok := declName.(*ast.Ident)
 	if !ok || declIdent.Name == "_" {
 		return
 	}
 
-	obj := v.typesInfo.Defs[declIdent]
+	obj := g.typesInfo.Defs[declIdent]
 	if obj == nil {
 		return
 	}
 
-	v.pkgDefs = append(v.pkgDefs, v.g.NewDef(obj, declNode, declIdent, v.structName))
+	g.Output.Defs = append(g.Output.Defs, g.NewDef(obj, declNode, declIdent, g.structName))
 }
 
 type defInfo struct {
