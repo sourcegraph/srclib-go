@@ -43,12 +43,11 @@ func TestPaths(t *testing.T) {
 		start, end := uint32(strings.Index(src, "/*START*/")), uint32(strings.Index(src, "/*END*/"))
 		prog := createPkg(t, "foo", []string{src}, nil)
 
-		g := New()
 		pkgInfo := prog.Created[0]
-		g.Graph(prog.Fset, pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info, false)
+		output := Graph(prog.Fset, pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info, false)
 
 		var paths []defPath
-		for _, s := range g.Defs {
+		for _, s := range output.Defs {
 			if s.IdentSpan[0] >= start && s.IdentSpan[1] <= end {
 				paths = append(paths, s.DefKey.defPath())
 			}

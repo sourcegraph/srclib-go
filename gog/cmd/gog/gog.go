@@ -68,21 +68,19 @@ func main() {
 		log.Fatal(err)
 	}
 
-	g := gog.New(prog)
-
 	var pkgs []*loader.PackageInfo
 	pkgs = append(pkgs, prog.Created...)
 	for _, pkg := range prog.Imported {
 		pkgs = append(pkgs, pkg)
 	}
 
+	var output gog.Output
 	for _, pkg := range pkgs {
-		if err := g.Graph(pkg.Files, pkg.Pkg, &pkg.Info); err != nil {
-			log.Fatal(err)
-		}
+		o := gog.Graph(prog.Fset, pkg.Files, pkg.Pkg, &pkg.Info, true)
+		output.Append(o)
 	}
 
-	err = json.NewEncoder(os.Stdout).Encode(&g.Output)
+	err = json.NewEncoder(os.Stdout).Encode(&output)
 	if err != nil {
 		log.Fatal(err)
 	}

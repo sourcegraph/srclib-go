@@ -329,8 +329,6 @@ func doGraph(pkgs []*build.Package) (*gog.Output, error) {
 		return nil, err
 	}
 
-	g := gog.New()
-
 	var pkgInfos []*loader.PackageInfo
 	for _, pkg := range prog.Created {
 		if strings.HasSuffix(pkg.Pkg.Name(), "_test") {
@@ -343,9 +341,11 @@ func doGraph(pkgs []*build.Package) (*gog.Output, error) {
 		pkgInfos = append(pkgInfos, pkg)
 	}
 
+	var output gog.Output
 	for _, pkg := range pkgInfos {
-		g.Graph(prog.Fset, pkg.Files, pkg.Pkg, &pkg.Info, true)
+		o := gog.Graph(prog.Fset, pkg.Files, pkg.Pkg, &pkg.Info, true)
+		output.Append(o)
 	}
 
-	return &g.Output, nil
+	return &output, nil
 }

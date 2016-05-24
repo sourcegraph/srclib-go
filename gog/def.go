@@ -32,7 +32,7 @@ type Def struct {
 }
 
 // NewDef creates a new Def.
-func (g *Grapher) NewDef(obj types.Object, declNode ast.Node, declIdent *ast.Ident, structName string) *Def {
+func (g *grapher) NewDef(obj types.Object, declNode ast.Node, declIdent *ast.Ident, structName string) *Def {
 	key, info := g.defInfo(obj)
 
 	si := definfo.DefInfo{
@@ -75,7 +75,7 @@ func (g *Grapher) NewDef(obj types.Object, declNode ast.Node, declIdent *ast.Ide
 }
 
 // NewPackageDef creates a new Def that represents a Go package.
-func (g *Grapher) NewPackageDef(pkgDir string, pkg *types.Package) *Def {
+func (g *grapher) NewPackageDef(pkgDir string, pkg *types.Package) *Def {
 	return &Def{
 		Name: pkg.Name(),
 

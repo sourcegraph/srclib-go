@@ -9,13 +9,14 @@ import (
 	"golang.org/x/tools/go/loader"
 )
 
-func graphPkgFromFiles(t *testing.T, path string, filenames []string) (*Grapher, *loader.Program) {
+func graphPkgFromFiles(t *testing.T, path string, filenames []string) (*Output, *loader.Program) {
 	prog := createPkgFromFiles(t, path, filenames)
-	g := New()
+	var output Output
 	for _, pkgInfo := range prog.AllPackages {
-		g.Graph(prog.Fset, pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info, true)
+		o := Graph(prog.Fset, pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info, true)
+		output.Append(o)
 	}
-	return g, prog
+	return &output, prog
 }
 
 func createPkgFromFiles(t *testing.T, path string, filenames []string) *loader.Program {

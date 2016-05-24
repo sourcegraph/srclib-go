@@ -76,12 +76,11 @@ func TestResolveStructFields(t *testing.T) {
 		start, end := uint32(strings.Index(src, "/*START*/")), uint32(strings.Index(src, "/*END*/"))
 		prog := createPkg(t, "foo", []string{src}, nil)
 
-		g := New()
 		pkgInfo := prog.Created[0]
-		g.Graph(prog.Fset, pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info, false)
+		output := Graph(prog.Fset, pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info, false)
 
 		var refs []*Ref
-		for _, r := range g.Refs {
+		for _, r := range output.Refs {
 			if r.Span[0] >= start && r.Span[1] <= end {
 				refs = append(refs, r)
 			}
