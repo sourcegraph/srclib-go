@@ -64,26 +64,28 @@ func testPkg(t *testing.T, path string) {
 	if err != nil {
 		t.Fatal(path, err)
 	}
-	g := New()
 
 	start := time.Now()
+	var output Output
 	for _, pkgInfo := range prog.AllPackages {
-		g.Graph(prog.Fset, pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info, true)
+		o := Graph(prog.Fset, pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info, true)
+		output.Append(o)
+
 	}
 	if testing.Verbose() {
-		fmt.Printf("graphed %-22s\t% 4d msec   [% 6d defs, % 6d refs]\n", path, time.Since(start)/time.Millisecond, len(g.Defs), len(g.Refs))
+		fmt.Printf("graphed %-22s\t% 4d msec   [% 6d defs, % 6d refs]\n", path, time.Since(start)/time.Millisecond, len(output.Defs), len(output.Refs))
 	}
 	pkgCount++
-	defCount += len(g.Defs)
-	refCount += len(g.Refs)
+	defCount += len(output.Defs)
+	refCount += len(output.Refs)
 
-	checkAllIdents(t, g, prog)
-	checkUnique(t, g, prog)
+	checkAllIdents(t, &output, prog)
+	checkUnique(t, &output, prog)
 }
 
-func checkUnique(t *testing.T, g *Grapher, prog *loader.Program) {
-	defs := make(map[defPath]*Def, len(g.Defs))
-	for _, s := range g.Defs {
+func checkUnique(t *testing.T, output *Output, prog *loader.Program) {
+	defs := make(map[defPath]*Def, len(output.Defs))
+	for _, s := range output.Defs {
 		key := s.DefKey.defPath()
 		if x, present := defs[key]; present {
 			t.Errorf("def %+v %s:%d-%d already defined at %s:%d-%d", key, s.File, s.IdentSpan[0], s.IdentSpan[1], x.File, x.IdentSpan[0], x.IdentSpan[1])

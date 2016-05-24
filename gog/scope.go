@@ -14,7 +14,7 @@ import (
 	"go/types"
 )
 
-func (g *Grapher) buildScopeInfo(typesInfo *types.Info) {
+func (g *grapher) buildScopeInfo(typesInfo *types.Info) {
 	// Precomputing funcNames now avoids an expensive lookup later on.
 	for ident, obj := range typesInfo.Defs {
 		if funcType, ok := obj.(*types.Func); ok {
@@ -27,7 +27,7 @@ func (g *Grapher) buildScopeInfo(typesInfo *types.Info) {
 	}
 }
 
-func (g *Grapher) path(obj types.Object) (path []string) {
+func (g *grapher) path(obj types.Object) (path []string) {
 	if path, present := g.paths[obj]; present {
 		return path
 	}
@@ -79,7 +79,7 @@ func uniqID(p token.Position) string {
 	return fmt.Sprintf("$%s%d", strippedFilename(p.Filename), p.Offset)
 }
 
-func (g *Grapher) scopePath(prefix []string, s *types.Scope) []string {
+func (g *grapher) scopePath(prefix []string, s *types.Scope) []string {
 	if path, present := g.scopePaths[s]; present {
 		return path
 	}
@@ -88,7 +88,7 @@ func (g *Grapher) scopePath(prefix []string, s *types.Scope) []string {
 	return path
 }
 
-func (g *Grapher) scopeLabel(s *types.Scope) (path []string) {
+func (g *grapher) scopeLabel(s *types.Scope) (path []string) {
 	node, present := g.scopeNodes[s]
 	if !present {
 		// TODO(sqs): diagnose why this happens. See https://github.com/sourcegraph/sourcegraph.com/issues/163.
@@ -155,11 +155,11 @@ func strippedFilename(filename string) string {
 	return strings.TrimSuffix(filepath.Base(filename), ".go")
 }
 
-func (g *Grapher) assignPathsInPackage(typesPkg *types.Package) {
+func (g *grapher) assignPathsInPackage(typesPkg *types.Package) {
 	g.assignPaths(typesPkg.Scope(), []string{}, true)
 }
 
-func (g *Grapher) assignPaths(s *types.Scope, prefix []string, pkgscope bool) {
+func (g *grapher) assignPaths(s *types.Scope, prefix []string, pkgscope bool) {
 	g.scopePaths[s] = prefix
 
 	for _, name := range s.Names() {
@@ -217,7 +217,7 @@ func (g *Grapher) assignPaths(s *types.Scope, prefix []string, pkgscope bool) {
 	}
 }
 
-func (g *Grapher) assignMethodPaths(named *types.Named, prefix []string, pkgscope bool) {
+func (g *grapher) assignMethodPaths(named *types.Named, prefix []string, pkgscope bool) {
 	for i := 0; i < named.NumMethods(); i++ {
 		m := named.Method(i)
 		path := append(append([]string{}, prefix...), m.Name())
@@ -245,7 +245,7 @@ func (g *Grapher) assignMethodPaths(named *types.Named, prefix []string, pkgscop
 	}
 }
 
-func (g *Grapher) assignStructFieldPaths(styp *types.Struct, prefix []string, pkgscope bool) {
+func (g *grapher) assignStructFieldPaths(styp *types.Struct, prefix []string, pkgscope bool) {
 	for i := 0; i < styp.NumFields(); i++ {
 		f := styp.Field(i)
 		path := append(append([]string{}, prefix...), f.Name())
@@ -261,7 +261,7 @@ func (g *Grapher) assignStructFieldPaths(styp *types.Struct, prefix []string, pk
 	}
 }
 
-func (g *Grapher) pathEnclosingInterval(start, end token.Pos) ([]ast.Node, bool) {
+func (g *grapher) pathEnclosingInterval(start, end token.Pos) ([]ast.Node, bool) {
 	for _, f := range g.files {
 		if f.Pos() == token.NoPos || !tokenFileContainsPos(g.fset.File(f.Pos()), start) {
 			continue

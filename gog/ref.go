@@ -6,7 +6,7 @@ import (
 	"go/types"
 )
 
-func (g *Grapher) NewRef(node ast.Node, obj types.Object, pkgPath string) *Ref {
+func (g *grapher) NewRef(node ast.Node, obj types.Object, pkgPath string) *Ref {
 	key, _ := g.defInfo(obj)
 
 	pos := g.fset.Position(node.Pos())

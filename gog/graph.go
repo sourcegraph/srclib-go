@@ -19,7 +19,13 @@ type Output struct {
 	Docs []*Doc
 }
 
-type Grapher struct {
+func (o *Output) Append(o2 *Output) {
+	o.Defs = append(o.Defs, o2.Defs...)
+	o.Refs = append(o.Refs, o2.Refs...)
+	o.Docs = append(o.Docs, o2.Docs...)
+}
+
+type grapher struct {
 	fset      *token.FileSet
 	files     []*ast.File
 	typesPkg  *types.Package
@@ -38,14 +44,24 @@ type Grapher struct {
 	fields     map[*types.Var]types.Type
 	structName string
 
-	Output
+	output *Output
 
 	seenDocObjs map[types.Object]struct{}
 	seenDocKeys map[string]struct{}
 }
 
-func New() *Grapher {
-	g := &Grapher{
+func Graph(fset *token.FileSet, files []*ast.File, typesPkg *types.Package, typesInfo *types.Info, includeDocs bool) *Output {
+	if len(files) == 0 {
+		log.Printf("warning: attempted to graph package %s with no files", typesPkg.Path())
+		return &Output{}
+	}
+
+	g := &grapher{
+		fset:      fset,
+		files:     files,
+		typesPkg:  typesPkg,
+		typesInfo: typesInfo,
+
 		defInfoCache: make(map[types.Object]*defInfo),
 		defKeyCache:  make(map[types.Object]*DefKey),
 
@@ -56,47 +72,38 @@ func New() *Grapher {
 		scopePaths: make(map[*types.Scope][]string),
 		pkgscope:   make(map[types.Object]bool),
 		fields:     make(map[*types.Var]types.Type),
+
+		output: &Output{},
 	}
 
-	return g
-}
-
-func (g *Grapher) Graph(fset *token.FileSet, files []*ast.File, typesPkg *types.Package, typesInfo *types.Info, includeDocs bool) {
-	if len(files) == 0 {
-		log.Printf("warning: attempted to graph package %s with no files", typesPkg.Path())
-		return
-	}
-
-	g.fset = fset
-	g.files = files
-	g.typesPkg = typesPkg
-	g.typesInfo = typesInfo
 	g.buildScopeInfo(typesInfo)
 	g.assignPathsInPackage(typesPkg)
 
-	g.Defs = append(g.Defs, g.NewPackageDef(filepath.Dir(g.fset.Position(files[0].Package).Filename), typesPkg))
+	g.output.Defs = append(g.output.Defs, g.NewPackageDef(filepath.Dir(g.fset.Position(files[0].Package).Filename), typesPkg))
 
 	for _, f := range files {
 		ast.Walk(g, f)
 	}
 
 	if includeDocs {
-		g.Docs = append(g.Docs, g.emitDocs(files, typesPkg, typesInfo)...)
+		g.output.Docs = g.emitDocs(files, typesPkg, typesInfo)
 	}
+
+	return g.output
 }
 
-func (g *Grapher) Visit(node ast.Node) (w ast.Visitor) {
+func (g *grapher) Visit(node ast.Node) (w ast.Visitor) {
 	switch n := node.(type) {
 	case *ast.File:
 		// Create a ref that represent the name of the package ("package foo")
 		pkgObj := types.NewPkgName(n.Name.Pos(), g.typesPkg, g.typesPkg.Name(), g.typesPkg)
 		ref := g.NewRef(n.Name, pkgObj, g.typesPkg.Path())
-		g.Output.Refs = append(g.Output.Refs, ref)
+		g.output.Refs = append(g.output.Refs, ref)
 
 	case *ast.ImportSpec:
 		if obj := g.typesInfo.Implicits[n]; obj != nil {
 			ref := g.NewRef(n, obj, g.typesPkg.Path())
-			g.Output.Refs = append(g.Output.Refs, ref)
+			g.output.Refs = append(g.output.Refs, ref)
 		}
 
 	case *ast.TypeSpec:
@@ -151,7 +158,7 @@ func (g *Grapher) Visit(node ast.Node) (w ast.Visitor) {
 		if obj := g.typesInfo.ObjectOf(n); obj != nil {
 			ref := g.NewRef(n, obj, g.typesPkg.Path())
 			ref.IsDef = (g.typesInfo.Defs[n] != nil)
-			g.Output.Refs = append(g.Output.Refs, ref)
+			g.output.Refs = append(g.output.Refs, ref)
 		}
 
 	case *ast.LabeledStmt:
@@ -165,7 +172,7 @@ func (g *Grapher) Visit(node ast.Node) (w ast.Visitor) {
 	return g
 }
 
-func (g *Grapher) newDef(declNode, declName ast.Node) {
+func (g *grapher) newDef(declNode, declName ast.Node) {
 	declIdent, ok := declName.(*ast.Ident)
 	if !ok || declIdent.Name == "_" {
 		return
@@ -176,7 +183,7 @@ func (g *Grapher) newDef(declNode, declName ast.Node) {
 		return
 	}
 
-	g.Output.Defs = append(g.Output.Defs, g.NewDef(obj, declNode, declIdent, g.structName))
+	g.output.Defs = append(g.output.Defs, g.NewDef(obj, declNode, declIdent, g.structName))
 }
 
 type defInfo struct {
@@ -184,7 +191,7 @@ type defInfo struct {
 	pkgscope bool
 }
 
-func (g *Grapher) defInfo(obj types.Object) (*DefKey, *defInfo) {
+func (g *grapher) defInfo(obj types.Object) (*DefKey, *defInfo) {
 	g.defCacheLock.Lock()
 	key := g.defKeyCache[obj]
 	info := g.defInfoCache[obj]
@@ -204,7 +211,7 @@ func (g *Grapher) defInfo(obj types.Object) (*DefKey, *defInfo) {
 	return key, info
 }
 
-func (g *Grapher) makeDefInfo(obj types.Object) (*DefKey, *defInfo) {
+func (g *grapher) makeDefInfo(obj types.Object) (*DefKey, *defInfo) {
 	switch obj := obj.(type) {
 	case *types.Builtin:
 		return &DefKey{"builtin", []string{obj.Name()}}, &defInfo{pkgscope: false, exported: true}
