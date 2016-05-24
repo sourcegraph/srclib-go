@@ -344,9 +344,7 @@ func doGraph(pkgs []*build.Package) (*gog.Output, error) {
 	}
 
 	for _, pkg := range pkgInfos {
-		if err := g.Graph(prog.Fset, pkg.Files, pkg.Pkg, &pkg.Info); err != nil {
-			log.Printf("Ignoring pkg %q due to error in gog.Graph: %s.", pkg.Pkg.Name(), err)
-		}
+		g.Graph(prog.Fset, pkg.Files, pkg.Pkg, &pkg.Info)
 	}
 
 	return &g.Output, nil

@@ -79,10 +79,7 @@ func TestResolveStructFields(t *testing.T) {
 		g := New()
 		g.SkipDocs = true
 		pkgInfo := prog.Created[0]
-		err := g.Graph(prog.Fset, pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info)
-		if err != nil {
-			t.Fatal(label, err)
-		}
+		g.Graph(prog.Fset, pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info)
 
 		var refs []*Ref
 		for _, r := range g.Refs {

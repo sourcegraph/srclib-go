@@ -20,7 +20,7 @@ type Doc struct {
 	Span [2]uint32 `json:",omitempty"`
 }
 
-func (g *Grapher) emitDocs(files []*ast.File, typesPkg *types.Package, typesInfo *types.Info) ([]*Doc, error) {
+func (g *Grapher) emitDocs(files []*ast.File, typesPkg *types.Package, typesInfo *types.Info) []*Doc {
 	var pkgDocs []*Doc
 	objOf := make(map[token.Position]types.Object, len(typesInfo.Defs))
 	for ident, obj := range typesInfo.Defs {
@@ -129,7 +129,7 @@ func (g *Grapher) emitDocs(files []*ast.File, typesPkg *types.Package, typesInfo
 			}
 		}
 	}
-	return pkgDocs, nil
+	return pkgDocs
 }
 
 func firstNonNil(comments ...*ast.CommentGroup) *ast.CommentGroup {

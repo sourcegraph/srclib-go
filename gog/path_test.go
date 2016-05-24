@@ -46,10 +46,7 @@ func TestPaths(t *testing.T) {
 		g := New()
 		g.SkipDocs = true
 		pkgInfo := prog.Created[0]
-		err := g.Graph(prog.Fset, pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info)
-		if err != nil {
-			t.Fatal(err)
-		}
+		g.Graph(prog.Fset, pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info)
 
 		var paths []defPath
 		for _, s := range g.Defs {
