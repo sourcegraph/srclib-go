@@ -68,7 +68,7 @@ func testPkg(t *testing.T, path string) {
 
 	start := time.Now()
 	for _, pkgInfo := range prog.AllPackages {
-		g.Graph(prog.Fset, pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info)
+		g.Graph(prog.Fset, pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info, true)
 	}
 	if testing.Verbose() {
 		fmt.Printf("graphed %-22s\t% 4d msec   [% 6d defs, % 6d refs]\n", path, time.Since(start)/time.Millisecond, len(g.Defs), len(g.Refs))

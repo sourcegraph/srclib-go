@@ -344,7 +344,7 @@ func doGraph(pkgs []*build.Package) (*gog.Output, error) {
 	}
 
 	for _, pkg := range pkgInfos {
-		g.Graph(prog.Fset, pkg.Files, pkg.Pkg, &pkg.Info)
+		g.Graph(prog.Fset, pkg.Files, pkg.Pkg, &pkg.Info, true)
 	}
 
 	return &g.Output, nil

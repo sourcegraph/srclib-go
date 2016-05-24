@@ -20,8 +20,6 @@ type Output struct {
 }
 
 type Grapher struct {
-	SkipDocs bool
-
 	fset      *token.FileSet
 	files     []*ast.File
 	typesPkg  *types.Package
@@ -63,7 +61,7 @@ func New() *Grapher {
 	return g
 }
 
-func (g *Grapher) Graph(fset *token.FileSet, files []*ast.File, typesPkg *types.Package, typesInfo *types.Info) {
+func (g *Grapher) Graph(fset *token.FileSet, files []*ast.File, typesPkg *types.Package, typesInfo *types.Info, includeDocs bool) {
 	if len(files) == 0 {
 		log.Printf("warning: attempted to graph package %s with no files", typesPkg.Path())
 		return
@@ -82,7 +80,7 @@ func (g *Grapher) Graph(fset *token.FileSet, files []*ast.File, typesPkg *types.
 		ast.Walk(g, f)
 	}
 
-	if !g.SkipDocs {
+	if includeDocs {
 		g.Docs = append(g.Docs, g.emitDocs(files, typesPkg, typesInfo)...)
 	}
 }

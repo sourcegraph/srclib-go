@@ -13,7 +13,7 @@ func graphPkgFromFiles(t *testing.T, path string, filenames []string) (*Grapher,
 	prog := createPkgFromFiles(t, path, filenames)
 	g := New()
 	for _, pkgInfo := range prog.AllPackages {
-		g.Graph(prog.Fset, pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info)
+		g.Graph(prog.Fset, pkgInfo.Files, pkgInfo.Pkg, &pkgInfo.Info, true)
 	}
 	return g, prog
 }
