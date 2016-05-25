@@ -5,7 +5,6 @@ import (
 	"go/build"
 	"go/importer"
 	"go/parser"
-	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -52,10 +51,6 @@ type srcfileConfig struct {
 	// directory that the repository being built is checked out to)
 	// and is set as the GOROOT environment variable.
 	GOROOT string
-
-	// GOROOTForCmd, if set, is used as the GOROOT env var when
-	// invoking the "go" tool.
-	GOROOTForCmd string
 
 	// GOPATH's colon-separated dirs, if specified, are made absolute
 	// (prefixed with the directory that the repository being built is
@@ -114,10 +109,6 @@ func (c *srcfileConfig) apply() error {
 		dirs = append(dirs, filepath.SplitList(buildContext.GOPATH)...)
 		buildContext.GOPATH = strings.Join(uniq(dirs), string(filepath.ListSeparator))
 		loaderConfig.Build = &buildContext
-	}
-
-	if config.GOROOTForCmd == "" {
-		config.GOROOTForCmd = buildContext.GOROOT
 	}
 
 	return nil
