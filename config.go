@@ -47,11 +47,6 @@ func isInEffectiveConfigGOPATH(dir string) bool {
 }
 
 type srcfileConfig struct {
-	// GOROOT, if specified, is made absolute (prefixed with the
-	// directory that the repository being built is checked out to)
-	// and is set as the GOROOT environment variable.
-	GOROOT string
-
 	// GOPATH's colon-separated dirs, if specified, are made absolute
 	// (prefixed with the directory that the repository being built is
 	// checked out to) and the resulting value is appended to the
@@ -87,19 +82,8 @@ func (c *srcfileConfig) apply() error {
 	// This is necessary for the stdlib unit names to be correct.
 	output, err := exec.Command("git", "config", "--get", "remote.origin.url").Output()
 	cloneURL := strings.Replace(strings.TrimSuffix(strings.TrimSpace(string(output)), ".git"), ":", "/", -1)
-	if err == nil && (strings.HasSuffix(cloneURL, "github.com/golang/go") || strings.HasSuffix(cloneURL, "github.com/sgtest/minimal-go-stdlib")) && c.GOROOT == "" {
-		c.GOROOT = "."
-	}
-
-	if config.GOROOT != "" {
-		// clean/absolutize all paths
-		config.GOROOT = filepath.Clean(config.GOROOT)
-		if !filepath.IsAbs(config.GOROOT) {
-			config.GOROOT = filepath.Join(cwd, config.GOROOT)
-		}
-
-		buildContext.GOROOT = c.GOROOT
-		loaderConfig.Build = &buildContext
+	if err == nil && (strings.HasSuffix(cloneURL, "github.com/golang/go") || strings.HasSuffix(cloneURL, "github.com/sgtest/minimal-go-stdlib")) {
+		buildContext.GOROOT = cwd
 	}
 
 	if config.GOPATH != "" {
