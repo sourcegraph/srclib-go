@@ -30,16 +30,7 @@ type ScanCmd struct{}
 var scanCmd ScanCmd
 
 func (c *ScanCmd) Execute(args []string) error {
-	if err := json.NewDecoder(os.Stdin).Decode(&config); err != nil {
-		return err
-	}
-	if err := os.Stdin.Close(); err != nil {
-		return err
-	}
-
-	if err := config.apply(); err != nil {
-		return err
-	}
+	initBuildContext()
 
 	scanDir, err := filepath.EvalSymlinks(getCWD())
 	if err != nil {
