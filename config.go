@@ -165,17 +165,6 @@ func (c *srcfileConfig) apply() error {
 	return nil
 }
 
-func (c *srcfileConfig) env() []string {
-	return []string{
-		"PATH=" + os.Getenv("PATH"),
-		"GOARCH=" + buildContext.GOARCH,
-		"GOOS=" + buildContext.GOOS,
-		"GOROOT=" + config.GOROOTForCmd,
-		"GOPATH=" + buildContext.GOPATH,
-		"GO15VENDOREXPERIMENT=1",
-	}
-}
-
 func pathHasPrefix(path, prefix string) bool {
 	return prefix == "." || path == prefix || strings.HasPrefix(path, prefix+string(filepath.Separator))
 }
