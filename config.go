@@ -27,23 +27,7 @@ var (
 		Build:       &buildContext,
 		AllowErrors: true,
 	}
-
-	// effectiveConfigGOPATHs is a list of GOPATH dirs that were
-	// created as a result of the GOPATH config property. These are
-	// the dirs that are appended to the actual build context GOPATH.
-	effectiveConfigGOPATHs []string
 )
-
-// isInEffectiveConfigGOPATH is true if dir is underneath any of the
-// dirs in effectiveConfigGOPATHs.
-func isInEffectiveConfigGOPATH(dir string) bool {
-	for _, gopath := range effectiveConfigGOPATHs {
-		if pathHasPrefix(dir, gopath) {
-			return true
-		}
-	}
-	return false
-}
 
 func initBuildContext() {
 	// KLUDGE: determine whether we're in the stdlib and if so, set GOROOT to "." before applying config.
