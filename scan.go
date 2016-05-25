@@ -119,15 +119,6 @@ func vendoredUnitName(pkg *build.Package) (name string, isVendored bool) {
 	return relImport, true
 }
 
-func isInGopath(path string) bool {
-	for _, gopath := range filepath.SplitList(buildContext.GOPATH) {
-		if strings.HasPrefix(evalSymlinks(path), filepath.Join(evalSymlinks(gopath), "src")) {
-			return true
-		}
-	}
-	return false
-}
-
 func scan(scanDir string) ([]*unit.SourceUnit, error) {
 	// TODO(sqs): include xtest, but we'll have to make them have a distinctly
 	// namespaced def path from the non-xtest pkg.
