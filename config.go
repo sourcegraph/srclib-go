@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"go/build"
 	"go/importer"
 	"go/parser"
@@ -29,8 +28,6 @@ var (
 		AllowErrors: true,
 	}
 
-	config *srcfileConfig
-
 	// effectiveConfigGOPATHs is a list of GOPATH dirs that were
 	// created as a result of the GOPATH config property. These are
 	// the dirs that are appended to the actual build context GOPATH.
@@ -48,33 +45,7 @@ func isInEffectiveConfigGOPATH(dir string) bool {
 	return false
 }
 
-type srcfileConfig struct {
-}
-
-// unmarshalTypedConfig parses config from the Config field of the source unit.
-// It stores it in the config global variable.
-//
-// Callers should typically call config.apply() after calling
-// unmarshalTypedConfig to actually apply the config.
-func unmarshalTypedConfig(cfg map[string]string) error {
-	data, err := json.Marshal(cfg)
-	if err != nil {
-		return err
-	}
-
-	if err := json.Unmarshal(data, &config); err != nil {
-		return err
-	}
-
-	if config == nil {
-		config = &srcfileConfig{}
-	}
-
-	return config.apply()
-}
-
-// apply applies the configuration.
-func (c *srcfileConfig) apply() error {
+func initBuildContext() {
 	// KLUDGE: determine whether we're in the stdlib and if so, set GOROOT to "." before applying config.
 	// This is necessary for the stdlib unit names to be correct.
 	output, err := exec.Command("git", "config", "--get", "remote.origin.url").Output()
@@ -100,8 +71,6 @@ func (c *srcfileConfig) apply() error {
 	}
 	gopaths = append(gopaths, filepath.SplitList(buildContext.GOPATH)...)
 	buildContext.GOPATH = strings.Join(gopaths, string(filepath.ListSeparator))
-
-	return nil
 }
 
 func pathHasPrefix(path, prefix string) bool {
