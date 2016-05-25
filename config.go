@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"go/build"
 	"go/importer"
 	"go/parser"
@@ -30,10 +29,6 @@ var (
 	}
 
 	config *srcfileConfig
-
-	goBinaryName string
-
-	validVersions = []string{"", "1.3", "1.2", "1.1", "1"}
 
 	// effectiveConfigGOPATHs is a list of GOPATH dirs that were
 	// created as a result of the GOPATH config property. These are
@@ -67,14 +62,6 @@ type srcfileConfig struct {
 	// checked out to) and the resulting value is appended to the
 	// GOPATH environment variable during the build.
 	GOPATH string
-
-	// GOVERSION is the version of the go tool that srclib-go
-	// should shell out to. If GOVERSION is empty, the system's
-	// default go binary is used. The only valid values for
-	// GOVERSION are the empty string, "1.3", "1.2", "1.1", and
-	// "1", which are transformed into "go", "go1.3", ..., "go1",
-	// respectively, when the binary is called.
-	GOVERSION string
 
 	// ImportPathRoot is a prefix which is used when converting from repository
 	// URI to Go import path.
@@ -110,25 +97,6 @@ func (c *srcfileConfig) apply() error {
 	cloneURL, err := exec.Command("git", "config", "--get", "remote.origin.url").Output()
 	if err == nil && strings.HasSuffix(strings.TrimSpace(string(cloneURL)), "github.com/golang/go") && c.GOROOT == "" {
 		c.GOROOT = "."
-	}
-
-	var versionValid bool
-	for _, v := range validVersions {
-		if config.GOVERSION == v {
-			versionValid = true
-			goBinaryName = fmt.Sprintf("go%s", config.GOVERSION)
-			if config.GOVERSION != "" && config.GOROOT == "" {
-				// If GOROOT is empty, assign $GOROOT<version_num> to it.
-				newGOROOT := os.Getenv(fmt.Sprintf("GOROOT%s", strings.Replace(config.GOVERSION, ".", "", -1)))
-				if newGOROOT != "" {
-					config.GOROOTForCmd = newGOROOT
-				}
-			}
-			break
-		}
-	}
-	if !versionValid {
-		return fmt.Errorf("The version %s is not valid. Use one of the following: %v", config.GOVERSION, validVersions)
 	}
 
 	if config.GOROOT != "" {
