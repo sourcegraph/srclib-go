@@ -19,9 +19,6 @@
 [submodule "testdata/case/src/github.com/sgtest/gopath-in-repo"]
 	path = testdata/case/src/github.com/sgtest/gopath-in-repo
 	url = https://github.com/sgtest/gopath-in-repo.git
-[submodule "testdata/case/src/github.com/sgtest/godep-exclude"]
-	path = testdata/case/src/github.com/sgtest/godep-exclude
-	url = https://github.com/sgtest/godep-exclude.git
 [submodule "testdata/case/src/github.com/sgtest/godep-include"]
 	path = testdata/case/src/github.com/sgtest/godep-include
 	url = https://github.com/sgtest/godep-include.git

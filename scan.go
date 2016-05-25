@@ -323,7 +323,7 @@ func scanForPackages(dir string) ([]*build.Package, error) {
 	for _, info := range infos {
 		name := info.Name()
 		fullPath := filepath.Join(dir, name)
-		if info.IsDir() && ((name[0] != '.' && name[0] != '_' && name != "testdata") || (strings.HasSuffix(filepath.ToSlash(fullPath), "/Godeps/_workspace") && !config.SkipGodeps)) {
+		if info.IsDir() && ((name[0] != '.' && name[0] != '_' && name != "testdata") || (strings.HasSuffix(filepath.ToSlash(fullPath), "/Godeps/_workspace"))) {
 			subPkgs, err := scanForPackages(fullPath)
 			if err != nil {
 				return nil, err
