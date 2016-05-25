@@ -76,12 +76,6 @@ type srcfileConfig struct {
 	// respectively, when the binary is called.
 	GOVERSION string
 
-	// SkipGodeps makes srclib-go skip the Godeps/_workspace directory when
-	// scanning for packages. This causes references to those packages to point
-	// to the files in their respective repositories instead of the local copies
-	// inside of Godeps/_workspace.
-	SkipGodeps bool
-
 	// ImportPathRoot is a prefix which is used when converting from repository
 	// URI to Go import path.
 	ImportPathRoot string
