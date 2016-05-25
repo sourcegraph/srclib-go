@@ -37,28 +37,6 @@ func (c *ScanCmd) Execute(args []string) error {
 		return err
 	}
 
-	// Automatically detect vendored dirs (check for vendor/src and
-	// Godeps/_workspace/src) and set up GOPATH pointing to them if
-	// they exist.
-	//
-	// Note that the `vendor` directory here is used by 3rd party vendoring
-	// tools and is NOT the `vendor` directory in the Go 1.6 official vendor
-	// specification (that `vendor` directory does not have a `src`
-	// subdirectory).
-	var setAutoGOPATH bool
-	if config.GOPATH == "" {
-		vendorDirs := []string{"vendor", "Godeps/_workspace"}
-		var foundGOPATHs []string
-		for _, vdir := range vendorDirs {
-			if fi, err := os.Stat(filepath.Join(cwd, vdir, "src")); err == nil && fi.Mode().IsDir() {
-				foundGOPATHs = append(foundGOPATHs, vdir)
-				setAutoGOPATH = true
-				log.Printf("Adding %s to GOPATH (auto-detected Go vendored dependencies source dir %s). If you don't want this, make a Srcfile with a GOPATH property set to something other than the empty string.", vdir, filepath.Join(vdir, "src"))
-			}
-		}
-		config.GOPATH = strings.Join(foundGOPATHs, string(filepath.ListSeparator))
-	}
-
 	if err := config.apply(); err != nil {
 		return err
 	}
@@ -71,33 +49,6 @@ func (c *ScanCmd) Execute(args []string) error {
 	units, err := scan(scanDir)
 	if err != nil {
 		return err
-	}
-
-	// Make vendored dep unit names (package import paths) relative to
-	// vendored src dir, not to top-level dir.
-	if config.GOPATH != "" {
-		dirs := filepath.SplitList(config.GOPATH)
-		for _, dir := range dirs {
-			relDir, err := filepath.Rel(cwd, dir)
-			if err != nil {
-				return err
-			}
-			srcDir := filepath.Join(relDir, "src")
-			for _, u := range units {
-				var pkg build.Package
-				if err := json.Unmarshal(u.Data, &pkg); err != nil {
-					return err
-				}
-				if strings.HasPrefix(pkg.Dir, srcDir) {
-					relImport, err := filepath.Rel(srcDir, pkg.Dir)
-					if err != nil {
-						return err
-					}
-					pkg.ImportPath = relImport
-					u.Name = pkg.ImportPath
-				}
-			}
-		}
 	}
 
 	// Make go1.5 style vendored dep unit names (package import paths)
@@ -121,28 +72,6 @@ func (c *ScanCmd) Execute(args []string) error {
 		pkgSubdir := pkg.Dir
 		for i, f := range u.Files {
 			u.Files[i] = filepath.ToSlash(filepath.Join(pkgSubdir, f))
-		}
-	}
-
-	// If we automatically set the GOPATH based on the presence of
-	// vendor dirs, then we need to pass the GOPATH to the units
-	// because it is not persisted in the Srcfile. Otherwise the other
-	// tools would never see the auto-set GOPATH.
-	if setAutoGOPATH {
-		for _, u := range units {
-			if u.Config == nil {
-				u.Config = map[string]string{}
-			}
-
-			dirs := filepath.SplitList(config.GOPATH)
-			for i, dir := range dirs {
-				relDir, err := filepath.Rel(cwd, dir)
-				if err != nil {
-					return err
-				}
-				dirs[i] = filepath.ToSlash(relDir)
-			}
-			u.Config["GOPATH"] = strings.Join(dirs, string(filepath.ListSeparator))
 		}
 	}
 
