@@ -5,6 +5,8 @@ import (
 	"go/build"
 	"go/importer"
 	"go/parser"
+	"log"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -47,11 +49,6 @@ func isInEffectiveConfigGOPATH(dir string) bool {
 }
 
 type srcfileConfig struct {
-	// GOPATH's colon-separated dirs, if specified, are made absolute
-	// (prefixed with the directory that the repository being built is
-	// checked out to) and the resulting value is appended to the
-	// GOPATH environment variable during the build.
-	GOPATH string
 }
 
 // unmarshalTypedConfig parses config from the Config field of the source unit.
@@ -86,34 +83,29 @@ func (c *srcfileConfig) apply() error {
 		buildContext.GOROOT = cwd
 	}
 
-	if config.GOPATH != "" {
-		// clean/absolutize all paths
-		dirs := cleanDirs(filepath.SplitList(config.GOPATH))
-		config.GOPATH = strings.Join(dirs, string(filepath.ListSeparator))
-
-		dirs = append(dirs, filepath.SplitList(buildContext.GOPATH)...)
-		buildContext.GOPATH = strings.Join(uniq(dirs), string(filepath.ListSeparator))
-		loaderConfig.Build = &buildContext
+	// Automatically detect vendored dirs (check for vendor/src and
+	// Godeps/_workspace/src) and set up GOPATH pointing to them if
+	// they exist.
+	//
+	// Note that the `vendor` directory here is used by 3rd party vendoring
+	// tools and is NOT the `vendor` directory in the Go 1.6 official vendor
+	// specification (that `vendor` directory does not have a `src`
+	// subdirectory).
+	var gopaths []string
+	for _, vdir := range []string{"vendor", "Godeps/_workspace"} {
+		if fi, err := os.Stat(filepath.Join(cwd, vdir, "src")); err == nil && fi.Mode().IsDir() {
+			gopaths = append(gopaths, filepath.Join(cwd, vdir))
+			log.Printf("Adding %s to GOPATH (auto-detected Go vendored dependencies source dir %s).", vdir, filepath.Join(vdir, "src"))
+		}
 	}
+	gopaths = append(gopaths, filepath.SplitList(buildContext.GOPATH)...)
+	buildContext.GOPATH = strings.Join(gopaths, string(filepath.ListSeparator))
 
 	return nil
 }
 
 func pathHasPrefix(path, prefix string) bool {
 	return prefix == "." || path == prefix || strings.HasPrefix(path, prefix+string(filepath.Separator))
-}
-
-// cleanDirs takes a list of paths cleans/abs them + removes duplicates
-func cleanDirs(dirs []string) []string {
-	dirs = uniq(dirs)
-	for i, dir := range dirs {
-		dir = filepath.Clean(dir)
-		if !filepath.IsAbs(dir) {
-			dir = filepath.Join(cwd, dir)
-		}
-		dirs[i] = dir
-	}
-	return dirs
 }
 
 // uniq maintains the order of s.
