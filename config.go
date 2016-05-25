@@ -62,10 +62,6 @@ type srcfileConfig struct {
 	// checked out to) and the resulting value is appended to the
 	// GOPATH environment variable during the build.
 	GOPATH string
-
-	// ImportPathRoot is a prefix which is used when converting from repository
-	// URI to Go import path.
-	ImportPathRoot string
 }
 
 // unmarshalTypedConfig parses config from the Config field of the source unit.
