@@ -2,31 +2,15 @@ package main
 
 import (
 	"go/build"
-	"go/importer"
-	"go/parser"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
-
-	"go/types"
-
-	"golang.org/x/tools/go/loader"
 )
 
 var (
 	buildContext = build.Default
-
-	loaderConfig = loader.Config{
-		ParserMode: parser.ParseComments,
-		TypeChecker: types.Config{
-			Importer:    importer.Default(),
-			FakeImportC: true,
-		},
-		Build:       &buildContext,
-		AllowErrors: true,
-	}
 )
 
 func initBuildContext() {

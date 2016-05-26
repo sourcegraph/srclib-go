@@ -13,6 +13,7 @@ func UnitDataAsBuildPackage(u *unit.SourceUnit) (*build.Package, error) {
 	if err := json.Unmarshal(u.Data, &pkg); err != nil {
 		return nil, err
 	}
+	pkg.Dir = filepath.Join(cwd, pkg.Dir)
 	return pkg, nil
 }
 
