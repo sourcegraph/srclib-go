@@ -1,4 +1,5 @@
 .bin/
 .test/
 testdata/actual/
+testdata/case/pkg
 vendor/*/

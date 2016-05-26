@@ -1,10 +1,15 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"go/ast"
 	"go/build"
+	"go/parser"
+	"go/token"
+	"go/types"
 	"io/ioutil"
 	"log"
 	"os"
@@ -13,7 +18,7 @@ import (
 	"regexp"
 	"strings"
 
-	"golang.org/x/tools/go/loader"
+	"golang.org/x/tools/go/gcimporter15"
 
 	"sourcegraph.com/sourcegraph/srclib-go/gog"
 	"sourcegraph.com/sourcegraph/srclib-go/gog/definfo"
@@ -130,9 +135,13 @@ func Graph(units unit.SourceUnits) (*graph.Output, error) {
 		pkgs = append(pkgs, pkg)
 	}
 
-	o, err := doGraph(pkgs)
-	if err != nil {
-		return nil, err
+	var o gog.Output
+	for _, pkg := range pkgs {
+		output, err := doGraph(pkg)
+		if err != nil {
+			return nil, err
+		}
+		o.Append(output)
 	}
 
 	o2 := graph.Output{}
@@ -303,42 +312,94 @@ func treePath(path string) string {
 	return "./" + path
 }
 
-func doGraph(pkgs []*build.Package) (*gog.Output, error) {
-	build.Default = *loaderConfig.Build
-
-	for _, pkg := range pkgs {
-		var allGoFiles []string
-		allGoFiles = append(allGoFiles, pkg.GoFiles...)
-		allGoFiles = append(allGoFiles, pkg.CgoFiles...)
-		allGoFiles = append(allGoFiles, pkg.TestGoFiles...)
-		for i, f := range allGoFiles {
-			allGoFiles[i] = filepath.Join(cwd, pkg.Dir, f)
-		}
-		loaderConfig.CreateFromFilenames(pkg.ImportPath, allGoFiles...)
+func doGraph(pkg *build.Package) (*gog.Output, error) {
+	var allGoFiles []string
+	allGoFiles = append(allGoFiles, pkg.GoFiles...)
+	allGoFiles = append(allGoFiles, pkg.CgoFiles...)
+	allGoFiles = append(allGoFiles, pkg.TestGoFiles...)
+	if len(allGoFiles) == 0 {
+		return &gog.Output{}, nil
 	}
 
-	prog, err := loaderConfig.Load()
+	fset := token.NewFileSet()
+	var files []*ast.File
+	for _, name := range allGoFiles {
+		file, err := parser.ParseFile(fset, filepath.Join(pkg.Dir, name), nil, parser.ParseComments)
+		if err != nil {
+			return nil, err
+		}
+		files = append(files, file)
+	}
+
+	typesConfig := &types.Config{
+		Importer: &buildContextImporter{
+			context:  &buildContext,
+			srcDir:   pkg.Dir,
+			packages: make(map[string]*types.Package),
+		},
+		FakeImportC: true,
+		Error: func(err error) {
+			// errors are ignored, use best-effort type checking output
+		},
+	}
+	typesInfo := &types.Info{
+		Defs:       make(map[*ast.Ident]types.Object),
+		Uses:       make(map[*ast.Ident]types.Object),
+		Implicits:  make(map[ast.Node]types.Object),
+		Selections: make(map[*ast.SelectorExpr]*types.Selection),
+		Scopes:     make(map[ast.Node]*types.Scope),
+	}
+	typesPkg, err := typesConfig.Check(pkg.ImportPath, fset, files, typesInfo)
+	if err != nil {
+		log.Println("type checker error:", err) // see comment above
+	}
+
+	return gog.Graph(fset, files, typesPkg, typesInfo, true), nil
+}
+
+type buildContextImporter struct {
+	context  *build.Context
+	srcDir   string
+	packages map[string]*types.Package
+}
+
+func (i *buildContextImporter) Import(path string) (*types.Package, error) {
+	buildPkg, err := i.context.Import(path, i.srcDir, build.FindOnly&build.AllowBinary)
 	if err != nil {
 		return nil, err
 	}
 
-	var pkgInfos []*loader.PackageInfo
-	for _, pkg := range prog.Created {
-		if strings.HasSuffix(pkg.Pkg.Name(), "_test") {
-			// ignore xtest packages
-			continue
+	if typesPkg, ok := i.packages[buildPkg.ImportPath]; ok && typesPkg.Complete() {
+		return typesPkg, nil
+	}
+
+	if _, err := os.Stat(buildPkg.PkgObj); os.IsNotExist(err) {
+		// try to build .a file if it does not exist
+		cmd := exec.Command("go", "install", "-buildmode=archive", buildPkg.ImportPath)
+		cmd.Env = []string{"PATH=" + os.Getenv("PATH"), "GOROOT=" + i.context.GOROOT, "GOPATH=" + i.context.GOPATH}
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			return nil, err
 		}
-		pkgInfos = append(pkgInfos, pkg)
-	}
-	for _, pkg := range prog.Imported {
-		pkgInfos = append(pkgInfos, pkg)
 	}
 
-	var output gog.Output
-	for _, pkg := range pkgInfos {
-		o := gog.Graph(prog.Fset, pkg.Files, pkg.Pkg, &pkg.Info, true)
-		output.Append(o)
+	r, err := os.Open(buildPkg.PkgObj)
+	if err != nil {
+		return nil, err
+	}
+	defer r.Close()
+
+	br := bufio.NewReader(r)
+
+	_, err = gcimporter.FindExportData(br)
+	if err != nil {
+		return nil, err
 	}
 
-	return &output, nil
+	typesPkg, err := gcimporter.ImportData(i.packages, buildPkg.PkgObj, buildPkg.ImportPath, br)
+	if err != nil {
+		return nil, err
+	}
+
+	return typesPkg, nil
 }
