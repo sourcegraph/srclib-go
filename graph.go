@@ -333,9 +333,11 @@ func doGraph(pkg *build.Package) (*gog.Output, error) {
 
 	typesConfig := &types.Config{
 		Importer: &buildContextImporter{
-			context:  &buildContext,
-			srcDir:   pkg.Dir,
-			packages: make(map[string]*types.Package),
+			context: &buildContext,
+			srcDir:  pkg.Dir,
+			packages: map[string]*types.Package{
+				"unsafe": types.Unsafe,
+			},
 		},
 		FakeImportC: true,
 		Error: func(err error) {

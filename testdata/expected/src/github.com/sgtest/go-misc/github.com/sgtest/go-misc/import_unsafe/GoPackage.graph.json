@@ -1,0 +1,131 @@
+{
+  "Defs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/import_unsafe",
+      "Path": ".",
+      "Name": "import_unsafe",
+      "Kind": "package",
+      "File": "import_unsafe",
+      "DefStart": 0,
+      "DefEnd": 0,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgName": "import_unsafe",
+        "TypeString": "",
+        "Kind": "package",
+        "PackageImportPath": "github.com/sgtest/go-misc/import_unsafe"
+      },
+      "TreePath": "."
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/import_unsafe",
+      "Path": "main",
+      "Name": "main",
+      "Kind": "func",
+      "File": "import_unsafe/import_unsafe.go",
+      "DefStart": 40,
+      "DefEnd": 84,
+      "Data": {
+        "PkgScope": true,
+        "PkgName": "import_unsafe",
+        "TypeString": "func()",
+        "UnderlyingTypeString": "func()",
+        "Kind": "func",
+        "PackageImportPath": "github.com/sgtest/go-misc/import_unsafe"
+      },
+      "TreePath": "./main"
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/import_unsafe",
+      "Path": "main/p",
+      "Name": "p",
+      "Kind": "var",
+      "File": "import_unsafe/import_unsafe.go",
+      "DefStart": 59,
+      "DefEnd": 75,
+      "Local": true,
+      "Data": {
+        "PkgName": "import_unsafe",
+        "TypeString": "unsafe.Pointer",
+        "UnderlyingTypeString": "unsafe.Pointer",
+        "Kind": "var",
+        "PackageImportPath": "github.com/sgtest/go-misc/import_unsafe"
+      },
+      "TreePath": "./main/p"
+    }
+  ],
+  "Refs": [
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/import_unsafe",
+      "DefPath": ".",
+      "Unit": "github.com/sgtest/go-misc/import_unsafe",
+      "File": "import_unsafe/import_unsafe.go",
+      "Start": 8,
+      "End": 21
+    },
+    {
+      "DefRepo": "github.com/golang/go",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "unsafe",
+      "DefPath": ".",
+      "Unit": "github.com/sgtest/go-misc/import_unsafe",
+      "File": "import_unsafe/import_unsafe.go",
+      "Start": 30,
+      "End": 38
+    },
+    {
+      "DefRepo": "github.com/golang/go",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "unsafe",
+      "DefPath": ".",
+      "Unit": "github.com/sgtest/go-misc/import_unsafe",
+      "File": "import_unsafe/import_unsafe.go",
+      "Start": 61,
+      "End": 67
+    },
+    {
+      "DefRepo": "github.com/golang/go",
+      "DefUnitType": "GoPackage",
+      "DefUnit": "builtin",
+      "DefPath": "Pointer",
+      "Unit": "github.com/sgtest/go-misc/import_unsafe",
+      "File": "import_unsafe/import_unsafe.go",
+      "Start": 68,
+      "End": 75
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/import_unsafe",
+      "DefPath": "main/p",
+      "Unit": "github.com/sgtest/go-misc/import_unsafe",
+      "Def": true,
+      "File": "import_unsafe/import_unsafe.go",
+      "Start": 59,
+      "End": 60
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/import_unsafe",
+      "DefPath": "main/p",
+      "Unit": "github.com/sgtest/go-misc/import_unsafe",
+      "File": "import_unsafe/import_unsafe.go",
+      "Start": 81,
+      "End": 82
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/import_unsafe",
+      "DefPath": "main",
+      "Unit": "github.com/sgtest/go-misc/import_unsafe",
+      "Def": true,
+      "File": "import_unsafe/import_unsafe.go",
+      "Start": 45,
+      "End": 49
+    }
+  ]
+}
