@@ -66,26 +66,17 @@ func (c *GraphCmd) Execute(args []string) error {
 	if err != nil {
 		return err
 	}
-	var units unit.SourceUnits
-	if err := json.NewDecoder(bytes.NewReader(inputBytes)).Decode(&units); err != nil {
-		// Legacy API: try parsing input as a single source unit
-		var u *unit.SourceUnit
-		if err := json.NewDecoder(bytes.NewReader(inputBytes)).Decode(&u); err != nil {
-			return err
-		}
-		units = unit.SourceUnits{u}
+	var unit *unit.SourceUnit
+	if err := json.NewDecoder(bytes.NewReader(inputBytes)).Decode(&unit); err != nil {
+		return err
 	}
 	if err := os.Stdin.Close(); err != nil {
 		return err
 	}
 
-	if len(units) == 0 {
-		log.Fatal("Input contains no source unit data.")
-	}
-
 	initBuildContext()
 
-	out, err := Graph(units)
+	out, err := Graph(unit)
 	if err != nil {
 		return err
 	}
@@ -124,24 +115,15 @@ func relPath(base, path string) string {
 	return filepath.ToSlash(rp)
 }
 
-func Graph(units unit.SourceUnits) (*graph.Output, error) {
-	var pkgs []*build.Package
-	for _, u := range units {
-		pkg, err := UnitDataAsBuildPackage(u)
-		if err != nil {
-			log.Printf("Ignoring unit %q due to error in converting to build pkg: %s.", u.Name, err)
-			continue
-		}
-		pkgs = append(pkgs, pkg)
+func Graph(unit *unit.SourceUnit) (*graph.Output, error) {
+	pkg, err := UnitDataAsBuildPackage(unit)
+	if err != nil {
+		return nil, err
 	}
 
-	var o gog.Output
-	for _, pkg := range pkgs {
-		output, err := doGraph(pkg)
-		if err != nil {
-			return nil, err
-		}
-		o.Append(output)
+	o, err := doGraph(pkg)
+	if err != nil {
+		return nil, err
 	}
 
 	o2 := graph.Output{}
