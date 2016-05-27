@@ -33,11 +33,12 @@ func (g *grapher) path(obj types.Object) (path []string) {
 	}
 
 	if obj.Pkg() != g.typesPkg {
-		if v, ok := obj.(*types.Var); ok {
-			if t, ok := g.fields[v]; ok {
-				if nt, ok := t.(*types.Named); ok {
-					return []string{nt.Obj().Name(), obj.Name()}
-				}
+		if recv, ok := g.selRecvs[obj]; ok {
+			if ptr, ok := recv.(*types.Pointer); ok {
+				recv = ptr.Elem()
+			}
+			if nt, ok := recv.(*types.Named); ok {
+				return []string{nt.Obj().Name(), obj.Name()}
 			}
 		}
 		return []string{obj.Name()}

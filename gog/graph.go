@@ -41,7 +41,7 @@ type grapher struct {
 	paths      map[types.Object][]string
 	scopePaths map[*types.Scope][]string
 	pkgscope   map[types.Object]bool
-	fields     map[*types.Var]types.Type
+	selRecvs   map[types.Object]types.Type
 	structName string
 
 	output *Output
@@ -71,7 +71,7 @@ func Graph(fset *token.FileSet, files []*ast.File, typesPkg *types.Package, type
 		paths:      make(map[types.Object][]string),
 		scopePaths: make(map[*types.Scope][]string),
 		pkgscope:   make(map[types.Object]bool),
-		fields:     make(map[*types.Var]types.Type),
+		selRecvs:   make(map[types.Object]types.Type),
 
 		output: &Output{},
 	}
@@ -144,13 +144,15 @@ func (g *grapher) Visit(node ast.Node) (w ast.Visitor) {
 
 	case *ast.SelectorExpr:
 		if sel := g.typesInfo.Selections[n]; sel != nil {
-			if v, ok := sel.Obj().(*types.Var); ok {
-				t := sel.Recv()
-				if ptr, ok := t.(*types.Pointer); ok {
-					t = ptr.Elem()
+			recv := sel.Recv()
+			index := sel.Index()
+			for i := 0; i < len(index)-1; i++ {
+				if ptr, ok := recv.Underlying().(*types.Pointer); ok {
+					recv = ptr.Elem()
 				}
-				g.fields[v] = t
+				recv = recv.Underlying().(*types.Struct).Field(i).Type()
 			}
+			g.selRecvs[sel.Obj()] = recv
 		}
 
 	case *ast.Ident:
