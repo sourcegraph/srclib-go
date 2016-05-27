@@ -150,7 +150,7 @@ func (g *grapher) Visit(node ast.Node) (w ast.Visitor) {
 				if ptr, ok := recv.Underlying().(*types.Pointer); ok {
 					recv = ptr.Elem()
 				}
-				recv = recv.Underlying().(*types.Struct).Field(i).Type()
+				recv = recv.Underlying().(*types.Struct).Field(index[i]).Type()
 			}
 			g.selRecvs[sel.Obj()] = recv
 		}
