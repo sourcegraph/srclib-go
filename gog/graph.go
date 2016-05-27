@@ -144,11 +144,13 @@ func (g *grapher) Visit(node ast.Node) (w ast.Visitor) {
 
 	case *ast.SelectorExpr:
 		if sel := g.typesInfo.Selections[n]; sel != nil {
-			t := sel.Recv()
-			if ptr, ok := t.(*types.Pointer); ok {
-				t = ptr.Elem()
+			if v, ok := sel.Obj().(*types.Var); ok {
+				t := sel.Recv()
+				if ptr, ok := t.(*types.Pointer); ok {
+					t = ptr.Elem()
+				}
+				g.fields[v] = t
 			}
-			g.fields[sel.Obj().(*types.Var)] = t
 		}
 
 	case *ast.Ident:
