@@ -125,7 +125,11 @@ func scan(scanDir string) ([]*unit.SourceUnit, error) {
 	// TODO(sqs): include xtest, but we'll have to make them have a distinctly
 	// namespaced def path from the non-xtest pkg.
 
-	pkgs, err := scanForPackages(scanDir)
+	filteredScanDir := scanDir
+	if buildContext.GOROOT == cwd { // Go stdlib
+		filteredScanDir = filepath.Join(scanDir, "src")
+	}
+	pkgs, err := scanForPackages(filteredScanDir)
 	if err != nil {
 		return nil, err
 	}
