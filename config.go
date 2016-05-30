@@ -27,6 +27,7 @@ func initBuildContext() error {
 			cmd.Dir = filepath.Join(cwd, "src")
 			cmd.Stdout = os.Stderr
 			cmd.Stderr = os.Stderr
+			cmd.Env = []string{"PATH=" + os.Getenv("PATH"), "GOROOT=" + cwd, "GOROOT_BOOTSTRAP=/usr/local/go"}
 			if err := cmd.Run(); err != nil {
 				return fmt.Errorf("Failed to run make.bash: %s", err)
 			}
