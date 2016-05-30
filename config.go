@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"go/build"
 	"log"
 	"os"
@@ -13,13 +14,23 @@ var (
 	buildContext = build.Default
 )
 
-func initBuildContext() {
+func initBuildContext() error {
 	// KLUDGE: determine whether we're in the stdlib and if so, set GOROOT to "." before applying config.
 	// This is necessary for the stdlib unit names to be correct.
 	output, err := exec.Command("git", "config", "--get", "remote.origin.url").Output()
 	cloneURL := strings.Replace(strings.TrimSuffix(strings.TrimSpace(string(output)), ".git"), ":", "/", -1)
 	if err == nil && (strings.HasSuffix(cloneURL, "github.com/golang/go") || strings.HasSuffix(cloneURL, "github.com/sgtest/minimal-go-stdlib")) {
 		buildContext.GOROOT = cwd
+		if _, err := os.Stat("src/runtime/internal/sys/zversion.go"); os.IsNotExist(err) {
+			log.Println("Go stdlib detected, but it was not built yet. Running make.bash...")
+			cmd := exec.Command("bash", "make.bash")
+			cmd.Dir = filepath.Join(cwd, "src")
+			cmd.Stdout = os.Stderr
+			cmd.Stderr = os.Stderr
+			if err := cmd.Run(); err != nil {
+				return fmt.Errorf("Failed to run make.bash: %s", err)
+			}
+		}
 	}
 
 	// Automatically detect vendored dirs (check for vendor/src and
@@ -39,6 +50,8 @@ func initBuildContext() {
 	}
 	gopaths = append(gopaths, filepath.SplitList(buildContext.GOPATH)...)
 	buildContext.GOPATH = strings.Join(gopaths, string(filepath.ListSeparator))
+
+	return nil
 }
 
 func pathHasPrefix(path, prefix string) bool {

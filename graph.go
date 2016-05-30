@@ -74,7 +74,9 @@ func (c *GraphCmd) Execute(args []string) error {
 		return err
 	}
 
-	initBuildContext()
+	if err := initBuildContext(); err != nil {
+		return err
+	}
 
 	out, err := Graph(unit)
 	if err != nil {

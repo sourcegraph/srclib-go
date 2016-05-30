@@ -30,7 +30,9 @@ type ScanCmd struct{}
 var scanCmd ScanCmd
 
 func (c *ScanCmd) Execute(args []string) error {
-	initBuildContext()
+	if err := initBuildContext(); err != nil {
+		return err
+	}
 
 	scanDir, err := filepath.EvalSymlinks(getCWD())
 	if err != nil {

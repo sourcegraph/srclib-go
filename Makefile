@@ -52,7 +52,7 @@ srctest:
 	GOPATH=${TESTFETCHGOPATH} go get -d golang.org/x/net/ipv6
 	# prepare minimal-go-stdlib test to be used as GOROOT for the Go command:
 	# the compiler binary needs to be available in the pkg/tool directory
-	rm -rf testdata/case/src/github.com/sgtest/minimal-go-stdlib/pkg
+	rm -rf testdata/case/src/github.com/sgtest/minimal-go-stdlib/pkg testdata/case/src/github.com/sgtest/minimal-go-stdlib/src/runtime/internal
 	mkdir testdata/case/src/github.com/sgtest/minimal-go-stdlib/pkg
 	ln -s $(shell go env GOROOT)/pkg/tool testdata/case/src/github.com/sgtest/minimal-go-stdlib/pkg/tool
 	@if [ -z "$$GEN" ]; then \
