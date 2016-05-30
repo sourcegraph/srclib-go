@@ -319,6 +319,7 @@ func doGraph(pkg *build.Package) (*gog.Output, error) {
 		Importer: &buildContextImporter{
 			context: &buildContext,
 			srcDir:  pkg.Dir,
+			fset:    fset,
 			packages: map[string]*types.Package{
 				"unsafe": types.Unsafe,
 			},
@@ -346,6 +347,7 @@ func doGraph(pkg *build.Package) (*gog.Output, error) {
 type buildContextImporter struct {
 	context  *build.Context
 	srcDir   string
+	fset     *token.FileSet
 	packages map[string]*types.Package
 }
 
@@ -377,15 +379,23 @@ func (i *buildContextImporter) Import(path string) (*types.Package, error) {
 
 	br := bufio.NewReader(r)
 
-	_, err = gcimporter.FindExportData(br)
+	hdr, err := gcimporter.FindExportData(br)
 	if err != nil {
 		return nil, err
 	}
 
-	typesPkg, err := gcimporter.ImportData(i.packages, buildPkg.PkgObj, buildPkg.ImportPath, br)
-	if err != nil {
-		return nil, err
+	switch hdr {
+	case "$$\n":
+		return gcimporter.ImportData(i.packages, buildPkg.PkgObj, buildPkg.ImportPath, br)
+	case "$$B\n":
+		var data []byte
+		data, err = ioutil.ReadAll(br)
+		if err != nil {
+			return nil, err
+		}
+		_, pkg, err := gcimporter.BImportData(i.fset, i.packages, data, buildPkg.ImportPath)
+		return pkg, err
+	default:
+		return nil, fmt.Errorf("unknown export data header: %q", hdr)
 	}
-
-	return typesPkg, nil
 }

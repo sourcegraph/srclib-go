@@ -51,10 +51,10 @@
 			"revisionTime": "2016-04-03T16:33:36-07:00"
 		},
 		{
-			"checksumSHA1": "Ymuplsf82NNHBZUgUT/nM/U4BpM=",
+			"checksumSHA1": "I7yuCtl+t3o62MQWODY6glzjSUY=",
 			"path": "golang.org/x/tools/go/gcimporter15",
-			"revision": "b75b3f5cd5d50fbb1fb88ce784d2e7cca17bba8a",
-			"revisionTime": "2016-04-03T16:33:36-07:00"
+			"revision": "6eef0b4fad0c51b103e29205c16f72fef5b09341",
+			"revisionTime": "2016-05-28T02:55:32Z"
 		},
 		{
 			"checksumSHA1": "oP1vuCE1PtUjnt+HMX+SvIUG4II=",
