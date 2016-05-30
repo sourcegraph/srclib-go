@@ -39,6 +39,7 @@ type grapher struct {
 	funcNames  map[*types.Scope]string
 
 	paths      map[types.Object][]string
+	usedPaths  map[string]struct{}
 	scopePaths map[*types.Scope][]string
 	pkgscope   map[types.Object]bool
 	selRecvs   map[types.Object]types.Type
@@ -69,6 +70,7 @@ func Graph(fset *token.FileSet, files []*ast.File, typesPkg *types.Package, type
 		funcNames:  make(map[*types.Scope]string),
 
 		paths:      make(map[types.Object][]string),
+		usedPaths:  make(map[string]struct{}),
 		scopePaths: make(map[*types.Scope][]string),
 		pkgscope:   make(map[types.Object]bool),
 		selRecvs:   make(map[types.Object]types.Type),
