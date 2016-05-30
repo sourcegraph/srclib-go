@@ -364,7 +364,7 @@ func (i *buildContextImporter) Import(path string) (*types.Package, error) {
 	if _, err := os.Stat(buildPkg.PkgObj); os.IsNotExist(err) {
 		// try to build .a file if it does not exist
 		cmd := exec.Command("go", "install", "-buildmode=archive", buildPkg.ImportPath)
-		cmd.Env = []string{"PATH=" + os.Getenv("PATH"), "GOROOT=" + i.context.GOROOT, "GOPATH=" + i.context.GOPATH, "CGO_ENABLED=0"}
+		cmd.Env = []string{"PATH=" + os.Getenv("PATH"), "GOROOT=" + i.context.GOROOT, "GOPATH=" + i.context.GOPATH}
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
 			return nil, err
