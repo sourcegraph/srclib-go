@@ -60,7 +60,7 @@
     {
       "UnitType": "GoPackage",
       "Unit": "github.com/sgtest/go-misc/multiple_mains",
-      "Path": "main2.go/main/x",
+      "Path": "main2.go/main/x/fixme",
       "Name": "x",
       "Kind": "var",
       "File": "multiple_mains/main2.go",
@@ -74,7 +74,7 @@
         "Kind": "var",
         "PackageImportPath": "github.com/sgtest/go-misc/multiple_mains"
       },
-      "TreePath": "./main2/main/x"
+      "TreePath": "./main2/main/x/fixme"
     }
   ],
   "Refs": [
@@ -128,7 +128,7 @@
     {
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/multiple_mains",
-      "DefPath": "main2.go/main/x",
+      "DefPath": "main2.go/main/x/fixme",
       "Unit": "github.com/sgtest/go-misc/multiple_mains",
       "File": "multiple_mains/main2.go",
       "Start": 111,
@@ -137,7 +137,7 @@
     {
       "DefUnitType": "GoPackage",
       "DefUnit": "github.com/sgtest/go-misc/multiple_mains",
-      "DefPath": "main2.go/main/x",
+      "DefPath": "main2.go/main/x/fixme",
       "Unit": "github.com/sgtest/go-misc/multiple_mains",
       "Def": true,
       "File": "multiple_mains/main2.go",

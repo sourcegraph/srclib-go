@@ -169,7 +169,7 @@ func (g *grapher) assignPaths(s *types.Scope, prefix []string, pkgscope bool) {
 			continue
 		}
 		path := append(append([]string{}, prefix...), name)
-		g.paths[e] = path
+		g.addPath(e, path)
 		g.pkgscope[e] = pkgscope
 
 		if tn, ok := e.(*types.TypeName); ok {
@@ -222,7 +222,7 @@ func (g *grapher) assignMethodPaths(named *types.Named, prefix []string, pkgscop
 	for i := 0; i < named.NumMethods(); i++ {
 		m := named.Method(i)
 		path := append(append([]string{}, prefix...), m.Name())
-		g.paths[m] = path
+		g.addPath(m, path)
 
 		g.pkgscope[m] = pkgscope
 
@@ -235,7 +235,7 @@ func (g *grapher) assignMethodPaths(named *types.Named, prefix []string, pkgscop
 		for i := 0; i < iface.NumExplicitMethods(); i++ {
 			m := iface.Method(i)
 			path := append(append([]string{}, prefix...), m.Name())
-			g.paths[m] = path
+			g.addPath(m, path)
 
 			g.pkgscope[m] = pkgscope
 
@@ -250,7 +250,7 @@ func (g *grapher) assignStructFieldPaths(styp *types.Struct, prefix []string, pk
 	for i := 0; i < styp.NumFields(); i++ {
 		f := styp.Field(i)
 		path := append(append([]string{}, prefix...), f.Name())
-		g.paths[f] = path
+		g.addPath(f, path)
 
 		g.pkgscope[f] = pkgscope
 
@@ -272,6 +272,18 @@ func (g *grapher) pathEnclosingInterval(start, end token.Pos) ([]ast.Node, bool)
 		}
 	}
 	return nil, false
+}
+
+func (g *grapher) addPath(obj types.Object, path []string) {
+	for {
+		_, ok := g.usedPaths[strings.Join(path, "/")]
+		if !ok {
+			break
+		}
+		path = append(path, "fixme") // crude workaround for path collisions, proper fix needs major rewrite of this code based on AST traversal
+	}
+	g.paths[obj] = path
+	g.usedPaths[strings.Join(path, "/")] = struct{}{}
 }
 
 func tokenFileContainsPos(f *token.File, pos token.Pos) bool {
