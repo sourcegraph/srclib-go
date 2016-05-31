@@ -357,9 +357,21 @@ func loadDependencies(imports []string, srcDir string, fset *token.FileSet) (map
 			continue
 		}
 
-		impPkg, err := buildContext.Import(path, srcDir, build.FindOnly&build.AllowBinary)
+		impPkg, err := buildContext.Import(path, srcDir, build.AllowBinary)
 		if err != nil {
-			return nil, err
+			// try to download package
+			cmd := exec.Command("go", "get", "-d", "-v", path)
+			cmd.Stdout = os.Stderr
+			cmd.Stderr = os.Stderr
+			cmd.Env = []string{"PATH=" + os.Getenv("PATH"), "GOROOT=" + buildContext.GOROOT, "GOPATH=" + buildContext.GOPATH}
+			if err := cmd.Run(); err != nil {
+				return nil, err
+			}
+
+			impPkg, err = buildContext.Import(path, srcDir, build.AllowBinary)
+			if err != nil {
+				return nil, err
+			}
 		}
 
 		if typesPkg, ok := packages[impPkg.ImportPath]; ok && typesPkg.Complete() {
