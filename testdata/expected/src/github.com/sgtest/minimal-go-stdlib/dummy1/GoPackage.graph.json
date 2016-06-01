@@ -39,9 +39,75 @@
         "PackageImportPath": "dummy1"
       },
       "TreePath": "./MyType"
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "dummy1_test",
+      "Path": ".",
+      "Name": "dummy1_test",
+      "Kind": "package",
+      "File": "src/dummy1",
+      "DefStart": 0,
+      "DefEnd": 0,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgName": "dummy1_test",
+        "TypeString": "",
+        "Kind": "package",
+        "PackageImportPath": "dummy1_test"
+      },
+      "TreePath": "."
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "dummy1_test",
+      "Path": "v",
+      "Name": "v",
+      "Kind": "var",
+      "File": "src/dummy1/dummy1_x_test.go",
+      "DefStart": 42,
+      "DefEnd": 57,
+      "Test": true,
+      "Data": {
+        "PkgScope": true,
+        "PkgName": "dummy1_test",
+        "TypeString": "dummy1.MyType",
+        "UnderlyingTypeString": "int",
+        "Kind": "var",
+        "PackageImportPath": "dummy1_test"
+      },
+      "TreePath": "./v"
     }
   ],
   "Refs": [
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy1_test",
+      "DefPath": ".",
+      "Unit": "dummy1_test",
+      "File": "src/dummy1/dummy1_x_test.go",
+      "Start": 8,
+      "End": 19
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy1",
+      "DefPath": ".",
+      "Unit": "dummy1_test",
+      "File": "src/dummy1/dummy1_x_test.go",
+      "Start": 28,
+      "End": 36
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy1",
+      "DefPath": ".",
+      "Unit": "dummy1_test",
+      "File": "src/dummy1/dummy1_x_test.go",
+      "Start": 44,
+      "End": 50
+    },
     {
       "DefUnitType": "GoPackage",
       "DefUnit": "dummy1",
@@ -50,6 +116,15 @@
       "File": "src/dummy1/dummy1.go",
       "Start": 8,
       "End": 14
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy1",
+      "DefPath": "MyType",
+      "Unit": "dummy1_test",
+      "File": "src/dummy1/dummy1_x_test.go",
+      "Start": 51,
+      "End": 57
     },
     {
       "DefUnitType": "GoPackage",
@@ -69,6 +144,16 @@
       "File": "src/dummy1/dummy1.go",
       "Start": 28,
       "End": 31
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "dummy1_test",
+      "DefPath": "v",
+      "Unit": "dummy1_test",
+      "Def": true,
+      "File": "src/dummy1/dummy1_x_test.go",
+      "Start": 42,
+      "End": 43
     }
   ]
 }
