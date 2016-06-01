@@ -63,17 +63,27 @@ func ResolveDep(importPath string) (*dep.ResolvedTarget, error) {
 	if target := resolveCache.Get(importPath); target != nil {
 		return target, nil
 	}
-	if strings.HasSuffix(importPath, "_test") {
-		// TODO(sqs): handle xtest packages - these should not be appearing here
-		// as import paths, but they are, so suppress errors
-		return nil, fmt.Errorf("xtest package (%s) is not yet supported", importPath)
+
+	target, err := doResolveDep(importPath)
+	if err != nil {
+		return nil, err
 	}
 
+	// Save in cache.
+	resolveCache.Put(importPath, target)
+
+	return target, nil
+}
+
+func doResolveDep(importPath string) (*dep.ResolvedTarget, error) {
 	// Check if this import path is in this tree. If refs refer to vendored deps, they are linked to the vendored code
 	// inside this repository (i.e., NOT linked to the external repository from which the code was vendored).
-	if pkg, err := buildContext.Import(importPath, "", build.FindOnly); err == nil {
+	if pkg, err := buildContext.Import(strings.TrimSuffix(importPath, "_test"), "", build.FindOnly); err == nil {
 		if pathHasPrefix(pkg.Dir, cwd) {
 			if name, isVendored := vendoredUnitName(pkg); isVendored {
+				if strings.HasSuffix(importPath, "_test") {
+					name += "_test"
+				}
 				return &dep.ResolvedTarget{
 					ToRepoCloneURL: "", // empty ToRepoCloneURL to indicate it's from this repository
 					ToUnit:         name,
@@ -90,13 +100,5 @@ func ResolveDep(importPath string) (*dep.ResolvedTarget, error) {
 		}
 	}
 
-	target, err := depresolve.ResolveImportPath(importPath)
-	if err != nil {
-		return nil, err
-	}
-
-	// Save in cache.
-	resolveCache.Put(importPath, target)
-
-	return target, nil
+	return depresolve.ResolveImportPath(importPath)
 }

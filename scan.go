@@ -143,7 +143,11 @@ func scan(scanDir string) ([]*unit.SourceUnit, error) {
 
 	var units []*unit.SourceUnit
 	for _, pkg := range pkgs {
-		if _, err := prepareDependencies(append(pkg.Imports, pkg.TestImports...), pkg.Dir, token.NewFileSet()); err != nil {
+		var allImports []string
+		allImports = append(allImports, pkg.Imports...)
+		allImports = append(allImports, pkg.TestImports...)
+		allImports = append(allImports, pkg.XTestImports...)
+		if _, err := prepareDependencies(allImports, pkg.ImportPath, pkg.Dir, token.NewFileSet()); err != nil {
 			return nil, err
 		}
 
@@ -161,7 +165,6 @@ func scan(scanDir string) ([]*unit.SourceUnit, error) {
 		files = append(files, pkg.SwigCXXFiles...)
 		files = append(files, pkg.SysoFiles...)
 		files = append(files, pkg.TestGoFiles...)
-		files = append(files, pkg.XTestGoFiles...)
 
 		// Collect all imports. We use a map to remove duplicates.
 		var imports []string
@@ -218,6 +221,22 @@ func scan(scanDir string) ([]*unit.SourceUnit, error) {
 				Ops:          map[string][]byte{"depresolve": nil, "graph": nil},
 			},
 		})
+
+		if len(pkg.XTestGoFiles) != 0 {
+			units = append(units, &unit.SourceUnit{
+				Key: unit.Key{
+					Name: pkg.ImportPath + "_test",
+					Type: "GoPackage",
+				},
+				Info: unit.Info{
+					Dir:          pkg.Dir,
+					Files:        pkg.XTestGoFiles,
+					Data:         pkgData,
+					Dependencies: deps,
+					Ops:          map[string][]byte{"depresolve": nil, "graph": nil},
+				},
+			})
+		}
 	}
 
 	return units, nil
@@ -284,14 +303,14 @@ func (p vendorDirSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 // prepareDependencies performs best-effort fetches and builds of the
 // packages whose import paths are given by imports. If fetching a
 // package fails, a warning is printed and the package is skipped.
-func prepareDependencies(imports []string, srcDir string, fset *token.FileSet) (map[string]*types.Package, error) {
+func prepareDependencies(imports []string, currentPkg string, srcDir string, fset *token.FileSet) (map[string]*types.Package, error) {
 	dependencies := map[string]*types.Package{
 		"unsafe": types.Unsafe,
 	}
 	packages := map[string]*types.Package{}
 
 	for _, path := range imports {
-		if path == "unsafe" || path == "C" {
+		if path == "unsafe" || path == "C" || path == currentPkg {
 			continue
 		}
 
@@ -346,7 +365,7 @@ func prepareDependencies(imports []string, srcDir string, fset *token.FileSet) (
 
 func writePkgObj(buildPkg *build.Package) error {
 	fset := token.NewFileSet()
-	dependencies, err := prepareDependencies(buildPkg.Imports, buildPkg.Dir, fset)
+	dependencies, err := prepareDependencies(buildPkg.Imports, buildPkg.ImportPath, buildPkg.Dir, fset)
 	if err != nil {
 		return err
 	}

@@ -1,0 +1,143 @@
+{
+  "Defs": [
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/tests_test",
+      "Path": ".",
+      "Name": "tests_test",
+      "Kind": "package",
+      "File": "tests",
+      "DefStart": 0,
+      "DefEnd": 0,
+      "Exported": true,
+      "Data": {
+        "Exported": true,
+        "PkgName": "tests_test",
+        "TypeString": "",
+        "Kind": "package",
+        "PackageImportPath": "github.com/sgtest/go-misc/tests_test"
+      },
+      "TreePath": "."
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/tests_test",
+      "Path": "C",
+      "Name": "C",
+      "Kind": "var",
+      "File": "tests/x_test.go",
+      "DefStart": 66,
+      "DefEnd": 77,
+      "Exported": true,
+      "Test": true,
+      "Data": {
+        "Exported": true,
+        "PkgScope": true,
+        "PkgName": "tests_test",
+        "TypeString": "int",
+        "UnderlyingTypeString": "int",
+        "Kind": "var",
+        "PackageImportPath": "github.com/sgtest/go-misc/tests_test"
+      },
+      "TreePath": "./C"
+    },
+    {
+      "UnitType": "GoPackage",
+      "Unit": "github.com/sgtest/go-misc/tests_test",
+      "Path": "D",
+      "Name": "D",
+      "Kind": "var",
+      "File": "tests/x_test.go",
+      "DefStart": 82,
+      "DefEnd": 93,
+      "Exported": true,
+      "Test": true,
+      "Data": {
+        "Exported": true,
+        "PkgScope": true,
+        "PkgName": "tests_test",
+        "TypeString": "int",
+        "UnderlyingTypeString": "int",
+        "Kind": "var",
+        "PackageImportPath": "github.com/sgtest/go-misc/tests_test"
+      },
+      "TreePath": "./D"
+    }
+  ],
+  "Refs": [
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/tests_test",
+      "DefPath": ".",
+      "Unit": "github.com/sgtest/go-misc/tests_test",
+      "File": "tests/x_test.go",
+      "Start": 8,
+      "End": 18
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/tests",
+      "DefPath": ".",
+      "Unit": "github.com/sgtest/go-misc/tests_test",
+      "File": "tests/x_test.go",
+      "Start": 27,
+      "End": 60
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/tests",
+      "DefPath": ".",
+      "Unit": "github.com/sgtest/go-misc/tests_test",
+      "File": "tests/x_test.go",
+      "Start": 70,
+      "End": 75
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/tests",
+      "DefPath": ".",
+      "Unit": "github.com/sgtest/go-misc/tests_test",
+      "File": "tests/x_test.go",
+      "Start": 86,
+      "End": 91
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/tests",
+      "DefPath": "A",
+      "Unit": "github.com/sgtest/go-misc/tests_test",
+      "File": "tests/x_test.go",
+      "Start": 76,
+      "End": 77
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/tests",
+      "DefPath": "B",
+      "Unit": "github.com/sgtest/go-misc/tests_test",
+      "File": "tests/x_test.go",
+      "Start": 92,
+      "End": 93
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/tests_test",
+      "DefPath": "C",
+      "Unit": "github.com/sgtest/go-misc/tests_test",
+      "Def": true,
+      "File": "tests/x_test.go",
+      "Start": 66,
+      "End": 67
+    },
+    {
+      "DefUnitType": "GoPackage",
+      "DefUnit": "github.com/sgtest/go-misc/tests_test",
+      "DefPath": "D",
+      "Unit": "github.com/sgtest/go-misc/tests_test",
+      "Def": true,
+      "File": "tests/x_test.go",
+      "Start": 82,
+      "End": 83
+    }
+  ]
+}
