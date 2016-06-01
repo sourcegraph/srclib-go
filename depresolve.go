@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"go/build"
 	"log"
-	"strings"
 	"sync"
 
 	"sourcegraph.com/sourcegraph/srclib-go/depresolve"
@@ -62,11 +61,6 @@ func ResolveDep(importPath string) (*dep.ResolvedTarget, error) {
 	// Look up in cache.
 	if target := resolveCache.Get(importPath); target != nil {
 		return target, nil
-	}
-	if strings.HasSuffix(importPath, "_test") {
-		// TODO(sqs): handle xtest packages - these should not be appearing here
-		// as import paths, but they are, so suppress errors
-		return nil, fmt.Errorf("xtest package (%s) is not yet supported", importPath)
 	}
 
 	// Check if this import path is in this tree. If refs refer to vendored deps, they are linked to the vendored code
