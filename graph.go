@@ -359,75 +359,23 @@ func loadDependencies(imports []string, srcDir string, fset *token.FileSet) (map
 
 		impPkg, err := buildContext.Import(path, srcDir, build.AllowBinary)
 		if err != nil {
-			// try to download package
-			cmd := exec.Command("go", "get", "-d", "-v", path)
-			cmd.Stdout = os.Stderr
-			cmd.Stderr = os.Stderr
-			cmd.Env = []string{"PATH=" + os.Getenv("PATH"), "GOROOT=" + buildContext.GOROOT, "GOPATH=" + buildContext.GOPATH}
-			if err := cmd.Run(); err != nil {
+			return nil, err
+		}
+
+		typesPkg, ok := packages[impPkg.ImportPath]
+		if !ok || !typesPkg.Complete() {
+			data, err := ioutil.ReadFile(impPkg.PkgObj)
+			if err != nil {
 				return nil, err
 			}
-
-			impPkg, err = buildContext.Import(path, srcDir, build.AllowBinary)
+			_, typesPkg, err = gcimporter.BImportData(fset, packages, data, impPkg.ImportPath)
 			if err != nil {
 				return nil, err
 			}
 		}
 
-		if typesPkg, ok := packages[impPkg.ImportPath]; ok && typesPkg.Complete() {
-			continue
-		}
-
-		if _, err := os.Stat(impPkg.PkgObj); os.IsNotExist(err) {
-			if err := writePkgObj(impPkg); err != nil {
-				return nil, err
-			}
-		}
-
-		data, err := ioutil.ReadFile(impPkg.PkgObj)
-		if err != nil {
-			return nil, err
-		}
-		_, pkg, err := gcimporter.BImportData(fset, packages, data, impPkg.ImportPath)
-		if err != nil {
-			return nil, err
-		}
-		dependencies[path] = pkg
+		dependencies[path] = typesPkg
 	}
 
 	return dependencies, nil
-}
-
-func writePkgObj(buildPkg *build.Package) error {
-	fset := token.NewFileSet()
-	dependencies, err := loadDependencies(buildPkg.Imports, buildPkg.Dir, fset)
-	if err != nil {
-		return err
-	}
-
-	var files []*ast.File
-	for _, name := range append(buildPkg.GoFiles, buildPkg.CgoFiles...) {
-		file, err := parser.ParseFile(fset, filepath.Join(buildPkg.Dir, name), nil, parser.ParseComments)
-		if err != nil {
-			return err
-		}
-		files = append(files, file)
-	}
-
-	typesConfig := &types.Config{
-		Importer:    mapImporter(dependencies),
-		FakeImportC: true,
-		Error: func(err error) {
-			// errors are ignored, use best-effort type checking output
-		},
-	}
-	typesPkg, err := typesConfig.Check(buildPkg.ImportPath, fset, files, nil)
-	if err != nil {
-		log.Println("type checker error:", err) // see comment above
-	}
-
-	if err := os.MkdirAll(filepath.Dir(buildPkg.PkgObj), 0777); err != nil {
-		return err
-	}
-	return ioutil.WriteFile(buildPkg.PkgObj, gcimporter.BExportData(fset, typesPkg), 0666)
 }

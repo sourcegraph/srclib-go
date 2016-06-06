@@ -2,14 +2,21 @@ package main
 
 import (
 	"encoding/json"
+	"go/ast"
 	"go/build"
+	"go/parser"
+	"go/token"
+	"go/types"
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
+
+	"golang.org/x/tools/go/gcimporter15"
 
 	"sourcegraph.com/sourcegraph/srclib/unit"
 )
@@ -136,6 +143,10 @@ func scan(scanDir string) ([]*unit.SourceUnit, error) {
 
 	var units []*unit.SourceUnit
 	for _, pkg := range pkgs {
+		if _, err := prepareDependencies(append(pkg.Imports, pkg.TestImports...), pkg.Dir, token.NewFileSet()); err != nil {
+			return nil, err
+		}
+
 		// Collect all files
 		var files []string
 		files = append(files, pkg.GoFiles...)
@@ -269,3 +280,89 @@ type vendorDirSlice []string
 func (p vendorDirSlice) Len() int           { return len(p) }
 func (p vendorDirSlice) Less(i, j int) bool { return len(p[i]) >= len(p[j]) }
 func (p vendorDirSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+
+func prepareDependencies(imports []string, srcDir string, fset *token.FileSet) (map[string]*types.Package, error) {
+	dependencies := map[string]*types.Package{
+		"unsafe": types.Unsafe,
+	}
+	packages := map[string]*types.Package{}
+
+	for _, path := range imports {
+		if path == "unsafe" || path == "C" {
+			continue
+		}
+
+		impPkg, err := buildContext.Import(path, srcDir, build.AllowBinary)
+		if err != nil {
+			// try to download package
+			cmd := exec.Command("go", "get", "-d", "-v", path)
+			cmd.Stdout = os.Stderr
+			cmd.Stderr = os.Stderr
+			cmd.Env = []string{"PATH=" + os.Getenv("PATH"), "GOROOT=" + buildContext.GOROOT, "GOPATH=" + buildContext.GOPATH}
+			if err := cmd.Run(); err != nil {
+				return nil, err
+			}
+
+			impPkg, err = buildContext.Import(path, srcDir, build.AllowBinary)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		typesPkg, ok := packages[impPkg.ImportPath]
+		if !ok || !typesPkg.Complete() {
+			if _, err := os.Stat(impPkg.PkgObj); os.IsNotExist(err) {
+				if err := writePkgObj(impPkg); err != nil {
+					return nil, err
+				}
+			}
+
+			data, err := ioutil.ReadFile(impPkg.PkgObj)
+			if err != nil {
+				return nil, err
+			}
+			_, typesPkg, err = gcimporter.BImportData(fset, packages, data, impPkg.ImportPath)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		dependencies[path] = typesPkg
+	}
+
+	return dependencies, nil
+}
+
+func writePkgObj(buildPkg *build.Package) error {
+	fset := token.NewFileSet()
+	dependencies, err := prepareDependencies(buildPkg.Imports, buildPkg.Dir, fset)
+	if err != nil {
+		return err
+	}
+
+	var files []*ast.File
+	for _, name := range append(buildPkg.GoFiles, buildPkg.CgoFiles...) {
+		file, err := parser.ParseFile(fset, filepath.Join(buildPkg.Dir, name), nil, parser.ParseComments)
+		if err != nil {
+			return err
+		}
+		files = append(files, file)
+	}
+
+	typesConfig := &types.Config{
+		Importer:    mapImporter(dependencies),
+		FakeImportC: true,
+		Error: func(err error) {
+			// errors are ignored, use best-effort type checking output
+		},
+	}
+	typesPkg, err := typesConfig.Check(buildPkg.ImportPath, fset, files, nil)
+	if err != nil {
+		log.Println("type checker error:", err) // see comment above
+	}
+
+	if err := os.MkdirAll(filepath.Dir(buildPkg.PkgObj), 0777); err != nil {
+		return err
+	}
+	return ioutil.WriteFile(buildPkg.PkgObj, gcimporter.BExportData(fset, typesPkg), 0666)
+}
