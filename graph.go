@@ -297,12 +297,7 @@ func treePath(path string) string {
 
 func doGraph(buildPkg *build.Package) (*gog.Output, error) {
 	fset := token.NewFileSet()
-
-	var allImports []string
-	allImports = append(allImports, buildPkg.Imports...)
-	allImports = append(allImports, buildPkg.TestImports...)
-	allImports = append(allImports, buildPkg.XTestImports...)
-	dependencies, err := loadDependencies(allImports, buildPkg.ImportPath, buildPkg.Dir, fset)
+	dependencies, err := loadDependencies(append(buildPkg.Imports, buildPkg.TestImports...), buildPkg.Dir, fset)
 	if err != nil {
 		return nil, err
 	}
@@ -311,33 +306,14 @@ func doGraph(buildPkg *build.Package) (*gog.Output, error) {
 	allGoFiles = append(allGoFiles, buildPkg.GoFiles...)
 	allGoFiles = append(allGoFiles, buildPkg.CgoFiles...)
 	allGoFiles = append(allGoFiles, buildPkg.TestGoFiles...)
-	oPkg, typesPkg, err := doGraphFiles(fset, buildPkg.ImportPath, buildPkg.Dir, allGoFiles, dependencies)
-	if err != nil {
-		return nil, err
+	if len(allGoFiles) == 0 {
+		return &gog.Output{}, nil
 	}
-
-	dependencies[buildPkg.ImportPath] = typesPkg
-	oTestPkg, _, err := doGraphFiles(fset, buildPkg.ImportPath+"_test", buildPkg.Dir, buildPkg.XTestGoFiles, dependencies)
-	if err != nil {
-		return nil, err
-	}
-
-	var output gog.Output
-	output.Append(oPkg)
-	output.Append(oTestPkg)
-	return &output, nil
-}
-
-func doGraphFiles(fset *token.FileSet, importPath string, srcDir string, fileNames []string, dependencies map[string]*types.Package) (*gog.Output, *types.Package, error) {
-	if len(fileNames) == 0 {
-		return &gog.Output{}, nil, nil
-	}
-
 	var files []*ast.File
-	for _, name := range fileNames {
-		file, err := parser.ParseFile(fset, filepath.Join(srcDir, name), nil, parser.ParseComments)
+	for _, name := range allGoFiles {
+		file, err := parser.ParseFile(fset, filepath.Join(buildPkg.Dir, name), nil, parser.ParseComments)
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 		files = append(files, file)
 	}
@@ -356,12 +332,12 @@ func doGraphFiles(fset *token.FileSet, importPath string, srcDir string, fileNam
 		Selections: make(map[*ast.SelectorExpr]*types.Selection),
 		Scopes:     make(map[ast.Node]*types.Scope),
 	}
-	typesPkg, err := typesConfig.Check(importPath, fset, files, typesInfo)
+	typesPkg, err := typesConfig.Check(buildPkg.ImportPath, fset, files, typesInfo)
 	if err != nil {
 		log.Println("type checker error:", err) // see comment above
 	}
 
-	return gog.Graph(fset, files, typesPkg, typesInfo, true), typesPkg, nil
+	return gog.Graph(fset, files, typesPkg, typesInfo, true), nil
 }
 
 type mapImporter map[string]*types.Package
@@ -370,14 +346,14 @@ func (i mapImporter) Import(path string) (*types.Package, error) {
 	return i[path], nil
 }
 
-func loadDependencies(imports []string, currentPkg string, srcDir string, fset *token.FileSet) (map[string]*types.Package, error) {
+func loadDependencies(imports []string, srcDir string, fset *token.FileSet) (map[string]*types.Package, error) {
 	dependencies := map[string]*types.Package{
 		"unsafe": types.Unsafe,
 	}
 	packages := map[string]*types.Package{}
 
 	for _, path := range imports {
-		if path == "unsafe" || path == "C" || path == currentPkg {
+		if path == "unsafe" || path == "C" {
 			continue
 		}
 
@@ -424,7 +400,7 @@ func loadDependencies(imports []string, currentPkg string, srcDir string, fset *
 
 func writePkgObj(buildPkg *build.Package) error {
 	fset := token.NewFileSet()
-	dependencies, err := loadDependencies(buildPkg.Imports, buildPkg.ImportPath, buildPkg.Dir, fset)
+	dependencies, err := loadDependencies(buildPkg.Imports, buildPkg.Dir, fset)
 	if err != nil {
 		return err
 	}
