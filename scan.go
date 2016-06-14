@@ -281,6 +281,9 @@ func (p vendorDirSlice) Len() int           { return len(p) }
 func (p vendorDirSlice) Less(i, j int) bool { return len(p[i]) >= len(p[j]) }
 func (p vendorDirSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 
+// prepareDependencies performs best-effort fetches and builds of the
+// packages whose import paths are given by imports. If fetching a
+// package fails, a warning is printed and the package is skipped.
 func prepareDependencies(imports []string, srcDir string, fset *token.FileSet) (map[string]*types.Package, error) {
 	dependencies := map[string]*types.Package{
 		"unsafe": types.Unsafe,
@@ -294,18 +297,26 @@ func prepareDependencies(imports []string, srcDir string, fset *token.FileSet) (
 
 		impPkg, err := buildContext.Import(path, srcDir, build.AllowBinary)
 		if err != nil {
+			// This step can fail when a dependency package has been
+			// moved or its host is down. Failures here will degrade
+			// the analysis, but they should not be fatal, or else the
+			// build success is very sensitive to external
+			// dependencies.
+
 			// try to download package
 			cmd := exec.Command("go", "get", "-d", "-v", path)
 			cmd.Stdout = os.Stderr
 			cmd.Stderr = os.Stderr
 			cmd.Env = []string{"PATH=" + os.Getenv("PATH"), "GOROOT=" + buildContext.GOROOT, "GOPATH=" + buildContext.GOPATH}
 			if err := cmd.Run(); err != nil {
-				return nil, err
+				log.Printf("warning: fetching dependency (with %v) failed: %s", cmd.Args, err)
+				continue
 			}
 
 			impPkg, err = buildContext.Import(path, srcDir, build.AllowBinary)
 			if err != nil {
-				return nil, err
+				log.Printf("warning: importing dependency %q failed: %s", path, err)
+				continue
 			}
 		}
 
