@@ -382,7 +382,11 @@ func doGraphFiles(fset *token.FileSet, importPath string, srcDir string, fileNam
 type mapImporter map[string]*types.Package
 
 func (i mapImporter) Import(path string) (*types.Package, error) {
-	return i[path], nil
+	pkg, ok := i[path]
+	if !ok {
+		return nil, fmt.Errorf("package not available: %s", path)
+	}
+	return pkg, nil
 }
 
 func loadDependencies(imports []string, currentPkg string, srcDir string, fset *token.FileSet) (map[string]*types.Package, error) {
@@ -398,18 +402,21 @@ func loadDependencies(imports []string, currentPkg string, srcDir string, fset *
 
 		impPkg, err := buildContext.Import(path, srcDir, build.AllowBinary)
 		if err != nil {
-			return nil, err
+			log.Printf("could not import %s: %s", path, err)
+			continue
 		}
 
 		typesPkg, ok := packages[impPkg.ImportPath]
 		if !ok || !typesPkg.Complete() {
 			data, err := ioutil.ReadFile(impPkg.PkgObj)
 			if err != nil {
-				return nil, err
+				log.Printf("could not import %s: %s", path, err)
+				continue
 			}
 			_, typesPkg, err = gcimporter.BImportData(fset, packages, data, impPkg.ImportPath)
 			if err != nil {
-				return nil, err
+				log.Printf("could not import %s: %s", path, err)
+				continue
 			}
 		}
 
