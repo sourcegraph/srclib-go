@@ -322,7 +322,8 @@ func doGraph(buildPkg *build.Package, testPkg bool) (*gog.Output, error) {
 	for _, name := range allGoFiles {
 		file, err := parser.ParseFile(fset, filepath.Join(buildPkg.Dir, name), nil, parser.ParseComments)
 		if err != nil {
-			return nil, err
+			log.Printf("could not parse %s: %s", name, err)
+			continue
 		}
 		files = append(files, file)
 	}
@@ -352,7 +353,8 @@ func doGraphFiles(fset *token.FileSet, importPath string, srcDir string, fileNam
 	for _, name := range fileNames {
 		file, err := parser.ParseFile(fset, filepath.Join(srcDir, name), nil, parser.ParseComments)
 		if err != nil {
-			return nil, err
+			log.Printf("could not parse %s: %s", name, err)
+			continue
 		}
 		files = append(files, file)
 	}
