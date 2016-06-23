@@ -314,6 +314,11 @@ func prepareDependencies(imports []string, currentPkg string, srcDir string, fse
 			continue
 		}
 
+		if build.IsLocalImport(path) {
+			log.Printf("warning: local imports not supported: %s", path)
+			continue
+		}
+
 		impPkg, err := buildContext.Import(path, srcDir, build.AllowBinary)
 		if err != nil {
 			// This step can fail when a dependency package has been
