@@ -1,5 +1,3 @@
-// +build nettest
-
 package depresolve_test
 
 import (
@@ -13,6 +11,10 @@ import (
 // TestResolveImportPath tests the behavior of ResolveImportPath
 // when called on some common Go package import paths.
 func TestResolveImportPath(t *testing.T) {
+	if testing.Short() {
+		t.Skip("short specified, skipping since accesses network")
+	}
+
 	tests := []struct {
 		ImportPath string
 		Result     *dep.ResolvedTarget
