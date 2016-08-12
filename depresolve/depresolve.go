@@ -40,9 +40,18 @@ func ResolveImportPath(importPath string) (*dep.ResolvedTarget, error) {
 		target.ToRepoCloneURL = "https://github.com/grpc/grpc-go"
 		target.ToUnit = strings.Replace(importPath, "google.golang.org/grpc", "github.com/grpc/grpc-go", 1)
 
+	// Special-case cloud.google.com/go/...
+	// The canonical import path is hosted on https://code.googlesource.com/gocloud,
+	// but sourcegraph.com uses its github.com mirror.
+	case importPath == "cloud.google.com/go" || strings.HasPrefix(importPath, "cloud.google.com/go/"):
+		target.ToRepoCloneURL = "https://github.com/GoogleCloudPlatform/gcloud-golang"
+		target.ToUnit = strings.Replace(importPath, "cloud.google.com/go", "github.com/GoogleCloudPlatform/gcloud-golang", 1)
+
 	// Special-case google.golang.org/cloud/...
 	// The canonical import path is hosted on https://code.googlesource.com/gocloud,
-	// but sourcegraph.com uses its github.com mirror
+	// but sourcegraph.com uses its github.com mirror.
+	// This path is now deprecated in favour of cloud.google.com/go/...,
+	// so we can remove this special casing in the future.
 	case importPath == "google.golang.org/cloud" || strings.HasPrefix(importPath, "google.golang.org/cloud/"):
 		target.ToRepoCloneURL = "https://github.com/GoogleCloudPlatform/gcloud-golang"
 		target.ToUnit = strings.Replace(importPath, "google.golang.org/cloud", "github.com/GoogleCloudPlatform/gcloud-golang", 1)
