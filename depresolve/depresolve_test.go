@@ -35,6 +35,8 @@ func TestResolveImportPath(t *testing.T) {
 		{"gopkg.in/redis.v3/internal/hashtag", &dep.ResolvedTarget{"https://gopkg.in/redis.v3", "gopkg.in/redis.v3/internal/hashtag", "GoPackage", "", ""}},
 		{"github.com/gorilla/mux", &dep.ResolvedTarget{"https://github.com/gorilla/mux", "github.com/gorilla/mux", "GoPackage", "", ""}},
 		{"github.com/aws/aws-sdk-go/aws/request", &dep.ResolvedTarget{"https://github.com/aws/aws-sdk-go", "github.com/aws/aws-sdk-go/aws/request", "GoPackage", "", ""}},
+		{"cloud.google.com/go", &dep.ResolvedTarget{"https://github.com/GoogleCloudPlatform/gcloud-golang", "github.com/GoogleCloudPlatform/gcloud-golang", "GoPackage", "", ""}},
+		{"cloud.google.com/go/bigtable", &dep.ResolvedTarget{"https://github.com/GoogleCloudPlatform/gcloud-golang", "github.com/GoogleCloudPlatform/gcloud-golang/bigtable", "GoPackage", "", ""}},
 	}
 	for _, test := range tests {
 		got, err := depresolve.ResolveImportPath(test.ImportPath)
