@@ -40,8 +40,6 @@ You should see this srclib-go toolchain in the list.
 
 Now that this toolchain is installed, any program that relies on srclib will support Go.
 
-(TODO(sqs): add a tutorial link)
-
 ## Screenshot
 
 Here's what srclib-go's analysis looks like in these applications.
@@ -98,11 +96,6 @@ properties in their Srcfile's `Config` property:
 srclib-go is alpha-quality software. It powers code analysis on
 [Sourcegraph.com](https://sourcegraph.com) but has not been widely tested or
 adapted for other use cases.
-
-
-## Tests
-
-TODO: needs updating.
 
 
 ## Contributing
